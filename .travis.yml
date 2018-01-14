@@ -29,7 +29,7 @@ matrix:
 
   allow_failures:
     - php: 7.1
-    - env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
+      env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
 
 before_script:
   - phpenv config-rm xdebug.ini
