@@ -10,6 +10,11 @@
     "homepage": "https://github.com/dereuromark/cakephp-tags",
     "license": "MIT",
     "authors": [
+		{
+			"name": "Mark Scherer",
+			"homepage": "http://www.dereuromark.de",
+			"role": "Maintainer"
+		},
         {
             "name": "Jad Bitar",
             "homepage": "http://jadb.io",
