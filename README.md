@@ -11,7 +11,7 @@ Make tagging of entities a piece of cake.
 Using Composer:
 
 ```
-composer require dereuromark/cakephp-tags:dev-master
+composer require dereuromark/cakephp-tags
 ```
 
 You then need to load the plugin. In `boostrap.php`, something like:
