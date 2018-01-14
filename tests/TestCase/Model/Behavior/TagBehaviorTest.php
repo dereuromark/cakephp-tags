@@ -81,8 +81,8 @@ class TagBehaviorTest extends TestCase {
 		$this->Table->saveOrFail($entity);
 
 		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
-		$tags = Hash::extract($taggedRows, '{n}.tags.label');
-		$this->assertSame(['Shiny', 'Awesome'], $tags);
+		$tags = Hash::extract($taggedRows, '{n}.tag.label');
+		$this->assertSame(['Awesome', 'Shiny'], $tags);
 
 		$this->assertSame($this->Table->getAlias(), $taggedRows[0]['fk_model']);
 	}
