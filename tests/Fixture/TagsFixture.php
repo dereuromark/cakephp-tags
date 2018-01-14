@@ -15,11 +15,9 @@ class TagsFixture extends TestFixture
         'counter' => ['type' => 'integer', 'unsigned' => true, 'default' => 0, 'null' => true],
         'created' => ['type' => 'datetime', 'null' => true],
         'modified' => ['type' => 'datetime', 'null' => true],
-		'_indexes' => [
-			'unique' => ['type' => 'index', 'columns' => ['slug', 'namespace'], 'length' => []],
-		],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id']],
+			'slug' => ['type' => 'unique', 'columns' => ['slug', 'namespace'], 'length' => []],
         ],
     ];
 

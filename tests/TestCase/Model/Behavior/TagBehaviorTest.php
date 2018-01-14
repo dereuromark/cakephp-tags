@@ -90,21 +90,22 @@ class TagBehaviorTest extends TestCase
         $expected = [
             0 => [
                 '_joinData' => [
-                    'fk_table' => 'tags_muffins'
+                    'fk_table' => 'Muffins'
                 ],
                 'label' => 'foo',
                 'slug' => 'foo'
             ],
             1 => [
                 '_joinData' => [
-                    'fk_table' => 'tags_muffins'
+                    'fk_table' => 'Muffins'
                 ],
-                'id' => '3',
-                'slug' => '3-foobar'
+                //'namespace' => '3',
+                'slug' => '3-foobar',
+				'label' => '3:foobar',
             ],
             2 => [
                 '_joinData' => [
-                    'fk_table' => 'tags_muffins'
+                    'fk_table' => 'Muffins'
                 ],
                 'label' => 'bar',
                 'slug' => 'bar'
@@ -116,14 +117,14 @@ class TagBehaviorTest extends TestCase
         $expected = [
             0 => [
                 '_joinData' => [
-                    'fk_table' => 'tags_muffins'
+                    'fk_table' => 'Muffins'
                 ],
                 'label' => 'foo',
                 'slug' => 'foo'
             ],
             1 => [
                 '_joinData' => [
-                    'fk_table' => 'tags_muffins'
+                    'fk_table' => 'Muffins'
                 ],
                 'label' => 'bar',
                 'slug' => 'bar'
@@ -136,7 +137,7 @@ class TagBehaviorTest extends TestCase
         $expected = [
             [
                 '_joinData' => [
-                    'fk_table' => 'tags_muffins',
+                    'fk_table' => 'Muffins',
                 ],
                 'label' => 'first',
                 'slug' => 'first',
@@ -149,7 +150,7 @@ class TagBehaviorTest extends TestCase
     {
         $data = [
             'name' => 'Muffin',
-            'tags' => 'foo, bar',
+            'tag_list' => 'foo, bar',
         ];
 
         $entity = $this->Table->newEntity($data);
@@ -159,7 +160,7 @@ class TagBehaviorTest extends TestCase
 
         $data = [
             'name' => 'Muffin',
-            'tags' => [
+            'tag_list' => [
                 'foo',
                 'bar',
             ],
@@ -175,7 +176,7 @@ class TagBehaviorTest extends TestCase
     {
         $data = [
             'name' => 'Muffin',
-            'tags' => '1:Color, 2:Dark Color',
+            'tag_list' => '1:Color, 2:Dark Color',
         ];
 
         $entity = $this->Table->newEntity($data);
@@ -201,7 +202,7 @@ class TagBehaviorTest extends TestCase
     {
         $data = [
             'name' => 'Muffin',
-            'tags' => '1:Color, foo',
+            'tag_list' => '1:Color, foo',
         ];
 
         $entity = $this->Table->newEntity($data);
@@ -214,7 +215,7 @@ class TagBehaviorTest extends TestCase
     {
         $data = [
             'name' => 'Muffin',
-            'tags' => '',
+            'tag_list' => '',
         ];
 
         $entity = $this->Table->newEntity($data);
@@ -225,7 +226,7 @@ class TagBehaviorTest extends TestCase
     {
         $data = [
             'name' => 'Muffin',
-            'tags' => '1:Color, 2:Dark Color',
+            'tag_list' => 'Color, Dark Color',
         ];
 
         $counter = $this->Table->Tags->get(1)->counter;
@@ -255,7 +256,7 @@ class TagBehaviorTest extends TestCase
 
         $data = [
             'id' => 1,
-            'tags' => '1:Color, 2:Dark Color, new color',
+            'tag_list' => '1:Color, 2:Dark Color, new color',
         ];
 
         $entity = $this->Table->newEntity($data);
@@ -279,6 +280,9 @@ class TagBehaviorTest extends TestCase
         ]);
     }
 
+	/**
+	 * @return void
+	 */
     public function testAssociationConditionsAreWorkingAsExpected()
     {
         $this->assertEquals(2, count($this->Table->get(1, ['contain' => ['Tags']])->tags));
@@ -302,9 +306,10 @@ class TagBehaviorTest extends TestCase
 	/**
 	 * @return void
 	 */
-    public function testFinder() {dd($this->Table->Tags->find('all')->hydrate(false)->toArray());
-		$result = $this->Table->Tags->find('all')->where(['slug' => 'color'])->toArray();
-		debug($result);
+    public function testFinder() {
+		$result = $this->Table->Tags->find('all')->where(['slug' => 'color'])->distinct()->toArray();
+		//FIXME: should not be duplicated
+		$this->assertCount(1, $result);
 
 		$tag = [
 			'label' => 'x',
@@ -313,10 +318,11 @@ class TagBehaviorTest extends TestCase
 		$this->Table->Tags->save($tag);
 
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
-		debug($result);
 		$this->assertCount(2, $result);
 
-		$result = $this->Table->find('tagged', ['tag' => 'color']);
-		dd($result);
+		$result = $this->Table->find('tagged', ['tag' => 'color'])->toArray();
+
+		$expected = ['blue', 'red'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
 	}
 }

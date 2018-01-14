@@ -31,7 +31,7 @@ class TagBehavior extends Behavior
             'targetForeignKey' => 'tag_id',
             'propertyName' => 'tags',
         ],
-        'tagsCounter' => [], //'counter'
+        'tagsCounter' => ['counter'],
         'taggedAlias' => 'Tagged',
         'taggedAssoc' => [
             'className' => 'Muffin/Tags.Tagged',
@@ -251,20 +251,23 @@ class TagBehavior extends Behavior
 	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
 	 *
 	 * @param Query $query
-	 * @param array $options
+	 * @param Query
 	 */
 	public function findByTag(Query $query, array $options) {
-		if (empty($options[$this->config('finderField')])) {
-			// Throw exception?
-			return;
+		if (!isset($options[$this->config('finderField')])) {
+			throw new \RuntimeException('Key not present');
 		}
-		$query->matching($this->config('tagsAlias'), function ($q) use ($options) {
-			return $q->where(
-				[
-					$this->config('tagsAlias').'.slug' => $options[$this->config('finderField')],
-				]
-			);
+		$slug = $options[$this->config('finderField')];
+		if (empty($slug)) {
+			return $query;
+		}
+		$query->matching($this->config('tagsAlias'), function ($q) use ($slug) {
+			return $q->where([
+				$this->config('tagsAlias').'.slug' => $slug,
+			]);
 		});
+
+		return $query;
 	}
 
     /**

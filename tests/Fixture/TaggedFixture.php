@@ -14,11 +14,9 @@ class TaggedFixture extends TestFixture
         'fk_table' => ['type' => 'string', 'limit' => 255, 'null' => false],
         'created' => ['type' => 'datetime', 'null' => true],
         'modified' => ['type' => 'datetime', 'null' => true],
-		'_indexes' => [
-			'unique' => ['type' => 'index', 'columns' => ['tag_id', 'fk_id', 'fk_table'], 'length' => []],
-		],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id']],
+			'unique' => ['type' => 'unique', 'columns' => ['tag_id', 'fk_id', 'fk_table'], 'length' => []],
         ],
     ];
 
