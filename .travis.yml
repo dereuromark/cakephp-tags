@@ -8,11 +8,6 @@ php:
 sudo: false
 
 env:
-  matrix:
-    - DB=mysql db_dsn='mysql://travis@0.0.0.0/cakephp_test'
-    - DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
-    - DB=sqlite db_dsn='sqlite:///:memory:'
-
   global:
     - DEFAULT=1
 
@@ -26,24 +21,34 @@ matrix:
     - php: 7.0
       env: CODECOVERAGE=1 DEFAULT=0 DB=mysql db_dsn='mysql://travis@0.0.0.0/cakephp_test'
 
+    - php: 7.1
+      env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
+
+    - php: 7.1
+      env: DB=sqlite db_dsn='sqlite:///:memory:'
+
+  allow_failures:
+    - php: 7.1
+      env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
+
 before_script:
   - phpenv config-rm xdebug.ini
 
   - composer install --prefer-dist --no-interaction
 
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
+  - if [[ $DB == 'mysql' ]]; then mysql -e 'CREATE DATABASE cakephp_test;' ; fi
+  - if [[ $DB == 'pgsql' ]]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres ; fi
 
-  - if [[ $PHPCS != 1 ]]; then composer require --dev phpunit/phpunit:"*"; fi
+  - if [[ $PHPCS != 1 ]]; then composer require --dev phpunit/phpunit:"*" ; fi
 
 script:
-  - sh -c "if [ '$DEFAULT' = '1' ]; then vendor/bin/phpunit; fi"
+  - if [[ $DEFAULT == 1 ]]; then vendor/bin/phpunit; fi
 
-  - sh -c "if [ '$PHPCS' = '1' ]; then composer cs-check ; fi"
+  - if [[ $PHPCS == 1 ]]; then composer cs-check ; fi
 
-  - sh -c "if [ '$CODECOVERAGE' = '1' ]; then phpdbg -qrr vendor/bin/phpunit --coverage-clover=clover.xml || true; fi"
-  - sh -c "if [ '$CODECOVERAGE' = '1' ]; then wget -O codecov.sh https://codecov.io/bash; fi"
-  - sh -c "if [ '$CODECOVERAGE' = '1' ]; then bash codecov.sh; fi"
+  - if [[ $CODECOVERAGE == 1 ]]; then vendor/bin/phpunit --coverage-clover=clover.xml || true ; fi
+  - if [[ $CODECOVERAGE == 1 ]]; then wget -O codecov.sh https://codecov.io/bash ; fi
+  - if [[ $CODECOVERAGE == 1 ]]; then bash codecov.sh ; fi
 
 notifications:
   email: false

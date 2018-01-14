@@ -1,5 +1,5 @@
 <?php
-namespace Muffin\Tags\Model\Entity;
+namespace Tags\Model\Entity;
 
 use Cake\ORM\Entity;
 
@@ -12,16 +12,16 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  */
-class Tag extends Entity
-{
+class Tag extends Entity {
 
-    /**
-     * List of properties that can be mass assigned.
-     *
-     * @var array
-     */
-    public $accessible = [
-        '*' => false,
-        'label' => true,
-    ];
+	/**
+	 * List of properties that can be mass assigned.
+	 *
+	 * @var array
+	 */
+	public $accessible = [
+		'*' => false,
+		'label' => true,
+	];
+
 }

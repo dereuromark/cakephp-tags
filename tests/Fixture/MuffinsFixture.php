@@ -1,29 +1,39 @@
 <?php
-namespace Muffin\Tags\Test\Fixture;
+namespace Tags\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
-class MuffinsFixture extends TestFixture
-{
-    public $table = 'tags_muffins';
+class MuffinsFixture extends TestFixture {
 
-    public $fields = [
-        'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
-        'name' => ['type' => 'string', 'length' => 255],
-        'tag_count' => ['type' => 'integer', 'null' => true, 'default' => 0],
-        '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id']],
-        ],
-    ];
+	/**
+	 * @var string
+	 */
+	public $table = 'tags_muffins';
 
-    public $records = [
-        [
-            'name' => 'blue',
-            'tag_count' => 2,
-        ],
-        [
-            'name' => 'red',
-            'tag_count' => 1,
-        ],
-    ];
+	/**
+	 * @var array
+	 */
+	public $fields = [
+		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
+		'name' => ['type' => 'string', 'length' => 255],
+		'tag_count' => ['type' => 'integer', 'null' => true, 'default' => 0],
+		'_constraints' => [
+			'primary' => ['type' => 'primary', 'columns' => ['id']],
+		],
+	];
+
+	/**
+	 * @var array
+	 */
+	public $records = [
+		[
+			'name' => 'blue',
+			'tag_count' => 2,
+		],
+		[
+			'name' => 'red',
+			'tag_count' => 1,
+		],
+	];
+
 }

@@ -1,11 +1,10 @@
 <?php
-namespace Muffin\Tags\Test\TestCase\Model\Table;
+namespace Tags\Test\TestCase\Model\Table;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
-class TagsTableTest extends TestCase
-{
+class TagsTableTest extends TestCase {
 
 	/**
 	 * Fixtures
@@ -13,11 +12,13 @@ class TagsTableTest extends TestCase
 	 * @var array
 	 */
 	public $fixtures = [
-		'plugin.muffin/tags.tags',
-		'plugin.muffin/tags.tagged',
+		'plugin.tags.tags',
+		'plugin.tags.tagged',
 	];
 
-	/** @var \Muffin\Tags\Model\Table\TagsTable */
+	/**
+	 * @var \Tags\Model\Table\TagsTable
+	 */
 	protected $Tags;
 
 	/**
@@ -25,10 +26,9 @@ class TagsTableTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function setUp()
-	{
+	public function setUp() {
 		parent::setUp();
-		$this->Tags = TableRegistry::get('Muffin/Tags.Tags');
+		$this->Tags = TableRegistry::get('Tags.Tags');
 	}
 
 	/**
@@ -36,8 +36,7 @@ class TagsTableTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function tearDown()
-	{
+	public function tearDown() {
 		parent::tearDown();
 		unset($this->Tags);
 		TableRegistry::clear();
@@ -48,15 +47,15 @@ class TagsTableTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test()
-	{
+	public function test() {
 		$result = $this->Tags->find()
 			->all()
 			->count();
 
 		$this->assertSame(2, $result);
 
-		$result = $this->Tags->find()->where(['slug'=> 'color'])->first();
+		$result = $this->Tags->find()->where(['slug' => 'color'])->first();
 		$this->assertSame('Color', $result->label);
 	}
+
 }

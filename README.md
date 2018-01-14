@@ -1,15 +1,14 @@
 # Tags
 
-[![Build Status](https://img.shields.io/travis/UseMuffin/Tags/master.svg?style=flat-square)](https://travis-ci.org/UseMuffin/Tags)
-[![Coverage](https://img.shields.io/codecov/c/github/UseMuffin/Tags.svg?style=flat-square)](https://codecov.io/github/UseMuffin/Tags)
-[![Total Downloads](https://img.shields.io/packagist/dt/muffin/tags.svg?style=flat-square)](https://packagist.org/packages/muffin/tags)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Build Status](https://img.shields.io/travis/dereuromark/cakephp-tags/master.svg?style=flat-square)](https://travis-ci.org/dereuromark/cakephp-tags)
+[![Total Downloads](https://img.shields.io/packagist/dt/dereuromark/cakephp-tags.svg?style=flat-square)](https://packagist.org/packages/dereuromark/cakephp-tags)
+[![License](https://poser.pugx.org/dereuromark/cakephp-tags/license)](https://packagist.org/packages/dereuromark/cakephp-tags)
 
-{{@TODO description}}
+Make tagging of entities a piece of cake.
 
 ## Install
 
-Using [Composer][composer]:
+Using Composer:
 
 ```
 composer require dereuromark/cakephp-tags:dev-master
@@ -18,10 +17,23 @@ composer require dereuromark/cakephp-tags:dev-master
 You then need to load the plugin. In `boostrap.php`, something like:
 
 ```php
-\Cake\Core\Plugin::load('Tags');
+use Cake\Core\Plugin:
+
+Plugin::load('Tags');
 ```
 
-Also don't forget to run migration:
+Also don't forget to run migration (e.g. using Migrations plugin):
 ```
 bin/cake migrations migrate -p Tags
 ```
+
+## Demo
+Coming up @ http://sandbox.dereuromark.de/sandbox/plugin-examples
+
+## Documentation
+
+For documentation, as well as tutorials, see the [docs](docs/) directory of this repository.
+
+## Support
+
+For bugs and feature requests, please use the [issues](https://github.com/dereuromark/cakephp-ratings/issues) section of this repository.
