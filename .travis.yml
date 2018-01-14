@@ -8,11 +8,6 @@ php:
 sudo: false
 
 env:
-  matrix:
-    - DB=mysql db_dsn='mysql://travis@0.0.0.0/cakephp_test'
-    - DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
-    - DB=sqlite db_dsn='sqlite:///:memory:'
-
   global:
     - DEFAULT=1
 
@@ -25,6 +20,16 @@ matrix:
 
     - php: 7.0
       env: CODECOVERAGE=1 DEFAULT=0 DB=mysql db_dsn='mysql://travis@0.0.0.0/cakephp_test'
+
+    - php: 7.1
+      env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
+
+    - php: 7.1
+      env: DB=sqlite db_dsn='sqlite:///:memory:'
+
+  allow_failures:
+    - php: 7.1
+    - env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
 
 before_script:
   - phpenv config-rm xdebug.ini
