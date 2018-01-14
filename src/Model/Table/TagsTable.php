@@ -1,8 +1,10 @@
 <?php
 namespace Muffin\Tags\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\ORM\Table;
+use RuntimeException;
 
 class TagsTable extends Table
 {
@@ -16,10 +18,26 @@ class TagsTable extends Table
     public function initialize(array $config)
     {
         $this->table('tags_tags');
-        $this->displayField('label');
+        $this->displayField('label'); // Change to name?
         $this->addBehavior('Timestamp');
-        if (Plugin::loaded('Muffin/Slug')) {
-            $this->addBehavior('Muffin/Slug.Slug');
-        }
+
+        $slugger = Configure::read('Tags.slugBehavior');
+        if (!$slugger) {
+        	return;
+		}
+        if ($slugger === true) {
+			if (Plugin::loaded('Tools')) {
+				$this->addBehavior('Tools.Slugged');
+				return;
+			}
+			if (Plugin::loaded('Muffin/Slug')) {
+				$this->addBehavior('Muffin/Slug.Slug');
+				return;
+			}
+
+			throw new RuntimeException('Auto-slug behaviors not found');
+		}
+
+		$this->addBehavior($slugger);
     }
 }

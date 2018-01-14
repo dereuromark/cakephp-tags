@@ -1,13 +1,13 @@
 {
-    "name": "muffin/tags",
+    "name": "dereuromark/cakephp-tags",
     "description": "Tags plugin for CakePHP 3.x",
     "type": "cakephp-plugin",
     "keywords": [
         "cakephp",
-        "muffin",
+        "tagging",
         "tags"
     ],
-    "homepage": "https://github.com/usemuffin/tags",
+    "homepage": "https://github.com/dereuromark/cakephp-tags",
     "license": "MIT",
     "authors": [
         {
@@ -26,25 +26,34 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/usemuffin/tags/issues",
-        "source": "https://github.com/usemuffin/tags"
+        "source": "https://github.com/dereuromark/cakephp-tags"
     },
     "require": {
-        "cakephp/orm": "~3.0"
+        "cakephp/orm": "^3.0"
     },
     "require-dev": {
-        "cakephp/cakephp": "~3.0",
-        "phpunit/phpunit": "~4.1",
-        "muffin/slug": "~1.0"
+        "cakephp/cakephp": "^3.0",
+        "muffin/slug": "^1.0",
+		"dereuromark/cakephp-tools": "*",
+		"cakephp/migrations": "*",
+        "fig-r/psr2r-sniffer": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            "Muffin\\Tags\\": "src"
+            "Muffin\\Tags\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Muffin\\Tags\\Test\\": "tests"
+            "Muffin\\Tags\\Test\\": "tests/",
+            "App\\": "tests/test_app/src/"
         }
+    },
+    "scripts": {
+        "test": "php phpunit.phar",
+        "test-setup": "[ ! -f phpunit.phar ] && wget https://phar.phpunit.de/phpunit-5.7.20.phar && mv phpunit-5.7.20.phar phpunit.phar || true",
+        "test-coverage" : "php phpunit.phar --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
+        "cs-check": "phpcs -p --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/ --extensions=php ./",
+        "cs-fix": "phpcbf -v --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/ --extensions=php ./"
     }
 }

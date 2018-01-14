@@ -5,6 +5,7 @@ use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -18,8 +19,9 @@ class TagBehavior extends Behavior
      * @var array
      */
     protected $_defaultConfig = [
+        'field' => 'tag_list',
         'delimiter' => ',',
-        'separator' => ':',
+        'separator' => false, //':'
         'namespace' => null,
         'tagsAlias' => 'Tags',
         'tagsAssoc' => [
@@ -29,7 +31,7 @@ class TagBehavior extends Behavior
             'targetForeignKey' => 'tag_id',
             'propertyName' => 'tags',
         ],
-        'tagsCounter' => ['counter'],
+        'tagsCounter' => [], //'counter'
         'taggedAlias' => 'Tagged',
         'taggedAssoc' => [
             'className' => 'Muffin/Tags.Tagged',
@@ -39,11 +41,16 @@ class TagBehavior extends Behavior
         ]],
         'implementedEvents' => [
             'Model.beforeMarshal' => 'beforeMarshal',
+            'Model.beforeFind' => 'beforeFind',
         ],
         'implementedMethods' => [
             'normalizeTags' => 'normalizeTags',
         ],
-        'fkTableField' => 'fk_table'
+		'implementedFinders' => [
+			'tagged' => 'findByTag'
+		],
+		'finderField' => 'tag',
+        'fkTableField' => 'fk_table' // Rename to foreign_model + foreign_key ?
     ];
 
     /**
@@ -78,13 +85,55 @@ class TagBehavior extends Behavior
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
-        $field = $this->config('tagsAssoc.propertyName');
-        if (!empty($data[$field]) && (!is_array($data[$field]) || !array_key_exists('_ids', $data[$field]))) {
-            $data[$field] = $this->normalizeTags($data[$field]);
+        $field = $this->config('field') ?: $this->config('tagsAssoc.propertyName');
+        if (!empty($data[$field])) {
+            $data['tags'] = $this->normalizeTags($data[$field]);
         }
+
         if (isset($data[$field]) && empty($data[$field])) {
             unset($data[$field]);
         }
+    }
+
+    /**
+     * @param $query
+     * @return void
+     */
+    public function beforeFind(Event $event, Query $query, ArrayObject $options) {
+        $query->formatResults(function ($results) {
+            return $results->map(function ($row) {
+                if (!$row instanceOf Entity) {
+                    return $row;
+                }
+
+                $field = $this->_config['field'];
+
+                $row[$field] = $row->tags ? $this->tagArrayToString($row->tags) : '';
+                return $row;
+            });
+        });
+    }
+
+    /**
+     * Generates comma-delimited string of tag names from tag array(), needed for
+     * initialization of data for text input
+     *
+     * @param array|null $data Tag data array to convert to string.
+     * @return string
+     */
+    public function tagArrayToString(array $data) {
+        if ($data) {
+            $tags = [];
+            foreach ($data as $tag) {
+                if ($this->_config['namespace']) {
+                    $tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
+                } else {
+                    $tags[] = $tag['label'];
+                }
+            }
+            return implode($this->_config['delimiter'] . ' ', $tags);
+        }
+        return '';
     }
 
     /**
@@ -104,7 +153,7 @@ class TagBehavior extends Behavior
         $table = $this->_table;
         $tableAlias = $this->_table->alias();
 
-        $assocConditions = [$taggedAlias . '.' . $this->config('fkTableField') => $table->table()];
+        $assocConditions = [$taggedAlias . '.' . $this->config('fkTableField') => $table->alias()];
 
         if (!$table->association($taggedAlias)) {
             $table->hasMany($taggedAlias, $taggedAssoc + [
@@ -186,15 +235,37 @@ class TagBehavior extends Behavior
                 ));
             }
         }
-
         if (!$counterCache->config($taggedAlias)) {
-            $field = key($config['taggedCounter']);
+            //$field = key($config['taggedCounter']);
             $config['taggedCounter']['tag_count']['conditions'] = [
-                $taggedTable->aliasField($this->config('fkTableField')) => $this->_table->table()
+                $taggedTable->aliasField($this->config('fkTableField')) => $this->_table->alias()
             ];
             $counterCache->config($this->_table->alias(), $config['taggedCounter']);
         }
     }
+
+	/**
+	 * Finder method
+	 *
+	 * Usage:
+	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
+	 *
+	 * @param Query $query
+	 * @param array $options
+	 */
+	public function findByTag(Query $query, array $options) {
+		if (empty($options[$this->config('finderField')])) {
+			// Throw exception?
+			return;
+		}
+		$query->matching($this->config('tagsAlias'), function ($q) use ($options) {
+			return $q->where(
+				[
+					$this->config('tagsAlias').'.slug' => $options[$this->config('finderField')],
+				]
+			);
+		});
+	}
 
     /**
      * Normalizes tags.
@@ -210,7 +281,7 @@ class TagBehavior extends Behavior
 
         $result = [];
 
-        $common = ['_joinData' => [$this->config('fkTableField') => $this->_table->table()]];
+        $common = ['_joinData' => [$this->config('fkTableField') => $this->_table->alias()]];
         if ($namespace = $this->config('namespace')) {
             $common += compact('namespace');
         }
@@ -232,7 +303,7 @@ class TagBehavior extends Behavior
             }
             list($id, $label) = $this->_normalizeTag($tag);
             $result[] = $common + compact(empty($id) ? $df : $pk) + [
-                'tag_key' => $tagKey
+                'slug' => $tagKey,
             ];
         }
 
@@ -261,7 +332,7 @@ class TagBehavior extends Behavior
         $tagsTable = $this->_table->{$this->config('tagsAlias')}->target();
         $result = $tagsTable->find()
             ->where([
-                $tagsTable->aliasField('tag_key') => $tag,
+                $tagsTable->aliasField('slug') => $tag,
             ])
             ->select([
                 $tagsTable->aliasField($tagsTable->primaryKey())

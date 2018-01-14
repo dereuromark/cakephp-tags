@@ -15,6 +15,11 @@ class TaggedTable extends Table
     public function initialize(array $config)
     {
         $this->table('tags_tagged');
+		$this->belongsTo('Tags', [
+			'className' => 'Muffin/Tags.Tags',
+			'foreignKey' => 'tag_id',
+			'propertyName' => 'tags',
+		]);
         $this->addBehavior('Timestamp');
     }
 }

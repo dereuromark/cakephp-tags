@@ -3,6 +3,7 @@ namespace Muffin\Tags\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Cake\Utility\Hash;
 use Muffin\Tags\Model\Behavior\TagBehavior;
 
 class TagBehaviorTest extends TestCase
@@ -14,6 +15,19 @@ class TagBehaviorTest extends TestCase
         'plugin.Muffin/Tags.Tags',
     ];
 
+	/**
+	 * @var \Cake\ORM\Table
+	 */
+    protected $Table;
+
+	/**
+	 * @var TagBehavior
+	 */
+    protected $Behavior;
+
+	/**
+	 * @return void
+	 */
     public function setUp()
     {
         parent::setUp();
@@ -79,21 +93,21 @@ class TagBehaviorTest extends TestCase
                     'fk_table' => 'tags_muffins'
                 ],
                 'label' => 'foo',
-                'tag_key' => 'foo'
+                'slug' => 'foo'
             ],
             1 => [
                 '_joinData' => [
                     'fk_table' => 'tags_muffins'
                 ],
                 'id' => '3',
-                'tag_key' => '3-foobar'
+                'slug' => '3-foobar'
             ],
             2 => [
                 '_joinData' => [
                     'fk_table' => 'tags_muffins'
                 ],
                 'label' => 'bar',
-                'tag_key' => 'bar'
+                'slug' => 'bar'
             ]
         ];
         $this->assertEquals($expected, $result);
@@ -105,14 +119,14 @@ class TagBehaviorTest extends TestCase
                     'fk_table' => 'tags_muffins'
                 ],
                 'label' => 'foo',
-                'tag_key' => 'foo'
+                'slug' => 'foo'
             ],
             1 => [
                 '_joinData' => [
                     'fk_table' => 'tags_muffins'
                 ],
                 'label' => 'bar',
-                'tag_key' => 'bar'
+                'slug' => 'bar'
             ]
         ];
 
@@ -125,7 +139,7 @@ class TagBehaviorTest extends TestCase
                     'fk_table' => 'tags_muffins',
                 ],
                 'label' => 'first',
-                'tag_key' => 'first',
+                'slug' => 'first',
             ],
         ];
         $this->assertEquals($expected, $result);
@@ -217,7 +231,7 @@ class TagBehaviorTest extends TestCase
         $counter = $this->Table->Tags->get(1)->counter;
         $entity = $this->Table->newEntity($data);
 
-        $this->Table->save($entity);
+        $this->Table->saveOrFail($entity);
 
         $result = $this->Table->Tags->get(1)->counter;
         $expected = $counter + 1;
@@ -269,4 +283,40 @@ class TagBehaviorTest extends TestCase
     {
         $this->assertEquals(2, count($this->Table->get(1, ['contain' => ['Tags']])->tags));
     }
+
+	/**
+	 * This works fine on MySQL and other case insensitive DBs.
+	 * For Postgres make sure the slugger returns a lower-cased version!
+	 *
+	 * @return void
+	 */
+    public function testSaveWithSlug() {
+		$tag = [
+			'label' => 'X Y',
+		];
+		$tag = $this->Table->Tags->newEntity($tag);
+		$result = $this->Table->Tags->save($tag);
+		$this->assertSame('X-Y', $result->slug);
+	}
+
+	/**
+	 * @return void
+	 */
+    public function testFinder() {dd($this->Table->Tags->find('all')->hydrate(false)->toArray());
+		$result = $this->Table->Tags->find('all')->where(['slug' => 'color'])->toArray();
+		debug($result);
+
+		$tag = [
+			'label' => 'x',
+		];
+		$tag = $this->Table->Tags->newEntity($tag);
+		$this->Table->Tags->save($tag);
+
+		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
+		debug($result);
+		$this->assertCount(2, $result);
+
+		$result = $this->Table->find('tagged', ['tag' => 'color']);
+		dd($result);
+	}
 }
