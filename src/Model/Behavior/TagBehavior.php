@@ -94,7 +94,7 @@ class TagBehavior extends Behavior {
 	 * @param \Cake\Event\Event $event
 	 * @param \Cake\ORM\Query $query
 	 * @param \ArrayObject $options
-	 * @return void
+	 * @return \Cake\ORM\Query
 	 */
 	public function beforeFind(Event $event, Query $query, ArrayObject $options) {
 		$query->formatResults(function ($results) {
@@ -109,6 +109,8 @@ class TagBehavior extends Behavior {
 				return $row;
 			});
 		});
+
+		return $query;
 	}
 
 	/**
