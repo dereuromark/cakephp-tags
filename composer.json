@@ -29,23 +29,22 @@
         "source": "https://github.com/dereuromark/cakephp-tags"
     },
     "require": {
-        "cakephp/orm": "^3.0"
+        "cakephp/cakephp": "^3.4"
     },
     "require-dev": {
-        "cakephp/cakephp": "^3.0",
-        "muffin/slug": "^1.0",
-		"dereuromark/cakephp-tools": "*",
+        "cakephp/cakephp": "^3.4",
+		"dereuromark/cakephp-tools": "^1.0",
 		"cakephp/migrations": "*",
         "fig-r/psr2r-sniffer": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            "Muffin\\Tags\\": "src/"
+            "Tags\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Muffin\\Tags\\Test\\": "tests/",
+            "Tags\\Test\\": "tests/",
             "App\\": "tests/test_app/src/"
         }
     },
@@ -53,7 +52,7 @@
         "test": "php phpunit.phar",
         "test-setup": "[ ! -f phpunit.phar ] && wget https://phar.phpunit.de/phpunit-5.7.20.phar && mv phpunit-5.7.20.phar phpunit.phar || true",
         "test-coverage" : "php phpunit.phar --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
-        "cs-check": "phpcs -p --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/ --extensions=php ./",
-        "cs-fix": "phpcbf -v --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/ --extensions=php ./"
+        "cs-check": "phpcs -p --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/,/config/Migrations/ --extensions=php ./",
+        "cs-fix": "phpcbf -v --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/,/config/Migrations/ --extensions=php ./"
     }
 }
