@@ -6,7 +6,7 @@
     >
 
     <testsuites>
-        <testsuite name="Tags Test Cases">
+        <testsuite name="tags">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
