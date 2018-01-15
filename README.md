@@ -1,4 +1,4 @@
-# Tags
+# CakePHP Tags Plugin
 
 [![Build Status](https://img.shields.io/travis/dereuromark/cakephp-tags/master.svg?style=flat-square)](https://travis-ci.org/dereuromark/cakephp-tags)
 [![Total Downloads](https://img.shields.io/packagist/dt/dereuromark/cakephp-tags.svg?style=flat-square)](https://packagist.org/packages/dereuromark/cakephp-tags)
