@@ -1,7 +1,10 @@
 <?php
 namespace Tags\Model\Table;
 
+use Cake\Collection\CollectionInterface;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 
 /**
  * @property \Tags\Model\Table\TagsTable|\Cake\ORM\Association\BelongsTo $Tags
@@ -32,6 +35,86 @@ class TaggedTable extends Table {
 			'propertyName' => 'tags',
 		]);
 		$this->addBehavior('Timestamp');
+	}
+
+	/**
+	 * Returns a tag cloud
+	 *
+	 * The result contains a "weight" field which has a normalized size of the tag
+	 * counter set. The min and max size can be set by passing 'minSize" and
+	 * 'maxSize' to the query. This value can be used in the view to control the
+	 * size of the tag font.
+	 *
+	 * @param \Cake\ORM\Query $query Query array.
+	 * @return array
+	 */
+	public function findCloud(Query $query) {
+		// Support old code without the counter cache
+		if (true || !$this->Tags->hasField('counter')) { // Hash::get($query, 'counterCache') === false
+			$groupBy = ['Tagged.tag_id', 'Tags.id', 'Tags.slug', 'Tags.label'];
+			$fields = $groupBy;
+			$fields['counter'] = $query->func()->count('*');
+		} else {
+			//FIXME or remove
+			// This is related to https://github.com/CakeDC/tags/issues/10 to work around a limitation of postgres
+			$field = $this->getDataSource()->fields($this->Tag);
+			$field = array_merge($field, $this->getDataSource()->fields($this, null, 'Tagged.tag_id'));
+			$fields = 'DISTINCT ' . implode(',', $field);
+			$groupBy = null;
+		}
+		$options = [
+			'minSize' => 10,
+			'maxSize' => 20,
+			//'page' => '',
+			//'limit' => '',
+			//'order' => '',
+			//'joins' => array(),
+			//'offset' => '',
+			'contain' => 'Tags',
+			//'conditions' => array(),
+			'fields' => $fields,
+			'group' => $groupBy
+		];
+
+		$calculate = true;
+		if ($calculate) {
+			$query->formatResults(function (CollectionInterface $results) {
+				$results = static::calculateWeights($results->toArray());
+
+				return $results;
+			});
+		}
+
+		return $query->find('all', $options);
+	}
+
+	/**
+	 * @param array $entities
+	 * @param array $config
+	 *
+	 * @return array
+	 */
+	public static function calculateWeights(array $entities, array $config = []) {
+		$config += [
+			'minSize' => 10,
+			'maxSize' => 20,
+		];
+		$weights = Hash::extract($entities, '{n}.counter');
+		$maxWeight = max($weights);
+		$minWeight = min($weights);
+		$spread = $maxWeight - $minWeight;
+		if ($spread == 0) {
+			$spread = 1;
+		}
+		foreach ($entities as $key => $result) {
+			$size = $config['minSize'] + (
+					($result['counter'] - $minWeight) * (
+						($config['maxSize'] - $config['minSize']) / ($spread)
+					)
+				);
+			$entities[$key]['weight'] = ceil($size);
+		}
+		return $entities;
 	}
 
 }

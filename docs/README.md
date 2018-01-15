@@ -41,6 +41,30 @@ echo $this->Form->control('tag_list', ['type' => 'select', 'multiple' => true, '
 If you need more customization, use the `tags` property directly. 
 When saving the tags, they need to be in the normalized form then on patching. 
 
+### Tag Cloud
+You can easily find and display all tags as cloud.
+
+In your controller:
+```php
+$tags = $this->MyTaggedTable->Tagged->find('cloud')->toArray();
+$this->set(compact('tags'));
+```
+
+In your template:
+```php
+<ul class="tag-cloud">
+	<?php
+	$this->loadHelper('Tags.TagCloud');
+
+	echo $this->TagCloud->display($tags, ['before' => '<li style="font-size: %size%%">', 'after' => '</li>']);
+	?>
+</ul>
+```
+
+With a bit of custom CSS you can make each tag a floating element.
+
+By default the shuffle is enabled, you can disable using `'shuffle' => false` as config.
+
 ### Advanced features
 By default the tags are counted (globally).
 You can to add the column *tag_count* to the taggable table to also cache this counter for the specific types.

@@ -51,7 +51,7 @@ class TagCloudHelper extends Helper {
 			return '';
 		}
 		$defaults = [
-			'tagModel' => 'tags',
+			'tagModel' => 'tag',
 			'shuffle' => true,
 			'extract' => '{n}.weight',
 			'before' => '',
@@ -59,7 +59,6 @@ class TagCloudHelper extends Helper {
 			'maxSize' => 160,
 			'minSize' => 80,
 			'url' => [
-				'controller' => 'search'
 			],
 			'named' => 'by'
 		];
@@ -94,7 +93,7 @@ class TagCloudHelper extends Helper {
 
 			$cloud .= $this->_replace($options['before'], $size);
 			$cloud .= $this->Html->link(
-				$tag[$options['tagModel']]['name'],
+				$tag[$options['tagModel']]['label'],
 				$this->_tagUrl($tag, $options),
 				['id' => 'tag-' . $tag[$options['tagModel']]['id']]
 			) . ' ';
@@ -116,7 +115,7 @@ class TagCloudHelper extends Helper {
 			'maxSize' => 20,
 		];
 
-		$weights = Hash::extract($entities, '{n}.occurrence');
+		$weights = Hash::extract($entities, '{n}.counter');
 		$maxWeight = max($weights);
 		$minWeight = min($weights);
 
@@ -127,7 +126,7 @@ class TagCloudHelper extends Helper {
 
 		foreach ($entities as $key => $result) {
 			$size = $config['minSize'] + (
-					($result['occurrence'] - $minWeight) * (
+					($result['counter'] - $minWeight) * (
 						($config['maxSize'] - $config['minSize']) / ($spread)
 					)
 				);
@@ -145,7 +144,7 @@ class TagCloudHelper extends Helper {
 	 * @return array|string Tag URL.
 	 */
 	protected function _tagUrl($tag, $options) {
-		$options['url'][$options['named']] = $tag[$options['tagModel']]['keyname'];
+		$options['url'][$options['named']] = $tag[$options['tagModel']]['slug'];
 		return $options['url'];
 	}
 

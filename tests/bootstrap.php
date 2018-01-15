@@ -9,8 +9,8 @@
 
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
-
 use Cake\Routing\DispatcherFactory;
+
 if (!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);
 }
@@ -24,7 +24,7 @@ define('TMP', ROOT . DS . 'tmp' . DS);
 if (!is_dir(TMP)) {
 	mkdir(TMP, 0770, true);
 }
-define('CONFIG', ROOT . DS . 'config' . DS);
+define('CONFIG', TEST_ROOT . DS . 'config' . DS);
 define('LOGS', TMP . 'logs' . DS);
 define('CACHE', TMP . 'cache' . DS);
 define('CAKE_CORE_INCLUDE_PATH', ROOT . '/vendor/cakephp/cakephp');

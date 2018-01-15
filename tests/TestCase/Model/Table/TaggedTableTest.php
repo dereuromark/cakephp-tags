@@ -3,6 +3,7 @@ namespace Tags\Test\TestCase\Model\Table;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Cake\Utility\Hash;
 
 class TaggedTableTest extends TestCase {
 
@@ -54,6 +55,15 @@ class TaggedTableTest extends TestCase {
 			->count();
 
 		$this->assertSame(2, $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindCloud() {
+		$result = $this->Tagged->find('cloud')->toArray();
+
+		$this->assertSame([20.0, 10.0], Hash::extract($result, '{n}.weight'));
 	}
 
 }
