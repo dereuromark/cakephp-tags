@@ -33,6 +33,9 @@ matrix:
 
 before_script:
   - phpenv config-rm xdebug.ini
+  - phpenv rehash
+  - set +H
+  - cp phpunit.xml.dist phpunit.xml
 
   - composer install --prefer-dist --no-interaction
 
