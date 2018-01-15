@@ -19,7 +19,7 @@ matrix:
       env: PHPCS=1 DEFAULT=0
 
     - php: 7.0
-      env: CODECOVERAGE=1 DEFAULT=0 DB=mysql db_dsn='mysql://travis@0.0.0.0/cakephp_test'
+      env: CODECOVERAGE=1 DEFAULT=0
 
     - php: 7.1
       env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
@@ -32,17 +32,16 @@ matrix:
       env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
 
 before_script:
-  - phpenv config-rm xdebug.ini
-  - phpenv rehash
-  - set +H
-  - cp phpunit.xml.dist phpunit.xml
-
   - composer install --prefer-dist --no-interaction
 
   - if [[ $DB == 'mysql' ]]; then mysql -e 'CREATE DATABASE cakephp_test;' ; fi
   - if [[ $DB == 'pgsql' ]]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres ; fi
 
   - if [[ $PHPCS != 1 ]]; then composer require --dev phpunit/phpunit:"*" ; fi
+
+  - phpenv rehash
+  - set +H
+  - cp phpunit.xml.dist phpunit.xml
 
 script:
   - if [[ $DEFAULT == 1 ]]; then vendor/bin/phpunit; fi
