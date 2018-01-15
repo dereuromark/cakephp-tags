@@ -2,12 +2,22 @@
 namespace Tags\Test\TestCase\View\Helper;
 
 use Cake\Http\ServerRequest as Request;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\Stub\Response;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Tags\View\Helper\TagHelper;
 
 class TagHelperTest extends TestCase {
+
+	/**
+	 * Fixtures
+	 *
+	 * @var array
+	 */
+	public $fixtures = [
+		'plugin.tags.tagged',
+	];
 
 	/**
 	 * @var \Cake\View\View
@@ -57,11 +67,32 @@ class TagHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testControlArray() {
-		$this->TagHelper->config('strategy', 'array');
+		$this->TagHelper->setConfig('strategy', 'array');
 		$result = $this->TagHelper->control();
 
-		$expected = '<div class="input select"><label for="tag-list">Tag List</label><input type="hidden" name="tag_list" value=""/><select name="tag_list[]" multiple="multiple" id="tag-list"></select></div>';
+		// Empty one
+		$expected = '<div class="input select"><label for="tag-list">Tags</label><input type="hidden" name="tag_list" value=""/><select name="tag_list[]" multiple="multiple" id="tag-list"></select></div>';
 		$this->assertSame($expected, $result);
+
+		$entity = TableRegistry::get('Tags.Tagged')->newEntity();
+		$entity->tag_list = [
+			'One', 'Two'
+		];
+		$this->TagHelper->Form->create($entity);
+
+		$result = $this->TagHelper->control();
+		$expected = <<<HTML
+<div class="input select">
+	<label for="tag-list">Tags</label>
+	<input type="hidden" name="tag_list" value=""/>
+	<select name="tag_list[]" multiple="multiple" id="tag-list">
+		<option value="One" selected="selected">One</option>
+		<option value="Two" selected="selected">Two</option>
+	</select>
+</div>
+HTML;
+		$expected = str_replace(["\t", "\n", "\r"], '', $expected);
+		$this->assertTextEquals($expected, $result);
 	}
 
 }

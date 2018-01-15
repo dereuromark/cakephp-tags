@@ -6,3 +6,5 @@
 /.idea/
 /config/Migrations/schema-dump-default.lock
 /error.log
+/tmp/
+/logs/

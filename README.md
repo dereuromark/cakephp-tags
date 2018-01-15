@@ -28,7 +28,7 @@ bin/cake migrations migrate -p Tags
 ```
 
 ## Demo
-Coming up @ http://sandbox.dereuromark.de/sandbox/plugin-examples
+See Sandbox @ https://sandbox.dereuromark.de/sandbox/tags
 
 ## Documentation
 

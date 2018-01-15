@@ -48,13 +48,20 @@ class TagHelper extends Helper {
 	}
 
 	/**
+	 * Convenience method for tag list form input.
+	 *
 	 * @param array $options
 	 *
 	 * @return string
 	 */
 	public function control(array $options = []) {
 		if ($this->config('strategy') === 'array') {
+			$tags = (array)$this->Form->getSourceValue('tag_list');
+
 			$options += [
+				'label' => __d('tags', 'Tags'),
+				'options' => array_combine($tags, $tags),
+				'val' => $tags,
 				'type' => 'select',
 				'multiple' => true,
 			];

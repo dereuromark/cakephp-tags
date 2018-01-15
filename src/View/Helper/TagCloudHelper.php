@@ -149,13 +149,13 @@ class TagCloudHelper extends Helper {
 		return $options['url'];
 	}
 
-				/**
-				 * Replaces %size% in strings with the calculated "size" of the tag
-				 *
-				 * @param string $string Template string.
-				 * @param float $size Replacement size.
-				 * @return string Final string.
-				 */
+	/**
+	 * Replaces %size% in strings with the calculated "size" of the tag
+	 *
+	 * @param string $string Template string.
+	 * @param float $size Replacement size.
+	 * @return string Final string.
+	 */
 	protected function _replace($string, $size) {
 		return str_replace('%size%', $size, $string);
 	}
