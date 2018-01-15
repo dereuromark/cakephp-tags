@@ -2,10 +2,12 @@
 namespace Tags\Model\Behavior;
 
 use ArrayObject;
+use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
+use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use RuntimeException;
 
@@ -18,6 +20,7 @@ class TagBehavior extends Behavior {
 	 */
 	protected $_defaultConfig = [
 		'field' => 'tag_list',
+		'strategy' => 'string',
 		'delimiter' => ',',
 		'separator' => false, //':'
 		'namespace' => null,
@@ -50,6 +53,18 @@ class TagBehavior extends Behavior {
 		'finderField' => 'tag',
 		'fkTableField' => 'fk_table' // Rename to foreign_model + foreign_key ?
 	];
+
+	/**
+	 * Merges config with the default and store in the config property
+	 *
+	 * @param \Cake\ORM\Table $table The table this behavior is attached to.
+	 * @param array $config The config for this behavior.
+	 */
+	public function __construct(Table $table, array $config = []) {
+		$this->_defaultConfig = (array)Configure::read('Tags') + $this->_defaultConfig;
+
+		parent::__construct($table, $config);
+	}
 
 	/**
 	 * Initialize configuration.
@@ -105,7 +120,7 @@ class TagBehavior extends Behavior {
 
 				$field = $this->_config['field'];
 
-				$row[$field] = $row->tags ? $this->tagArrayToString($row->tags) : '';
+				$row[$field] = $row->tags ? $this->prepareTagsForOutput($row->tags) : '';
 				return $row;
 			});
 		});
@@ -118,21 +133,23 @@ class TagBehavior extends Behavior {
 	 * initialization of data for text input
 	 *
 	 * @param array|null $data Tag data array to convert to string.
-	 * @return string
+	 * @return string|array
 	 */
-	public function tagArrayToString(array $data) {
-		if ($data) {
-			$tags = [];
-			foreach ($data as $tag) {
-				if ($this->_config['namespace']) {
-					$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
-				} else {
-					$tags[] = $tag['label'];
-				}
+	public function prepareTagsForOutput(array $data) {
+		$tags = [];
+		foreach ($data as $tag) {
+			if ($this->_config['namespace']) {
+				$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
+			} else {
+				$tags[] = $tag['label'];
 			}
-			return implode($this->_config['delimiter'] . ' ', $tags);
 		}
-		return '';
+
+		if ($this->_config['strategy'] === 'array') {
+			return $tags;
+		}
+
+		return implode($this->_config['delimiter'] . ' ', $tags);
 	}
 
 	/**

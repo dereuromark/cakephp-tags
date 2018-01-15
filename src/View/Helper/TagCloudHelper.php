@@ -16,6 +16,8 @@ use Cake\View\Helper;
 
 /**
  * Tag cloud helper
+ *
+ * @property \Cake\View\Helper\HtmlHelper $Html
  */
 class TagCloudHelper extends Helper {
 

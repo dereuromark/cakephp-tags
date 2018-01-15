@@ -98,6 +98,27 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testPrepareTagsForOutput() {
+		$tags = [
+			[
+				'label' => 'Foo',
+			],
+			[
+				'label' => 'Bar',
+			],
+		];
+
+		$result = $this->Behavior->prepareTagsForOutput($tags);
+		$this->assertSame('Foo, Bar', $result);
+
+		$this->Behavior->config('strategy', 'array');
+		$result = $this->Behavior->prepareTagsForOutput($tags);
+		$this->assertSame(['Foo', 'Bar'], $result);
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testNormalizeTags() {
 		$result = $this->Behavior->normalizeTags('foo, 3:foobar, bar');
 		$expected = [
