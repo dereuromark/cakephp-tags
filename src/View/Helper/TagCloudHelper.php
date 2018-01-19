@@ -13,6 +13,7 @@ namespace Tags\View\Helper;
 
 use Cake\Utility\Hash;
 use Cake\View\Helper;
+use Cake\View\StringTemplateTrait;
 
 /**
  * Tag cloud helper
@@ -20,6 +21,8 @@ use Cake\View\Helper;
  * @property \Cake\View\Helper\HtmlHelper $Html
  */
 class TagCloudHelper extends Helper {
+
+	use StringTemplateTrait;
 
 	/**
 	 * @var array
@@ -29,40 +32,47 @@ class TagCloudHelper extends Helper {
 	];
 
 	/**
+	 * @var array
+	 */
+	protected $_defaultConfig = [
+		'tagModel' => 'tag',
+		'shuffle' => true,
+		'extract' => '{n}.weight',
+		'maxSize' => 160,
+		'minSize' => 80,
+		'url' => [
+		],
+		'named' => 'by',
+		'templates' => [
+			'wrapper' => '<ul{{attrs}}>{{content}}</ul>',
+			'item' => '<li style="font-size: {{size}}%">{{content}}</li>'
+		],
+	];
+
+	/**
 	 * Method to output a tag-cloud formatted based on the weight of the tags
 	 *
-	 * @param array $tags Tag array to display.
-	 * @param array $options Display options. Valid keys are:
+	 * Valid option keys are:
 	 *  - shuffle: true to shuffle the tag list, false to display them in the same order than passed [default: true]
-	 *  - extract: Set::extract() compatible format string. Path to extract weight values from the $tags array
-	 *      [default: {n}.Tag.weight]
-	 *  - before: string to be displayed before each generated link. "%size%" will be replaced with tag size calculated
-	 *      from the weight [default: empty]
-	 *  - after: string to be displayed after each generated link. "%size%" will be replaced with tag size calculated from
-	 *      the weight [default: empty]
+	 *  - extract: Hash::extract() compatible format string. Path to extract weight values from the $tags array
+	 *      [default: {n}.weight]
+	 *  - templates: Set your wrapper and item (usually ul/li elements). {{size}} will be replaced with tag size calculated
+	 *      from the weight
 	 *  - maxSize: size of the heaviest tag [default: 160]
 	 *  - minSize: size of the lightest tag [default: 80]
 	 *  - url: an array containing the default url
 	 *  - named: the named parameter used to send the tag [default: by].
+	 *
+	 * @param array $tags Tag array to display.
+	 * @param array $options Display options.
+	 * @param array $attrs For ul element
 	 * @return string
 	 */
-	public function display(array $tags, $options = []) {
+	public function display(array $tags, array $options = [], array $attrs = []) {
 		if (empty($tags)) {
 			return '';
 		}
-		$defaults = [
-			'tagModel' => 'tag',
-			'shuffle' => true,
-			'extract' => '{n}.weight',
-			'before' => '',
-			'after' => '',
-			'maxSize' => 160,
-			'minSize' => 80,
-			'url' => [
-			],
-			'named' => 'by'
-		];
-		$options = array_merge($defaults, $options);
+		$options += $this->_config;
 
 		$tags = $this->calculateWeights($tags);
 
@@ -80,7 +90,7 @@ class TagCloudHelper extends Helper {
 			shuffle($tags);
 		}
 
-		$cloud = null;
+		$cloud = [];
 		foreach ($tags as $tag) {
 			$tagWeight = $tag['weight'];
 
@@ -91,16 +101,20 @@ class TagCloudHelper extends Helper {
 			);
 			$size = $tag['size'] = ceil($size);
 
-			$cloud .= $this->_replace($options['before'], $size);
-			$cloud .= $this->Html->link(
+			$content = $this->Html->link(
 				$tag[$options['tagModel']]['label'],
 				$this->_tagUrl($tag, $options),
 				['id' => 'tag-' . $tag[$options['tagModel']]['id']]
-			) . ' ';
-			$cloud .= $this->_replace($options['after'], $size);
+			);
+			$data = compact('size', 'content');
+			$cloud[] = $this->templater()->format('item', $data);
 		}
 
-		return $cloud;
+		$content = implode(PHP_EOL, $cloud);
+		$attrs = $this->templater()->formatAttributes($attrs);
+		$data = compact('attrs', 'content');
+
+		return $this->templater()->format('wrapper', $data);
 	}
 
 	/**
@@ -145,18 +159,8 @@ class TagCloudHelper extends Helper {
 	 */
 	protected function _tagUrl($tag, $options) {
 		$options['url'][$options['named']] = $tag[$options['tagModel']]['slug'];
-		return $options['url'];
-	}
 
-	/**
-	 * Replaces %size% in strings with the calculated "size" of the tag
-	 *
-	 * @param string $string Template string.
-	 * @param float $size Replacement size.
-	 * @return string Final string.
-	 */
-	protected function _replace($string, $size) {
-		return str_replace('%size%', $size, $string);
+		return $options['url'];
 	}
 
 }

@@ -22,7 +22,7 @@ class TagBehavior extends Behavior {
 		'field' => 'tag_list',
 		'strategy' => 'string',
 		'delimiter' => ',',
-		'separator' => false, //':'
+		'separator' => null,
 		'namespace' => null,
 		'tagsAlias' => 'Tags',
 		'tagsAssoc' => [
@@ -37,9 +37,12 @@ class TagBehavior extends Behavior {
 		'taggedAssoc' => [
 			'className' => 'Tags.Tagged',
 		],
-		'taggedCounter' => ['tag_count' => [
-			'conditions' => []
-		]],
+		'taggedCounter' => [
+			'tag_count' => [
+				'conditions' => [
+				]
+			]
+		],
 		'implementedEvents' => [
 			'Model.beforeMarshal' => 'beforeMarshal',
 			'Model.beforeFind' => 'beforeFind',
@@ -51,7 +54,7 @@ class TagBehavior extends Behavior {
 			'tagged' => 'findByTag'
 		],
 		'finderField' => 'tag',
-		'fkTableField' => 'fk_table' // Rename to foreign_model + foreign_key ?
+		'fkModelField' => 'fk_model'
 	];
 
 	/**
@@ -113,6 +116,7 @@ class TagBehavior extends Behavior {
 	 */
 	public function beforeFind(Event $event, Query $query, ArrayObject $options) {
 		$query->formatResults(function ($results) {
+			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {
 				if (!$row instanceOf Entity) {
 					return $row;
@@ -168,7 +172,7 @@ class TagBehavior extends Behavior {
 		$table = $this->_table;
 		$tableAlias = $this->_table->alias();
 
-		$assocConditions = [$taggedAlias . '.' . $this->config('fkTableField') => $table->alias()];
+		$assocConditions = [$taggedAlias . '.' . $this->config('fkModelField') => $table->alias()];
 
 		if (!$table->association($taggedAlias)) {
 			$table->hasMany($taggedAlias, $taggedAssoc + [
@@ -252,7 +256,7 @@ class TagBehavior extends Behavior {
 		if (!$counterCache->config($taggedAlias)) {
 			//$field = key($config['taggedCounter']);
 			$config['taggedCounter']['tag_count']['conditions'] = [
-				$taggedTable->aliasField($this->config('fkTableField')) => $this->_table->alias()
+				$taggedTable->aliasField($this->config('fkModelField')) => $this->_table->alias()
 			];
 			$counterCache->config($this->_table->alias(), $config['taggedCounter']);
 		}
@@ -298,7 +302,7 @@ class TagBehavior extends Behavior {
 
 		$result = [];
 
-		$common = ['_joinData' => [$this->config('fkTableField') => $this->_table->alias()]];
+		$common = ['_joinData' => [$this->config('fkModelField') => $this->_table->alias()]];
 		$namespace = $this->config('namespace');
 		if ($namespace) {
 			$common += compact('namespace');

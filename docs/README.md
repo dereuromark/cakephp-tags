@@ -52,18 +52,16 @@ $this->set(compact('tags'));
 
 In your template:
 ```php
-<ul class="tag-cloud">
-	<?php
-	$this->loadHelper('Tags.TagCloud');
+<?php
+$this->loadHelper('Tags.TagCloud');
 
-	echo $this->TagCloud->display($tags, ['before' => '<li style="font-size: %size%%">', 'after' => '</li>']);
-	?>
-</ul>
+echo $this->TagCloud->display($tags, ['shuffle' => false], ['class' => 'tag-cloud']);
+?>
 ```
 
 With a bit of custom CSS you can make each tag a floating element.
 
-By default the shuffle is enabled, you can disable using `'shuffle' => false` as config.
+By default the shuffle is enabled, you can disable using `'shuffle' => false` config as shown above.
 
 ### Advanced features
 By default the tags are counted (globally).
@@ -76,3 +74,10 @@ You can re-use the same validation if you store it in a more central place.
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
 Or you can dynamically set it on each `addBehavior()` method call as well as when loading the helper.
+
+The most important ones are:
+
+- `'slugBehavior'`: `true`/`false` (`true` = auto detect slugging, set to behavior otherwise, e.g. `'MyPlugin.MyCustomSlugger'`)
+- `'strategy'`: `'string'`/`'array'`
+- `'delimiter'` - separating the tags, e.g.: `','`
+- `'separator'`: For namespace prefix, e.g.: `':'`

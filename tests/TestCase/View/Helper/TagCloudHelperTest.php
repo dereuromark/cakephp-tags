@@ -90,20 +90,21 @@ class TagCloudHelperTest extends TestCase {
 			],
 		];
 		$options = [
-			'before' => '<li style="font-size: %size%%">',
-			'after' => '</li>',
 			'shuffle' => false,
 		];
 
 		// Wrap with <ul class="tag-cloud">...</ul>
-		$result = $this->Helper->display($tags, $options);
+		$result = $this->Helper->display($tags, $options, ['class' => 'tag-cloud']);
 
 		$expected = <<<HTML
-<li style="font-size: 80%"><a href="/?by=Foo" id="tag-1">Foo</a> </li>
-<li style="font-size: 160%"><a href="/?by=Bar" id="tag-2">Bar</a> </li>
-<li style="font-size: 120%"><a href="/?by=X-Y-Z" id="tag-3">X Y Z</a> </li>
+<ul class="tag-cloud">		
+<li style="font-size: 80%"><a href="/?by=Foo" id="tag-1">Foo</a></li>
+<li style="font-size: 160%"><a href="/?by=Bar" id="tag-2">Bar</a></li>
+<li style="font-size: 120%"><a href="/?by=X-Y-Z" id="tag-3">X Y Z</a></li>
+</ul>
 HTML;
 		$expected = str_replace(["\t", "\n", "\r"], '', $expected);
+		$result = str_replace(["\t", "\n", "\r"], '', $result);
 		$this->assertTextEquals($expected, $result);
 	}
 
