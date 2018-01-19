@@ -90,8 +90,6 @@ class TagCloudHelperTest extends TestCase {
 			],
 		];
 		$options = [
-			'before' => '<li style="font-size: %size%%">',
-			'after' => '</li>',
 			'shuffle' => false,
 		];
 

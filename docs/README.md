@@ -52,18 +52,16 @@ $this->set(compact('tags'));
 
 In your template:
 ```php
-<ul class="tag-cloud">
-	<?php
-	$this->loadHelper('Tags.TagCloud');
+<?php
+$this->loadHelper('Tags.TagCloud');
 
-	echo $this->TagCloud->display($tags, ['before' => '<li style="font-size: %size%%">', 'after' => '</li>']);
-	?>
-</ul>
+echo $this->TagCloud->display($tags, ['shuffle' => false], ['class' => 'tag-cloud']);
+?>
 ```
 
 With a bit of custom CSS you can make each tag a floating element.
 
-By default the shuffle is enabled, you can disable using `'shuffle' => false` as config.
+By default the shuffle is enabled, you can disable using `'shuffle' => false` config as shown above.
 
 ### Advanced features
 By default the tags are counted (globally).
