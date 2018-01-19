@@ -124,14 +124,14 @@ class TagBehaviorTest extends TestCase {
 		$expected = [
 			0 => [
 				'_joinData' => [
-					'fk_table' => 'Muffins'
+					'fk_model' => 'Muffins'
 				],
 				'label' => 'foo',
 				'slug' => 'foo'
 			],
 			1 => [
 				'_joinData' => [
-					'fk_table' => 'Muffins'
+					'fk_model' => 'Muffins'
 				],
 				//'namespace' => '3',
 				'slug' => '3-foobar',
@@ -139,7 +139,7 @@ class TagBehaviorTest extends TestCase {
 			],
 			2 => [
 				'_joinData' => [
-					'fk_table' => 'Muffins'
+					'fk_model' => 'Muffins'
 				],
 				'label' => 'bar',
 				'slug' => 'bar'
@@ -151,14 +151,14 @@ class TagBehaviorTest extends TestCase {
 		$expected = [
 			0 => [
 				'_joinData' => [
-					'fk_table' => 'Muffins'
+					'fk_model' => 'Muffins'
 				],
 				'label' => 'foo',
 				'slug' => 'foo'
 			],
 			1 => [
 				'_joinData' => [
-					'fk_table' => 'Muffins'
+					'fk_model' => 'Muffins'
 				],
 				'label' => 'bar',
 				'slug' => 'bar'
@@ -171,7 +171,7 @@ class TagBehaviorTest extends TestCase {
 		$expected = [
 			[
 				'_joinData' => [
-					'fk_table' => 'Muffins',
+					'fk_model' => 'Muffins',
 				],
 				'label' => 'first',
 				'slug' => 'first',

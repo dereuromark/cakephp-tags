@@ -76,3 +76,10 @@ You can re-use the same validation if you store it in a more central place.
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
 Or you can dynamically set it on each `addBehavior()` method call as well as when loading the helper.
+
+The most important ones are:
+
+- `'slugBehavior'`: `true`/`false` (`true` = auto detect slugging, set to behavior otherwise, e.g. `'MyPlugin.MyCustomSlugger'`)
+- `'strategy'`: `'string'`/`'array'`
+- `'delimiter'` - separating the tags, e.g.: `','`
+- `'separator'`: For namespace prefix, e.g.: `':'`
