@@ -56,7 +56,7 @@ class TagHelper extends Helper {
 	 */
 	public function control(array $options = []) {
 		if ($this->config('strategy') === 'array') {
-			$tags = (array)$this->Form->getSourceValue('tag_list');
+			$tags = (array)$this->Form->getSourceValue($this->config('field'));
 
 			$options += [
 				'options' => array_combine($tags, $tags),
