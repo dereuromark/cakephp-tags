@@ -59,7 +59,7 @@ class TagHelperTest extends TestCase {
 	public function testControl() {
 		$result = $this->TagHelper->control();
 
-		$expected = '<div class="input text"><label for="tag-list">Tag List</label><input type="text" name="tag_list" id="tag-list"/></div>';
+		$expected = '<div class="input text"><label for="tag-list">Tags</label><input type="text" name="tag_list" id="tag-list"/></div>';
 		$this->assertSame($expected, $result);
 	}
 
