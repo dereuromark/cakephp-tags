@@ -124,7 +124,10 @@ class TagBehavior extends Behavior {
 					return $row;
 				}
 
-				$row[$field] = $row['tags'] ? $this->prepareTagsForOutput($row['tags']) : '';
+				$row[$field] = $this->prepareTagsForOutput((array)$row['tags']);
+				if ($row instanceOf Entity) {
+					$row->setDirty($field, false);
+				}
 				return $row;
 			});
 		});
@@ -141,6 +144,7 @@ class TagBehavior extends Behavior {
 	 */
 	public function prepareTagsForOutput(array $data) {
 		$tags = [];
+
 		foreach ($data as $tag) {
 			if ($this->_config['namespace']) {
 				$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
