@@ -118,13 +118,13 @@ class TagBehavior extends Behavior {
 		$query->formatResults(function ($results) {
 			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {
-				if (!$row instanceOf Entity) {
+				$field = $this->_config['field'];
+
+				if (!$row instanceOf Entity && !isset($row['tags'])) {
 					return $row;
 				}
 
-				$field = $this->_config['field'];
-
-				$row[$field] = $row->tags ? $this->prepareTagsForOutput($row->tags) : '';
+				$row[$field] = $row['tags'] ? $this->prepareTagsForOutput($row['tags']) : '';
 				return $row;
 			});
 		});

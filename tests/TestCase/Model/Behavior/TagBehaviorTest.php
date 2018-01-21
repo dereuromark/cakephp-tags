@@ -54,6 +54,24 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testFind() {
+		$entity = $this->Table->find()->contain('Tags')->first();
+		$this->assertCount(2, $entity->tags);
+		$this->assertSame('Color, Dark Color', $entity->tag_list);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindHydrateFalse() {
+		$entity = $this->Table->find()->contain('Tags')->hydrate(false)->first();
+		$this->assertCount(2, $entity['tags']);
+		$this->assertSame('Color, Dark Color', $entity['tag_list']);
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testSavingDuplicates() {
 		$entity = $this->Table->newEntity([
 			'name' => 'Duplicate Tags?',
