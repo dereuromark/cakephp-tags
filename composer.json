@@ -1,65 +1,65 @@
 {
-    "name": "dereuromark/cakephp-tags",
-    "description": "Tags plugin for CakePHP 3.x",
-    "type": "cakephp-plugin",
-    "keywords": [
-        "cakephp",
-        "tagging",
-        "tags"
-    ],
-    "homepage": "https://github.com/dereuromark/cakephp-tags",
-    "license": "MIT",
-    "authors": [
+	"name": "dereuromark/cakephp-tags",
+	"description": "Tags plugin for CakePHP 3.x",
+	"type": "cakephp-plugin",
+	"keywords": [
+		"cakephp",
+		"tagging",
+		"tags"
+	],
+	"homepage": "https://github.com/dereuromark/cakephp-tags",
+	"license": "MIT",
+	"authors": [
 		{
 			"name": "Mark Scherer",
 			"homepage": "http://www.dereuromark.de",
 			"role": "Maintainer"
 		},
-        {
-            "name": "Jad Bitar",
-            "homepage": "http://jadb.io",
-            "role": "Author"
-        },
-        {
-            "name": "ADmad",
-            "homepage": "https://github.com/ADmad",
-            "role": "Author"
-        },
-        {
-            "name": "Others",
-            "homepage": "https://github.com/dereuromark/cakephp-tags/graphs/contributors"
-        }
-    ],
-    "support": {
-        "source": "https://github.com/dereuromark/cakephp-tags"
-    },
-    "require": {
+		{
+			"name": "Jad Bitar",
+			"homepage": "http://jadb.io",
+			"role": "Author"
+		},
+		{
+			"name": "ADmad",
+			"homepage": "https://github.com/ADmad",
+			"role": "Author"
+		},
+		{
+			"name": "Others",
+			"homepage": "https://github.com/dereuromark/cakephp-tags/graphs/contributors"
+		}
+	],
+	"support": {
+		"source": "https://github.com/dereuromark/cakephp-tags"
+	},
+	"require": {
 		"php": ">=5.6",
-        "cakephp/cakephp": "^3.4"
-    },
-    "require-dev": {
-        "cakephp/cakephp": "^3.4",
+		"cakephp/cakephp": "^3.4"
+	},
+	"require-dev": {
+		"cakephp/cakephp": "^3.4",
 		"dereuromark/cakephp-tools": "^1.0",
 		"cakephp/migrations": "*",
-        "fig-r/psr2r-sniffer": "dev-master"
-    },
-    "autoload": {
-        "psr-4": {
-            "Tags\\": "src/",
+		"fig-r/psr2r-sniffer": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"Tags\\": "src/",
 			"Tags\\Test\\Fixture\\": "tests/Fixture/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tags\\Test\\": "tests/",
-            "App\\": "tests/test_app/src/"
-        }
-    },
-    "scripts": {
-        "test": "php phpunit.phar",
-        "test-setup": "[ ! -f phpunit.phar ] && wget https://phar.phpunit.de/phpunit-5.7.20.phar && mv phpunit-5.7.20.phar phpunit.phar || true",
-        "test-coverage" : "php phpunit.phar --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
-        "cs-check": "phpcs -p --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/,/config/Migrations/ --extensions=php ./",
-        "cs-fix": "phpcbf -v --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/,/config/Migrations/ --extensions=php ./"
-    }
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tags\\Test\\": "tests/",
+			"App\\": "tests/test_app/src/"
+		}
+	},
+	"scripts": {
+		"test": "php phpunit.phar",
+		"test-setup": "[ ! -f phpunit.phar ] && wget https://phar.phpunit.de/phpunit-5.7.20.phar && mv phpunit-5.7.20.phar phpunit.phar || true",
+		"test-coverage" : "php phpunit.phar --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
+		"cs-check": "phpcs -p --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/,/config/Migrations/ --extensions=php ./",
+		"cs-fix": "phpcbf -v --standard=vendor/fig-r/psr2r-sniffer/PSR2R/ruleset.xml --ignore=/cakephp-tags/vendor/,/tmp/,/logs/,/config/Migrations/ --extensions=php ./"
+	}
 }
