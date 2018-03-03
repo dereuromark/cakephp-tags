@@ -91,7 +91,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Before marshal callaback
+	 * Before marshal callback
 	 *
 	 * @param \Cake\Event\Event $event The Model.beforeMarshal event.
 	 * @param \ArrayObject $data Data.
