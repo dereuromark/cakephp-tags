@@ -3,8 +3,8 @@ namespace Tags\Model\Table;
 
 use ArrayObject;
 use Cake\Collection\CollectionInterface;
-use Cake\ORM\Query;
 use Cake\Event\Event;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 
@@ -126,7 +126,7 @@ class TaggedTable extends Table {
 	 *
 	 * @param \Cake\Event\Event $event
 	 * @param \Cake\ORM\Query $query
-	 * @param ArrayObject $options
+	 * @param \ArrayObject $options
 	 * @param bool $primary
 	 * @return \Cake\ORM\Query
 	 */
