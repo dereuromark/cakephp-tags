@@ -122,7 +122,8 @@ class TaggedTable extends Table {
 	/**
 	 * Sets the default ordering.
 	 *
-	 * If you don't want that, don't call parent when overwriting it in extending classes.
+	 * If you don't want that, don't call parent when overwriting it in extending classes
+	 * or just set the order to an empty array. This will only trigger for order clause of null.
 	 *
 	 * @param \Cake\Event\Event $event
 	 * @param \Cake\ORM\Query $query
