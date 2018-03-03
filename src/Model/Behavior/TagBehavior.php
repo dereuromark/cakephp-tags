@@ -104,7 +104,7 @@ class TagBehavior extends Behavior {
 			$data['tags'] = $this->normalizeTags($data[$field]);
 		} elseif ($field !== 'tags') {
 			if (isset($data['tags']) && is_string($data['tags'])) {
-				throw new \RuntimeException('Your `tags` property is malformed (expected array instead of string). You configured to save list of tags in `' . $field . '` field.');
+				throw new RuntimeException('Your `tags` property is malformed (expected array instead of string). You configured to save list of tags in `' . $field . '` field.');
 			}
 		}
 
