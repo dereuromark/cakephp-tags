@@ -72,17 +72,48 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testSave() {
+		$data = [
+			'name' => 'New',
+			'tag_list' => 'Shiny, Awesome'
+		];
+		$entity = $this->Table->newEntity($data);
+		$this->Table->saveOrFail($entity);
+
+		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
+		$tags = Hash::extract($taggedRows, '{n}.tags.label');
+		$this->assertSame(['Shiny', 'Awesome'], $tags);
+
+		$this->assertSame($this->Table->getAlias(), $taggedRows[0]['fk_model']);
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testSavingDuplicates() {
 		$entity = $this->Table->newEntity([
 			'name' => 'Duplicate Tags?',
-			'tags' => 'Color, Dark Color'
+			'tag_list' => 'Color, Dark Color'
 		]);
-		$this->Table->save($entity);
+		$this->Table->saveOrFail($entity);
+
 		$Tags = $this->Table->Tagged->Tags;
 		$count = $Tags->find()->where(['label' => 'Color'])->count();
 		$this->assertEquals(1, $count);
 		$count = $Tags->find()->where(['label' => 'Dark Color'])->count();
 		$this->assertEquals(1, $count);
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 *
+	 * @return void
+	 */
+	public function testSavingWithWrongKey() {
+		$this->Table->newEntity([
+			'name' => 'Duplicate Tags?',
+			'tags' => 'X, Y'
+		]);
 	}
 
 	/**
@@ -279,7 +310,7 @@ class TagBehaviorTest extends TestCase {
 		];
 
 		$entity = $this->Table->newEntity($data);
-		$this->assertEquals(0, count($entity->get('tags')));
+		$this->assertNull($entity->get('tags'));
 	}
 
 	/**

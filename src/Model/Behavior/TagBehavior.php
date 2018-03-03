@@ -3,6 +3,7 @@ namespace Tags\Model\Behavior;
 
 use ArrayObject;
 use Cake\Core\Configure;
+use Cake\Datasource\QueryInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
@@ -101,6 +102,10 @@ class TagBehavior extends Behavior {
 		$field = $this->config('field') ?: $this->config('tagsAssoc.propertyName');
 		if (!empty($data[$field])) {
 			$data['tags'] = $this->normalizeTags($data[$field]);
+		} elseif ($field !== 'tags') {
+			if (isset($data['tags']) && is_string($data['tags'])) {
+				throw new \RuntimeException('Your `tags` property is malformed (expected array instead of string). You configured to save list of tags in `' . $field . '` field.');
+			}
 		}
 
 		if (isset($data[$field]) && empty($data[$field])) {
@@ -284,7 +289,7 @@ class TagBehavior extends Behavior {
 		if (empty($slug)) {
 			return $query;
 		}
-		$query->matching($this->config('tagsAlias'), function ($q) use ($slug) {
+		$query->matching($this->config('tagsAlias'), function (QueryInterface $q) use ($slug) {
 			return $q->where([
 				$this->config('tagsAlias') . '.slug' => $slug,
 			]);
