@@ -1,7 +1,9 @@
 <?php
 namespace Tags\Model\Table;
 
+use ArrayObject;
 use Cake\Collection\CollectionInterface;
+use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -32,7 +34,7 @@ class TaggedTable extends Table {
 		$this->belongsTo('Tags', [
 			'className' => 'Tags.Tags',
 			'foreignKey' => 'tag_id',
-			'propertyName' => 'tags',
+			'propertyName' => 'tag',
 		]);
 		$this->addBehavior('Timestamp');
 	}
@@ -115,6 +117,42 @@ class TaggedTable extends Table {
 			$entities[$key]['weight'] = ceil($size);
 		}
 		return $entities;
+	}
+
+	/**
+	 * Sets the default ordering.
+	 *
+	 * If you don't want that, don't call parent when overwriting it in extending classes
+	 * or just set the order to an empty array. This will only trigger for order clause of null.
+	 *
+	 * @param \Cake\Event\Event $event
+	 * @param \Cake\ORM\Query $query
+	 * @param \ArrayObject $options
+	 * @param bool $primary
+	 * @return \Cake\ORM\Query
+	 */
+	public function beforeFind(Event $event, Query $query, ArrayObject $options, $primary) {
+		$order = $query->clause('order');
+		if ($order !== null) {
+			return $query;
+		}
+
+		if (!isset($this->order)) {
+			$contain = $query->contain();
+			if (!isset($contain[$this->Tags->alias()])) {
+				return $query;
+			}
+
+			$order = [$this->Tags->alias() . '.label' => 'ASC'];
+		} else {
+			$order = $this->order;
+		}
+
+		if (!empty($order)) {
+			$query->order($order);
+		}
+
+		return $query;
 	}
 
 }

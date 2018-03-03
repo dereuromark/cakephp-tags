@@ -44,6 +44,62 @@ class TaggedTableTest extends TestCase {
 	}
 
 	/**
+	 * Tries to auto-sort by tag alias if contained.
+	 *
+	 * @return void
+	 */
+	public function testFindSort() {
+		$data = [
+			'fk_id' => 1,
+			'fk_model' => 'Muffins',
+			'tag' => [
+				'label' => 'Awesome',
+				'slug' => 'awesome',
+			],
+		];
+		$tagged = $this->Tagged->newEntity($data);
+		$this->Tagged->save($tagged);
+
+		$result = $this->Tagged->find()
+			->contain('Tags')
+			->where(['fk_id' => 1, 'fk_model' => 'Muffins'])
+			->all()
+			->toArray();
+
+		$tags = Hash::extract($result, '{n}.tag.label');
+		$ids = Hash::extract($result, '{n}.tag_id');
+
+		$this->assertSame(['Awesome', 'Color', 'Dark Color'], $tags);
+		$this->assertSame([3, 1, 2], $ids);
+	}
+
+	/**
+	 * Fallback to unsorted by tag alias then.
+	 *
+	 * @return void
+	 */
+	public function testFindSortWithoutContain() {
+		$data = [
+			'fk_id' => 1,
+			'fk_model' => 'Muffins',
+			'tag' => [
+				'label' => 'Awesome',
+				'slug' => 'awesome',
+			],
+		];
+		$tagged = $this->Tagged->newEntity($data);
+		$this->Tagged->save($tagged);
+
+		$result = $this->Tagged->find()
+			->where(['fk_id' => 1, 'fk_model' => 'Muffins'])
+			->all()
+			->toArray();
+
+		$ids = Hash::extract($result, '{n}.tag_id');
+		$this->assertSame([1, 2, 3], $ids);
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testFindMatching() {
