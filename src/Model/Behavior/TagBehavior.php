@@ -100,6 +100,8 @@ class TagBehavior extends Behavior {
 	 */
 	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
 		$field = $this->config('field') ?: $this->config('tagsAssoc.propertyName');
+		$options['accessibleFields']['tags'] = true;
+
 		if (!empty($data[$field])) {
 			$data['tags'] = $this->normalizeTags($data[$field]);
 		} elseif ($field !== 'tags') {

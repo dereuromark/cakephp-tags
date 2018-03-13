@@ -88,6 +88,30 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
+	 * Tests that whole entity guarded false by default will still work.
+	 *
+	 * @return void
+	 */
+	public function testSaveWithGuarding() {
+		$data = [
+			'name' => 'New',
+			'tag_list' => 'Shiny, Awesome'
+		];
+
+		$entity = $this->Table->newEntity();
+		$entity->setAccess('tags', false);
+
+		$entity = $this->Table->patchEntity($entity, $data);
+		$this->assertNotEmpty($entity->tags);
+
+		$this->Table->saveOrFail($entity);
+
+		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
+		$tags = Hash::extract($taggedRows, '{n}.tag.label');
+		$this->assertSame(['Awesome', 'Shiny'], $tags);
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testSavingDuplicates() {
