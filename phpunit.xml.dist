@@ -4,10 +4,15 @@
     colors="true"
     stopOnFailure="false"
     >
+	<php>
+		<!-- E_ALL & ~E_USER_DEPRECATED (16383)-->
+		<!-- E_ALL (32767) -->
+		<ini name="error_reporting" value="16383"/>
+	</php>
 
     <testsuites>
         <testsuite name="tags">
-            <directory>./tests/</directory>
+            <directory>tests/</directory>
         </testsuite>
     </testsuites>
 
@@ -15,7 +20,7 @@
     <listeners>
         <listener
         class="\Cake\TestSuite\Fixture\FixtureInjector"
-        file="./vendor/cakephp/cakephp/src/TestSuite/Fixture/FixtureInjector.php">
+        file="vendor/cakephp/cakephp/src/TestSuite/Fixture/FixtureInjector.php">
             <arguments>
                 <object class="\Cake\TestSuite\Fixture\FixtureManager" />
             </arguments>
@@ -24,7 +29,7 @@
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./src/</directory>
+            <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
 </phpunit>
