@@ -146,7 +146,7 @@ class TagBehavior extends Behavior {
 	 * Generates comma-delimited string of tag names from tag array(), needed for
 	 * initialization of data for text input
 	 *
-	 * @param array|null $data Tag data array to convert to string.
+	 * @param array $data Tag data array to convert to string.
 	 * @return string|array
 	 */
 	public function prepareTagsForOutput(array $data) {

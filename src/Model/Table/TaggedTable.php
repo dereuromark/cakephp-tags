@@ -48,22 +48,23 @@ class TaggedTable extends Table {
 	 * size of the tag font.
 	 *
 	 * @param \Cake\ORM\Query $query Query array.
-	 * @return array
+	 * @return \Cake\ORM\Query
 	 */
 	public function findCloud(Query $query) {
+		$groupBy = ['Tagged.tag_id', 'Tags.id', 'Tags.slug', 'Tags.label'];
+		$fields = $groupBy;
+		$fields['counter'] = $query->func()->count('*');
+
+		// FIXME or remove
 		// Support old code without the counter cache
-		if (true || !$this->Tags->hasField('counter')) { // Hash::get($query, 'counterCache') === false
-			$groupBy = ['Tagged.tag_id', 'Tags.id', 'Tags.slug', 'Tags.label'];
-			$fields = $groupBy;
-			$fields['counter'] = $query->func()->count('*');
-		} else {
-			//FIXME or remove
-			// This is related to https://github.com/CakeDC/tags/issues/10 to work around a limitation of postgres
-			$field = $this->getDataSource()->fields($this->Tag);
-			$field = array_merge($field, $this->getDataSource()->fields($this, null, 'Tagged.tag_id'));
-			$fields = 'DISTINCT ' . implode(',', $field);
-			$groupBy = null;
-		}
+		// This is related to https://github.com/CakeDC/tags/issues/10 to work around a limitation of postgres
+		/*
+		$field = $this->getDataSource()->fields($this->Tag);
+		$field = array_merge($field, $this->getDataSource()->fields($this, null, 'Tagged.tag_id'));
+		$fields = 'DISTINCT ' . implode(',', $field);
+		$groupBy = null;
+		*/
+
 		$options = [
 			'minSize' => 10,
 			'maxSize' => 20,
@@ -139,11 +140,11 @@ class TaggedTable extends Table {
 
 		if (!isset($this->order)) {
 			$contain = $query->contain();
-			if (!isset($contain[$this->Tags->alias()])) {
+			if (!isset($contain[$this->Tags->getAlias()])) {
 				return $query;
 			}
 
-			$order = [$this->Tags->alias() . '.label' => 'ASC'];
+			$order = [$this->Tags->getAlias() . '.label' => 'ASC'];
 		} else {
 			$order = $this->order;
 		}
