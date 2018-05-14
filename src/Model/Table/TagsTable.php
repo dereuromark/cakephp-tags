@@ -26,8 +26,8 @@ class TagsTable extends Table {
 	 * @return void
 	 */
 	public function initialize(array $config) {
-		$this->table('tags_tags');
-		$this->displayField('label'); // Change to name?
+		$this->setTable('tags_tags');
+		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
 
 		$slugger = Configure::read('Tags.slugBehavior');
