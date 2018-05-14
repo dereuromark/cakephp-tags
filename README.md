@@ -9,7 +9,7 @@
 
 Make tagging of entities a piece of cake.
 
-This branch is for CakePHP 3.5+.
+This branch is for CakePHP 3.6+.
 
 ## Install
 
