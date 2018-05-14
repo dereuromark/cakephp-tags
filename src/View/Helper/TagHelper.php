@@ -55,8 +55,8 @@ class TagHelper extends Helper {
 	 * @return string
 	 */
 	public function control(array $options = []) {
-		if ($this->config('strategy') === 'array') {
-			$tags = (array)$this->Form->getSourceValue($this->config('field'));
+		if ($this->getConfig('strategy') === 'array') {
+			$tags = (array)$this->Form->getSourceValue($this->getConfig('field'));
 
 			$options += [
 				'options' => array_combine($tags, $tags),
@@ -70,7 +70,7 @@ class TagHelper extends Helper {
 			'label' => __d('tags', 'Tags'),
 		];
 
-		return $this->Form->control($this->config('field'), $options);
+		return $this->Form->control($this->getConfig('field'), $options);
 	}
 
 }

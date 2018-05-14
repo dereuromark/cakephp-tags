@@ -30,7 +30,7 @@ class TaggedTable extends Table {
 	 * @return void
 	 */
 	public function initialize(array $config) {
-		$this->table('tags_tagged');
+		$this->setTable('tags_tagged');
 		$this->belongsTo('Tags', [
 			'className' => 'Tags.Tags',
 			'foreignKey' => 'tag_id',
