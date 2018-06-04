@@ -194,7 +194,7 @@ class TagBehavior extends Behavior {
 
 		if (!$table->hasAssociation($tagsAlias)) {
 			$table->belongsToMany($tagsAlias, $tagsAssoc + [
-				'through' => $table->{$taggedAlias}->target(),
+				'through' => $table->{$taggedAlias}->getTarget(),
 				'conditions' => $assocConditions
 			]);
 		}
@@ -360,7 +360,7 @@ class TagBehavior extends Behavior {
 	 * @return null|int
 	 */
 	protected function _tagExists($tag) {
-		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->target();
+		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
 		$result = $tagsTable->find()
 			->where([
 				$tagsTable->aliasField('slug') => $tag,
