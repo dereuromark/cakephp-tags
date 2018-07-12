@@ -5,8 +5,10 @@
 Add the behavior to the model you want to tag:
 
 ```php
-$this->addBehavior('Tags.Tag');
+$this->addBehavior('Tags.Tag', ['taggedCounter' => false]);
 ```
+If you want a tag counter in your tagged table, add a migration that adds a `tag_count` field into this table.
+For now, we skip this.
 
 And in the add/edit forms you can use a basic text input:
 
@@ -21,6 +23,12 @@ You can even just use the helper:
 $this->loadHelper('Tags.Tag');
 
 echo $this->Tag->control();
+```
+
+Your edit action needs to contain the Tags relation to display existing tags into the form:
+```php
+// Inside get() call in the action
+	'contain' => ['Tags'],
 ```
 
 Enjoy tagging!
@@ -77,7 +85,8 @@ Or you can dynamically set it on each `addBehavior()` method call as well as whe
 
 The most important ones are:
 
+- `'taggedCounter'`: Set to false if you don't need a counter cache field in your tagged table.
 - `'slugBehavior'`: `true`/`false` (`true` = auto detect slugging, set to behavior otherwise, e.g. `'MyPlugin.MyCustomSlugger'`)
 - `'strategy'`: `'string'`/`'array'`
-- `'delimiter'` - separating the tags, e.g.: `','`
+- `'delimiter'` - Separating the tags, e.g.: `','`
 - `'separator'`: For namespace prefix, e.g.: `':'`
