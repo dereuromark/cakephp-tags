@@ -19,12 +19,15 @@ Using Composer:
 composer require dereuromark/cakephp-tags
 ```
 
-You then need to load the plugin. In `boostrap.php`, something like:
+You then need to load the plugin. In `src/Application.php`, something like:
 
 ```php
-use Cake\Core\Plugin:
+public function bootstrap()
+{
+    parent::bootstrap();
+    $this->addPlugin('Tags');
+}
 
-Plugin::load('Tags');
 ```
 
 Also don't forget to run migration (e.g. using Migrations plugin):
