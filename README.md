@@ -40,7 +40,3 @@ See Sandbox @ https://sandbox.dereuromark.de/sandbox/tags
 ## Documentation
 
 For documentation, as well as tutorials, see the [docs](docs/) directory of this repository.
-
-## Support
-
-For bugs and feature requests, please use the [issues](https://github.com/dereuromark/cakephp-tags/issues) section of this repository.
