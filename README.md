@@ -22,8 +22,7 @@ composer require dereuromark/cakephp-tags
 You then need to load the plugin. In `src/Application.php`, something like:
 
 ```php
-public function bootstrap()
-{
+public function bootstrap() {
     parent::bootstrap();
     $this->addPlugin('Tags');
 }
