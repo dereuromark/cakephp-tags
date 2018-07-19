@@ -77,7 +77,29 @@ You can to add the column *tag_count* to the taggable table to also cache this c
 
 #### Validation
 Don't forget to set up some basic validation on your tagged model.
-You can re-use the same validation if you store it in a more central place. 
+You can re-use the same validation if you store it in a more central place.
+
+#### Search/Filter
+
+You can easily combine the `tagged` custom finder with e.g. [Search](https://github.com/FriendsOfCake/search) plugin.
+This way you can add a filter to your paginated index action.
+
+Just pass a list of tags ([slug => name] pairs) down to the view layer where you populate the search form field as dropdown, for example:
+```php
+echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
+```
+
+In your table's searchManager() configuration you will need a small callback config:
+```php
+$searchManager
+	...
+	->callback('tag', [
+		'callback' => function (Query $query, array $args, $manager) {
+			// Here you would have to remap $args if key isn't the expected "tag"
+			$query->find('tagged', $args);
+		}
+	]);
+```
 
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
