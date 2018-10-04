@@ -104,7 +104,7 @@ class TagBehavior extends Behavior {
 		$field = $this->getConfig('field', $this->getConfig('tagsAssoc.propertyName'));
 		$options['accessibleFields']['tags'] = true;
 
-		if (!empty($data[$field])) {
+		if (isset($data[$field])) {
 			$data['tags'] = $this->normalizeTags($data[$field]);
 		} elseif ($field !== 'tags') {
 			if (isset($data['tags']) && is_string($data['tags'])) {

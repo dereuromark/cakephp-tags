@@ -185,7 +185,7 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Behavior->prepareTagsForOutput($tags);
 		$this->assertSame('Foo, Bar', $result);
 
-		$this->Behavior->config('strategy', 'array');
+		$this->Behavior->setConfig('strategy', 'array');
 		$result = $this->Behavior->prepareTagsForOutput($tags);
 		$this->assertSame(['Foo', 'Bar'], $result);
 	}
@@ -335,7 +335,7 @@ class TagBehaviorTest extends TestCase {
 		];
 
 		$entity = $this->Table->newEntity($data);
-		$this->assertNull($entity->get('tags'));
+		$this->assertSame([], $entity->get('tags'));
 	}
 
 	/**
@@ -359,6 +359,29 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->get($entity->id)->tag_count;
 		$expected = 2;
 		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSaveEmptyStringRemovesAllTags() {
+		$data = [
+			'name' => 'Muffin',
+			'tag_list' => 'Color, Dark Color',
+		];
+
+		$counter = $this->Table->Tags->get(1)->counter;
+		$entity = $this->Table->newEntity($data);
+
+		$this->Table->saveOrFail($entity);
+		$entity = $this->Table->get($entity->id, ['contain' => 'Tags']);
+		$this->assertCount(2, $entity->tags);
+
+		$this->Table->patchEntity($entity, ['tag_list' => '']);
+		$this->Table->saveOrFail($entity);
+
+		$entity = $this->Table->get($entity->id, ['contain' => 'Tags']);
+		$this->assertCount(0, $entity->tags);
 	}
 
 	/**
