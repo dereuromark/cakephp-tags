@@ -157,3 +157,23 @@ The most important ones are:
 - `'separator'`: For namespace prefix, e.g.: `':'`
 
 You can set them globally using Configure and the `Tags` config key.
+
+
+## Tips
+
+For higher productivity use the [IdeHelper](https://github.com/dereuromark/cakephp-ide-helper/) plugin to auto-add the annotations for your new relations.
+
+This will most likely add the following annotations to your table class:
+```
+ * @property \Tags\Model\Table\TaggedTable|\Cake\ORM\Association\HasMany $Tagged
+ * @property \Tags\Model\Table\TagsTable|\Cake\ORM\Association\BelongsToMany $Tags
+ * @mixin \Tags\Model\Behavior\TagBehavior
+```
+And also some in your entity:
+```
+ * @property \Tags\Model\Entity\Tagged[] $tagged
+ * @property \Tags\Model\Entity\Tag[] $tags
+```
+
+These will help you, your IDE and tooling like PHPStan to understand the relations and how to use them.
+The IdeHelper will also give you autocomplete on those for all loadModel() calls as well as autocomplete on the custom finders.
