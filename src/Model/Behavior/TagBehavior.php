@@ -276,7 +276,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Finder method
+	 * Customer finder method.
 	 *
 	 * Usage:
 	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
@@ -304,10 +304,17 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Usage:
-	 *   $query->find('untagged', ['counterField' => 'my_tag_count']);
+	 * Customer finder method.
 	 *
-	 * Set 'counterField' to false to do a live lookup in the pivot table
+	 * Usage:
+	 *   $query->find('untagged');
+	 *
+	 * Define a field if you have multiple counter cache fields set up:
+	 *   $query->find('untagged', ['counterField' => 'my_tag_count']);
+	 * Otherwise it will fallback to the first in the list.
+	 *
+	 * Set 'counterField' to false to do a live lookup in the pivot table.
+	 * It will automatically do the live lookup if you do not have any counter cache fields.
 	 *
 	 * @param \Cake\ORM\Query $query
 	 * @param array $options
@@ -323,8 +330,9 @@ class TagBehavior extends Behavior {
 			return $query->where([$this->_table->getAlias() . '.' . $options['counterField'] => 0]);
 		}
 
-		$foreignKey = $this->getConfig('TagsAssoc.foreignKey') ?: 'fk_id';
-		$this->_table->hasOne('NoTags', ['className' => 'Tags.Tagged', 'foreignKey' => $foreignKey, 'conditions' => [$this->getConfig('fkModelField') => $this->_table->getAlias()]]);
+		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
+		$conditions = [$this->getConfig('fkModelField') => $this->_table->getAlias()];
+		$this->_table->hasOne('NoTags', ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions]);
 		$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
 
 		return $query;
