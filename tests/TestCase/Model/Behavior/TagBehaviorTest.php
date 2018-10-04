@@ -17,6 +17,7 @@ class TagBehaviorTest extends TestCase {
 		'plugin.Tags.Muffins',
 		'plugin.Tags.Tagged',
 		'plugin.Tags.Tags',
+		'plugin.Tags.CounterlessMuffins',
 	];
 
 	/**
@@ -265,7 +266,7 @@ class TagBehaviorTest extends TestCase {
 		$entity = $this->Table->newEntity($data);
 
 		$this->assertEquals(2, count($entity->get('tags')));
-		$this->assertTrue($entity->dirty('tags'));
+		$this->assertTrue($entity->isDirty('tags'));
 
 		$data = [
 			'name' => 'Muffin',
@@ -278,7 +279,7 @@ class TagBehaviorTest extends TestCase {
 		$entity = $this->Table->newEntity($data);
 
 		$this->assertEquals(2, count($entity->get('tags')));
-		$this->assertTrue($entity->dirty('tags'));
+		$this->assertTrue($entity->isDirty('tags'));
 	}
 
 	/**
@@ -293,7 +294,7 @@ class TagBehaviorTest extends TestCase {
 		$entity = $this->Table->newEntity($data);
 
 		$this->assertEquals(2, count($entity->get('tags')));
-		$this->assertTrue($entity->dirty('tags'));
+		$this->assertTrue($entity->isDirty('tags'));
 
 		$data = [
 			'name' => 'Muffin',
@@ -306,7 +307,7 @@ class TagBehaviorTest extends TestCase {
 		$entity = $this->Table->newEntity($data);
 
 		$this->assertEquals(2, count($entity->get('tags')));
-		$this->assertTrue($entity->dirty('tags'));
+		$this->assertTrue($entity->isDirty('tags'));
 	}
 
 	/**
@@ -321,7 +322,7 @@ class TagBehaviorTest extends TestCase {
 		$entity = $this->Table->newEntity($data);
 
 		$this->assertEquals(2, count($entity->get('tags')));
-		$this->assertTrue($entity->dirty('tags'));
+		$this->assertTrue($entity->isDirty('tags'));
 	}
 
 	/**
@@ -424,7 +425,7 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function testFinder() {
+	public function testFinderTagged() {
 		$result = $this->Table->Tags->find('all')->where(['slug' => 'color'])->distinct()->toArray();
 		//FIXME: should not be duplicated
 		$this->assertCount(1, $result);
@@ -441,6 +442,53 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->find('tagged', ['tag' => 'color'])->toArray();
 
 		$expected = ['blue', 'red'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFinderUntagged() {
+		$record = [
+			'name' => 'TestMe',
+		];
+		$record = $this->Table->newEntity($record);
+		$this->Table->saveOrFail($record);
+
+		$record = $this->Table->get($record->id);
+		$this->assertSame(0, $record->tag_count);
+
+		$result = $this->Table->find('untagged')->toArray();
+		$expected = ['TestMe'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFinderUntaggedWithoutCounterField() {
+		$table = TableRegistry::get('Tags.CounterlessMuffins', ['table' => 'tags_counterless_muffins']);
+
+		$table->addBehavior('Tags.Tag', [
+			'taggedCounter' => false,
+		]);
+
+		$record = [
+			'name' => 'TestMe',
+		];
+		$record = $table->newEntity($record);
+		$table->saveOrFail($record);
+
+		$result = $table->find('untagged')->toArray();
+		$expected = ['blue', 'red', 'TestMe'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+
+		$record = $table->find()->where(['name' => 'red'])->firstOrFail();
+		$table->patchEntity($record, ['tag_list' => 'Foo, Bar']);
+		$table->saveOrFail($record);
+
+		$result = $table->find('untagged')->toArray();
+		$expected = ['blue', 'TestMe'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
 	}
 

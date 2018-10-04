@@ -41,8 +41,8 @@ class TagBehavior extends Behavior {
 		'taggedCounter' => [
 			'tag_count' => [
 				'conditions' => [
-				]
-			]
+				],
+			],
 		],
 		'implementedEvents' => [
 			'Model.beforeMarshal' => 'beforeMarshal',
@@ -52,10 +52,11 @@ class TagBehavior extends Behavior {
 			'normalizeTags' => 'normalizeTags',
 		],
 		'implementedFinders' => [
-			'tagged' => 'findByTag'
+			'tagged' => 'findByTag',
+			'untagged' => 'findUntagged',
 		],
 		'finderField' => 'tag',
-		'fkModelField' => 'fk_model'
+		'fkModelField' => 'fk_model',
 	];
 
 	/**
@@ -97,6 +98,7 @@ class TagBehavior extends Behavior {
 	 * @param \ArrayObject $data Data.
 	 * @param \ArrayObject $options Options.
 	 * @return void
+	 * @throws \RuntimeException
 	 */
 	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
 		$field = $this->getConfig('field', $this->getConfig('tagsAssoc.propertyName'));
@@ -251,7 +253,7 @@ class TagBehavior extends Behavior {
 			$counterCache->setConfig($tagsAlias, $config['tagsCounter']);
 		}
 
-		if ($config['taggedCounter'] === false) {
+		if (!$config['taggedCounter']) {
 			return;
 		}
 
@@ -265,8 +267,8 @@ class TagBehavior extends Behavior {
 			}
 		}
 		if (!$counterCache->getConfig($taggedAlias)) {
-			//$field = key($config['taggedCounter']);
-			$config['taggedCounter']['tag_count']['conditions'] = [
+			$field = key($config['taggedCounter']);
+			$config['taggedCounter'][$field]['conditions'] = [
 				$taggedTable->aliasField($this->getConfig('fkModelField')) => $this->_table->getAlias()
 			];
 			$counterCache->setConfig($this->_table->getAlias(), $config['taggedCounter']);
@@ -274,7 +276,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Finder method
+	 * Customer finder method.
 	 *
 	 * Usage:
 	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
@@ -282,6 +284,7 @@ class TagBehavior extends Behavior {
 	 * @param \Cake\ORM\Query $query
 	 * @param array $options
 	 * @return \Cake\ORM\Query
+	 * @throws \RuntimeException
 	 */
 	public function findByTag(Query $query, array $options) {
 		if (!isset($options[$this->getConfig('finderField')])) {
@@ -301,6 +304,41 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
+	 * Customer finder method.
+	 *
+	 * Usage:
+	 *   $query->find('untagged');
+	 *
+	 * Define a field if you have multiple counter cache fields set up:
+	 *   $query->find('untagged', ['counterField' => 'my_tag_count']);
+	 * Otherwise it will fallback to the first in the list.
+	 *
+	 * Set 'counterField' to false to do a live lookup in the pivot table.
+	 * It will automatically do the live lookup if you do not have any counter cache fields.
+	 *
+	 * @param \Cake\ORM\Query $query
+	 * @param array $options
+	 * @return \Cake\ORM\Query
+	 */
+	public function findUntagged(Query $query, array $options) {
+		$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->getConfig('taggedCounter')) : [];
+		$options += [
+			'counterField' => $taggedCounters ? reset($taggedCounters) : null,
+		];
+
+		if ($options['counterField']) {
+			return $query->where([$this->_table->getAlias() . '.' . $options['counterField'] => 0]);
+		}
+
+		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
+		$conditions = [$this->getConfig('fkModelField') => $this->_table->getAlias()];
+		$this->_table->hasOne('NoTags', ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions]);
+		$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
+
+		return $query;
+	}
+
+	/**
 	 * Normalizes tags.
 	 *
 	 * @param array|string $tags List of tags as an array or a delimited string (comma by default).
@@ -313,15 +351,15 @@ class TagBehavior extends Behavior {
 
 		$result = [];
 
-		$common = ['_joinData' => [$this->getConfig('fkModelField') => $this->_table->alias()]];
+		$common = ['_joinData' => [$this->getConfig('fkModelField') => $this->_table->getAlias()]];
 		$namespace = $this->getConfig('namespace');
 		if ($namespace) {
 			$common += compact('namespace');
 		}
 
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
-		$pk = $tagsTable->getPrimaryKey();
-		$df = $tagsTable->getDisplayField();
+		$primaryKey = $tagsTable->getPrimaryKey();
+		$displayField = $tagsTable->getDisplayField();
 
 		foreach ($tags as $tag) {
 			$tag = trim($tag);
@@ -335,7 +373,7 @@ class TagBehavior extends Behavior {
 				continue;
 			}
 			list($id, $label) = $this->_normalizeTag($tag);
-			$result[] = $common + compact(empty($id) ? $df : $pk) + [
+			$result[] = $common + compact(empty($id) ? $displayField : $primaryKey) + [
 				'slug' => $tagKey,
 			];
 		}
@@ -366,7 +404,7 @@ class TagBehavior extends Behavior {
 				$tagsTable->aliasField('slug') => $tag,
 			])
 			->select([
-				$tagsTable->aliasField($tagsTable->primaryKey())
+				$tagsTable->aliasField($tagsTable->getPrimaryKey())
 			])
 			->first();
 		if (!empty($result)) {

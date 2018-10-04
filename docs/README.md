@@ -47,7 +47,21 @@ echo $this->Form->control('tag_list', ['type' => 'select', 'multiple' => true, '
 ```
 
 If you need more customization, use the `tags` property directly. 
-When saving the tags, they need to be in the normalized form then on patching. 
+When saving the tags, they need to be in the normalized form then on patching.
+
+### Custom finders
+They can also be combined/stacked with other custom finders, of course.
+
+#### Tagged
+```php
+$taggedRecords = $this->Records->find('tagged', ['tag' => 'tag-slug']);
+```
+
+#### Untagged
+```php
+$untaggedRecords = $this->Records->find('untagged');
+```
+
 
 ### Tag Cloud
 You can easily find and display all tags as cloud.
@@ -110,18 +124,25 @@ $searchManager
 ```
 
 ##### Finding records without tags
-For this the `tag_count` field (and check for 0) is the quickest and easiest.
-If you didn't set up such a counter cache field, then you can also set up the callback query as:
-```php
-$this->hasOne('NoTags', ['className' => 'Tags.Tagged', 'foreignKey' => 'fk_id', 'conditions' => ['fk_model' => '...']]);
-$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
-```
-Your search form then might also have an additional value for this in the $tags array:
+You can use the untagged finder here inside the search callback.
+For this the `tag_count` field (and check for 0) is the quickest and easiest. It will otherwise
+automatically fallback to a live lookup in the pivot table (tagged).
+
+Your search form might now have an additional value for this in the `$tags` array:
 ```php
 $tags['-1'] = '- All without any tags -';
 echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
 ```
-Then you just have to switch the query to the one above in the case of `-1`.
+Then you just have to switch the query inside the callback in the case of `-1`:
+```php
+	'callback' => function (Query $query, array $args, $manager) {
+		if ($args['tag'] === '-1') {
+			$query->find('untagged');
+		} else {
+			$query->find('tagged', $args);
+		}
+	}
+```
 
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
@@ -134,3 +155,5 @@ The most important ones are:
 - `'strategy'`: `'string'`/`'array'`
 - `'delimiter'` - Separating the tags, e.g.: `','`
 - `'separator'`: For namespace prefix, e.g.: `':'`
+
+You can set them globally using Configure and the `Tags` config key.
