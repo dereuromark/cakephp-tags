@@ -109,6 +109,20 @@ $searchManager
 	]);
 ```
 
+##### Finding records without tags
+For this the `tag_count` field (and check for 0) is the quickest and easiest.
+If you didn't set up such a counter cache field, then you can also set up the callback query as:
+```php
+$this->hasOne('NoTags', ['className' => 'Tags.Tagged', 'foreignKey' => 'fk_id', 'conditions' => ['fk_model' => '...']]);
+$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
+```
+Your search form then might also have an additional value for this in the $tags array:
+```php
+$tags['-1'] = '- All without any tags -';
+echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
+```
+Then you just have to switch the query to the one above in the case of `-1`.
+
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
 Or you can dynamically set it on each `addBehavior()` method call as well as when loading the helper.
