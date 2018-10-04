@@ -16,7 +16,7 @@ class BunsFixture extends TestFixture {
 	public $fields = [
 		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
 		'name' => ['type' => 'string', 'length' => 255],
-		'tag_count' => ['type' => 'integer', 'null' => true, 'default' => 0],
+		'tag_count' => ['type' => 'integer', 'null' => false, 'default' => 0],
 		'_constraints' => [
 			'primary' => ['type' => 'primary', 'columns' => ['id']],
 		],
