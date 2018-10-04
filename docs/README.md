@@ -73,11 +73,19 @@ By default the shuffle is enabled, you can disable using `'shuffle' => false` co
 
 ### Advanced features
 By default the tags are counted (globally).
-You can to add the column *tag_count* to the taggable table to also cache this counter for the specific types.
+You can add the column `counter` to the taggable table to also cache this counter for the specific types.
 
 #### Validation
 Don't forget to set up some basic validation on your tagged model.
 You can re-use the same validation if you store it in a more central place.
+
+#### Mass assignment
+If you happen to set tags in a non-form context, you can just patch the entity manually:
+```php
+// $tags could be "Foo, Bar"
+$this->Posts->patchEntity($post, ['tag_list' => $tags]);
+$this->Posts->saveOrFail($post);
+```
 
 #### Search/Filter
 
