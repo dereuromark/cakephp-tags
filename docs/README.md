@@ -175,5 +175,15 @@ And also some in your entity:
  * @property \Tags\Model\Entity\Tag[] $tags
 ```
 
+For helper usage in the templates this will be added to AppView:
+```
+@property \Tags\View\Helper\TagHelper $Tag
+```
+
 These will help you, your IDE and tooling like PHPStan to understand the relations and how to use them.
 The IdeHelper will also give you autocomplete on those for all loadModel() calls as well as autocomplete on the custom finders.
+
+The only manual annotation you will have to add, is the `tag_list` for the entity:
+```
+@property string $tag_list !
+```
