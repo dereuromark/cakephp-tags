@@ -177,7 +177,7 @@ And also some in your entity:
 
 For helper usage in the templates this will be added to AppView:
 ```
-@property \Tags\View\Helper\TagHelper $Tag
+* @property \Tags\View\Helper\TagHelper $Tag
 ```
 
 These will help you, your IDE and tooling like PHPStan to understand the relations and how to use them.
@@ -185,5 +185,5 @@ The IdeHelper will also give you autocomplete on those for all loadModel() calls
 
 The only manual annotation you will have to add, is the `tag_list` for the entity:
 ```
-@property string $tag_list !
+* @property string $tag_list !
 ```
