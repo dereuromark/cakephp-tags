@@ -37,6 +37,8 @@ bin/cake migrations migrate -p Tags
 ## Demo
 See Sandbox @ https://sandbox.dereuromark.de/sandbox/tags
 
+Tutorial and Blog Post: https://www.dereuromark.de/2018/07/12/tutorial-cakephp-tagging/
+
 ## Documentation
 
 For documentation, as well as tutorials, see the [docs](docs/) directory of this repository.
