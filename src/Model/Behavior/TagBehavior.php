@@ -9,7 +9,6 @@ use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
-use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use RuntimeException;
 
