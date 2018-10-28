@@ -10,6 +10,7 @@ use Cake\ORM\Entity;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use RuntimeException;
 
 class TagBehavior extends Behavior {
@@ -388,7 +389,7 @@ class TagBehavior extends Behavior {
 	 * @return string
 	 */
 	protected function _getTagKey($tag) {
-		return strtolower(Inflector::slug($tag));
+		return strtolower(Text::slug($tag));
 	}
 
 	/**

@@ -44,7 +44,7 @@ class TagsTable extends Table {
 				return;
 			}
 
-			throw new RuntimeException('Auto-slug behaviors not found');
+			throw new RuntimeException('Auto-slug behavior not found, plugin not loaded.');
 		}
 
 		$this->addBehavior($slugger);

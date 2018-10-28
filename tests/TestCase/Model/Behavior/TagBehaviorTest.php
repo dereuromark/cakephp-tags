@@ -65,7 +65,7 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function testFindHydrateFalse() {
-		$entity = $this->Table->find()->contain('Tags')->hydrate(false)->first();
+		$entity = $this->Table->find()->contain('Tags')->enableHydration(false)->first();
 		$this->assertCount(2, $entity['tags']);
 		$this->assertSame('Color, Dark Color', $entity['tag_list']);
 	}
@@ -145,10 +145,10 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function testDefaultInitialize() {
-		$belongsToMany = $this->Table->association('Tags');
+		$belongsToMany = $this->Table->getAssociation('Tags');
 		$this->assertInstanceOf(BelongsToMany::class, $belongsToMany);
 
-		$hasMany = $this->Table->association('Tagged');
+		$hasMany = $this->Table->getAssociation('Tagged');
 		$this->AssertInstanceOf(HasMany::class, $hasMany);
 	}
 
@@ -162,10 +162,10 @@ class TagBehaviorTest extends TestCase {
 			'taggedAlias' => 'Labelled',
 		]);
 
-		$belongsToMany = $this->Table->association('Labels');
+		$belongsToMany = $this->Table->getAssociation('Labels');
 		$this->assertInstanceOf(BelongsToMany::class, $belongsToMany);
 
-		$hasMany = $this->Table->association('Labelled');
+		$hasMany = $this->Table->getAssociation('Labelled');
 		$this->assertInstanceOf(HasMany::class, $hasMany);
 	}
 

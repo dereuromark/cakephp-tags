@@ -79,14 +79,11 @@ class TaggedTable extends Table {
 			'group' => $groupBy
 		];
 
-		$calculate = true;
-		if ($calculate) {
-			$query->formatResults(function (CollectionInterface $results) {
-				$results = static::calculateWeights($results->toArray());
+		$query->formatResults(function (CollectionInterface $results) {
+			$results = static::calculateWeights($results->toArray());
 
-				return $results;
-			});
-		}
+			return $results;
+		});
 
 		return $query->find('all', $options);
 	}
@@ -139,7 +136,7 @@ class TaggedTable extends Table {
 		}
 
 		if (!isset($this->order)) {
-			$contain = $query->contain();
+			$contain = $query->getContain();
 			if (!isset($contain[$this->Tags->getAlias()])) {
 				return $query;
 			}
