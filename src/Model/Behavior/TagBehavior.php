@@ -424,6 +424,13 @@ class TagBehavior extends Behavior {
 		$namespace = null;
 		$label = $tag;
 		$separator = $this->getConfig('separator');
+		if ($separator === null) {
+			return [
+				null,
+				$tag,
+			];
+		}
+
 		if (strpos($tag, $separator) !== false) {
 			list($namespace, $label) = explode($separator, $tag);
 		}
