@@ -14,12 +14,12 @@ class TaggedFixture extends TestFixture {
 	 * @var array
 	 */
 	public $fields = [
-		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
+		'id' => ['type' => 'integer', 'length' => 11, 'autoIncrement' => true],
 		'tag_id' => ['type' => 'integer', 'null' => false],
 		'fk_id' => ['type' => 'integer', 'null' => false],
 		'fk_model' => ['type' => 'string', 'limit' => 255, 'null' => false],
-		'created' => ['type' => 'datetime', 'null' => true],
-		'modified' => ['type' => 'datetime', 'null' => true],
+		'created' => ['type' => 'datetime', 'null' => false],
+		'modified' => ['type' => 'datetime', 'null' => false],
 		'_constraints' => [
 			'primary' => ['type' => 'primary', 'columns' => ['id']],
 			'tag_id' => ['type' => 'unique', 'columns' => ['tag_id', 'fk_id', 'fk_model'], 'length' => []],
