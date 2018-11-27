@@ -13,10 +13,10 @@ class TagBehaviorTest extends TestCase {
 	 * @var array
 	 */
 	public $fixtures = [
+		'plugin.Tags.Tags',
+		'plugin.Tags.Tagged',
 		'plugin.Tags.Buns',
 		'plugin.Tags.Muffins',
-		'plugin.Tags.Tagged',
-		'plugin.Tags.Tags',
 		'plugin.Tags.CounterlessMuffins',
 	];
 

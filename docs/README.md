@@ -158,6 +158,13 @@ The most important ones are:
 
 You can set them globally using Configure and the `Tags` config key.
 
+## UUIDs
+By default, the plugin works with AIIDs (auto-incremental IDs). This usually suffices, as the tags are usually not exposes via ID, but via slug.
+As such the internal ID is usually not leaking to the outside.
+If you, for some reason, still need to use UUIDs, please copy over the schema to your project's `/config/Migrations/` folder and adjust the primary key in the migration files to `'type' => 'uuid', 'length' => 36, 'null' => false`.
+
+Make sure you didn't add any validation like "numeric" here, only "scalar" ideally.
+See the test cases (and fixtures for UUIDs) for details.
 
 ## Tips
 
