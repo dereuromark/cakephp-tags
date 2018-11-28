@@ -35,8 +35,6 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function setUp() {
-		Cache::clearAll();
-
 		parent::setUp();
 
 		$table = TableRegistry::get('Tags.Muffins', ['table' => 'tags_muffins']);
