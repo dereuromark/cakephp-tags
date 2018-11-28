@@ -158,6 +158,10 @@ The most important ones are:
 
 You can set them globally using Configure and the `Tags` config key.
 
+If you need also to pass options to the slug behavior, use an array config for it:
+```php
+'slugBehavior' => ['Tools.Slugged' => ['mode' => [Text::class, 'slug'], ...],
+```
 
 ## Tips
 

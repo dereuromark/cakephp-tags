@@ -30,6 +30,7 @@ class TagsTable extends Table {
 		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
 
+		/** @var array|bool|null $slugger */
 		$slugger = Configure::read('Tags.slugBehavior');
 		if (!$slugger) {
 			return;
@@ -47,7 +48,12 @@ class TagsTable extends Table {
 			throw new RuntimeException('Auto-slug behavior not found, plugin not loaded.');
 		}
 
-		$this->addBehavior($slugger);
+		$config = [];
+		if (!is_string($slugger)) {
+			$config = current($slugger);
+			$slugger = key($slugger);
+		}
+		$this->addBehavior($slugger, $config);
 	}
 
 }
