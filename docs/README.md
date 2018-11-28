@@ -113,7 +113,7 @@ You can add the column `counter` to the taggable table to also cache this counte
 Don't forget to set up some basic validation on your tagged model.
 You can re-use the same validation if you store it in a more central place.
 
-#### Mass assignment
+#### Patching
 If you happen to set tags in a non-form context, you can just patch the entity manually:
 ```php
 // $tags could be "Foo, Bar"
@@ -138,6 +138,8 @@ object(App\Model\Entity\Post) {
 	]
 }
 ```
+
+After patching, it should contain the full list of existing/modified (`'new' => false`) and to be added entities (`'new' => true`) - and should not contain any to be deleted ones.
 
 #### Search/Filter
 
@@ -211,6 +213,7 @@ See the test cases (and fixtures for UUIDs) for details.
 
 ## Tips
 
+### IDE support/help
 For higher productivity use the [IdeHelper](https://github.com/dereuromark/cakephp-ide-helper/) plugin to auto-add the annotations for your new relations.
 
 This will most likely add the following annotations to your table class:
@@ -237,3 +240,17 @@ The only manual annotation you will have to add, is the `tag_list` for the entit
 ```
 * @property string $tag_list !
 ```
+
+
+### Make sure modified fields are `$_accessible`
+You do not necessarily need to have:
+```php
+protected $_accessible = [
+	'*' => true,
+	'id' => false,
+];
+```
+The TagsBehavior will usually automatically make the needed `tags` field accessible for patching.
+If in doubt or if patching doesn't work as expected, double check if those fields have been properly made accessible.
+
+Only if you need to store more data than the default fields, you might have to additionally whitelist those, as well.
