@@ -35,8 +35,7 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function setUp() {
-		Cache::delete('_cake_model_');
-		Cache::delete('_cake_core_');
+		Cache::clearAll();
 
 		parent::setUp();
 
