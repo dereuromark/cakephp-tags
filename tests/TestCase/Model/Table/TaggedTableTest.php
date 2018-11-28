@@ -4,6 +4,7 @@ namespace Tags\Test\TestCase\Model\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Tags\Model\Table\TaggedTable;
 
 class TaggedTableTest extends TestCase {
 
@@ -120,6 +121,30 @@ class TaggedTableTest extends TestCase {
 		$result = $this->Tagged->find('cloud')->toArray();
 
 		$this->assertSame([20.0, 10.0], Hash::extract($result, '{n}.weight'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testCalculateWeights() {
+		$entities = $this->Tagged->find()->all()->toArray();
+		foreach ($entities as $key => $entity) {
+			$entities[$key]->counter = mt_rand(1, 10);
+		}
+
+		$result = TaggedTable::calculateWeights($entities);
+
+		foreach ($result as $entity) {
+			$this->assertNotEmpty($entity->weight);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testCalculateWeightsEmpty() {
+		$result = TaggedTable::calculateWeights([]);
+		$this->assertSame([], $result);
 	}
 
 }

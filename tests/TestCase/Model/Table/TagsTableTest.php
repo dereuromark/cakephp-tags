@@ -1,8 +1,10 @@
 <?php
 namespace Tags\Test\TestCase\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Tools\Utility\Text;
 
 class TagsTableTest extends TestCase {
 
@@ -13,7 +15,6 @@ class TagsTableTest extends TestCase {
 	 */
 	public $fixtures = [
 		'plugin.tags.tags',
-		'plugin.tags.tagged',
 	];
 
 	/**
@@ -43,19 +44,36 @@ class TagsTableTest extends TestCase {
 	}
 
 	/**
-	 * Test initialize method
-	 *
 	 * @return void
 	 */
-	public function test() {
+	public function testFind() {
 		$result = $this->Tags->find()
 			->all()
 			->count();
 
 		$this->assertSame(2, $result);
 
+		/** @var \Tags\Model\Entity\Tag $result */
 		$result = $this->Tags->find()->where(['slug' => 'color'])->first();
 		$this->assertSame('Color', $result->label);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testCustomSluggerWithConfig() {
+		$slugBehavior = ['Tools.Slugged' => ['mode' => [Text::class, 'slug']]];
+		Configure::write('Tags.slugBehavior', $slugBehavior);
+		TableRegistry::clear();
+
+		$this->Tags = TableRegistry::get('Tags.Tags');
+
+		$tag = $this->Tags->newEntity([
+			'label' => 'Föö Bää',
+		]);
+
+		$this->Tags->saveOrFail($tag);
+		$this->assertSame('Foo-Baa', $tag->slug);
 	}
 
 }

@@ -158,6 +158,10 @@ The most important ones are:
 
 You can set them globally using Configure and the `Tags` config key.
 
+If you need also to pass options to the slug behavior, use an array config for it:
+```php
+'slugBehavior' => ['Tools.Slugged' => ['mode' => [Text::class, 'slug'], ...],
+```
 ## UUIDs
 By default, the plugin works with AIIDs (auto-incremental IDs). This usually suffices, as the tags are usually not exposes via ID, but via slug.
 As such the internal ID is usually not leaking to the outside.
