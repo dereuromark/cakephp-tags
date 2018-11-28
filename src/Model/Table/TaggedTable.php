@@ -100,20 +100,23 @@ class TaggedTable extends Table {
 			'maxSize' => 20,
 		];
 		$weights = Hash::extract($entities, '{n}.counter');
-		$maxWeight = max($weights);
-		$minWeight = min($weights);
-		$spread = $maxWeight - $minWeight;
-		if ($spread == 0) {
-			$spread = 1;
+		if ($weights) {
+			$maxWeight = max($weights);
+			$minWeight = min($weights);
+			$spread = $maxWeight - $minWeight;
+			if ($spread === 0) {
+				$spread = 1;
+			}
+			foreach ($entities as $key => $result) {
+				$size = $config['minSize'] + (
+						($result['counter'] - $minWeight) * (
+							($config['maxSize'] - $config['minSize']) / ($spread)
+						)
+					);
+				$entities[$key]['weight'] = ceil($size);
+			}
 		}
-		foreach ($entities as $key => $result) {
-			$size = $config['minSize'] + (
-					($result['counter'] - $minWeight) * (
-						($config['maxSize'] - $config['minSize']) / ($spread)
-					)
-				);
-			$entities[$key]['weight'] = ceil($size);
-		}
+
 		return $entities;
 	}
 
