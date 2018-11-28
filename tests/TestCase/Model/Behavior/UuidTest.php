@@ -1,6 +1,7 @@
 <?php
 namespace Tags\Test\TestCase\Model\Behavior;
 
+use Cake\Cache\Cache;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
@@ -20,6 +21,9 @@ class UuidTest extends TestCase {
 	 * @return void
 	 */
 	public function setUp() {
+		Cache::delete('_cake_model_');
+		Cache::delete('_cake_core_');
+
 		parent::setUp();
 	}
 
@@ -35,19 +39,10 @@ class UuidTest extends TestCase {
 	 * @return void
 	 */
 	public function testUuids() {
-		$table = TableRegistry::get('Posts', ['className' => 'Tags.UuidPosts', 'table' => 'uuid_posts']);
-
-		$tagsTable = TableRegistry::get('Tags', ['className' => 'Tags.UuidTags', 'table' => 'uuid_tags']);
-		$taggedTable = TableRegistry::get('Tagged', ['className' => 'Tags.UuidTagged', 'table' => 'uuid_tagged']);
+		$table = TableRegistry::get('Posts', ['table' => 'tags_posts']);
 
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => false,
-			'tagsAssoc' => [
-				'className' => 'Tags.UuidTags',
-			],
-			'taggedAssoc' => [
-				'className' => 'Tags.UuidTagged',
-			],
 		]);
 
 		$record = [
@@ -61,18 +56,19 @@ class UuidTest extends TestCase {
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
 
 		$record = $table->find()->where(['name' => 'TestMe'])->firstOrFail();
-		$table->patchEntity($record, ['tag_list' => 'Foo, Bar']);
+		$table->patchEntity($record, ['tag_list' => 'Foo, Bar'], ['fields' => ['tag_list', 'tags']]);
 		$table->saveOrFail($record);
 
 		$savedRecord = $table->get($record->id, ['contain' => ['Tags']]);
-		debug($savedRecord);
 
-		$tagged = $taggedTable->find()->all()->toArray();
-		debug($tagged);
+		$tagged = $table->Tagged->find()->all()->toArray();
+		$this->assertCount(2, $tagged);
 
-		$tags = $tagsTable->find()->all()->toArray();
-		debug($tags);
-		$this->assertNotEmpty($tags);
+		$this->assertCount(2, $savedRecord->tags);
+
+		$tags = $table->Tags->find()->orderAsc('slug')->all()->toArray();
+		$expected = ['Bar', 'Foo'];
+		$this->assertSame($expected, Hash::extract($tags, '{n}.slug'));
 	}
 
 }

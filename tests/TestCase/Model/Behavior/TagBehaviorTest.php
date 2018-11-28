@@ -1,6 +1,7 @@
 <?php
 namespace Tags\Test\TestCase\Model\Behavior;
 
+use Cake\Cache\Cache;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\TableRegistry;
@@ -34,6 +35,9 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function setUp() {
+		Cache::delete('_cake_model_');
+		Cache::delete('_cake_core_');
+
 		parent::setUp();
 
 		$table = TableRegistry::get('Tags.Muffins', ['table' => 'tags_muffins']);
