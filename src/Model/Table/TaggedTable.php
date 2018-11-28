@@ -100,11 +100,11 @@ class TaggedTable extends Table {
 			'maxSize' => 20,
 		];
 		$weights = Hash::extract($entities, '{n}.counter');
-		if (sizeof($weights)) {
+		if ($weights) {
 			$maxWeight = max($weights);
 			$minWeight = min($weights);
 			$spread = $maxWeight - $minWeight;
-			if ($spread == 0) {
+			if ($spread === 0) {
 				$spread = 1;
 			}
 			foreach ($entities as $key => $result) {
@@ -116,6 +116,7 @@ class TaggedTable extends Table {
 				$entities[$key]['weight'] = ceil($size);
 			}
 		}
+
 		return $entities;
 	}
 
