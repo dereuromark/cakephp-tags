@@ -101,6 +101,24 @@ $this->Posts->patchEntity($post, ['tag_list' => $tags]);
 $this->Posts->saveOrFail($post);
 ```
 
+Make sure, that - when updating instead of creating tags - you contained the existing ones in the entity.
+It should look somewhat like this before patching:
+```
+object(App\Model\Entity\Post) {
+	...
+	'tags' => [
+		object(Tags\Model\Entity\Tag) {
+			'id' => 1,
+			...
+			'_joinData' => object(Tags\Model\Entity\Tagged) {
+				...
+			}
+		},
+		...
+	]
+}
+```
+
 #### Search/Filter
 
 You can easily combine the `tagged` custom finder with e.g. [Search](https://github.com/FriendsOfCake/search) plugin.
@@ -162,7 +180,8 @@ If you need also to pass options to the slug behavior, use an array config for i
 ```php
 'slugBehavior' => ['Tools.Slugged' => ['mode' => [Text::class, 'slug'], ...],
 ```
-## UUIDs
+
+### UUIDs
 By default, the plugin works with AIIDs (auto-incremental IDs). This usually suffices, as the tags are usually not exposes via ID, but via slug.
 As such the internal ID is usually not leaking to the outside.
 If you, for some reason, still need to use UUIDs, please copy over the schema to your project's `/config/Migrations/` folder and adjust the primary key in the migration files to `'type' => 'uuid', 'length' => 36, 'null' => false`.
