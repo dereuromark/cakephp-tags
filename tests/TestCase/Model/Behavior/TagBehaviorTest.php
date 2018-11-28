@@ -1,7 +1,6 @@
 <?php
 namespace Tags\Test\TestCase\Model\Behavior;
 
-use Cake\Cache\Cache;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\TableRegistry;

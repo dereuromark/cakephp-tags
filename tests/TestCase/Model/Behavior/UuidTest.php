@@ -32,6 +32,8 @@ class UuidTest extends TestCase {
 	public function tearDown() {
 		parent::tearDown();
 		TableRegistry::clear();
+
+		Cache::clearAll();
 	}
 
 	/**
