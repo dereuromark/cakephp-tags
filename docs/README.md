@@ -30,6 +30,26 @@ Your edit action needs to contain the Tags relation to display existing tags int
 // Inside get() call in the action
 	'contain' => ['Tags'],
 ```
+This is also important for the patching part to avoid the ORM trying to re-add existing ones.
+
+So a controller "edit" action usually still looks like always:
+```php
+	$article = $this->Article->get($id, [
+		'contain' => ['Tags'],
+	]);
+	if ($this->request->is(['patch', 'post', 'put'])) {
+		$article = $this->Articles->patchEntity($article, $this->request->getData());
+		if ($this->Articles->save($article)) {
+			$this->Flash->success(__('Post and its tags has been saved.'));
+
+			return $this->redirect(['action' => 'view', $id]);
+		}
+		$this->Flash->error(__('The post could not be saved. Please, try again.'));
+	}
+
+	$tags = $this->Articles->Tags->find('list', ['keyField' => 'slug']);
+	$this->set(compact('article', 'tags'));
+```
 
 Enjoy tagging!
 
