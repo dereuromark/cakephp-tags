@@ -31,7 +31,7 @@ class TagsTable extends Table {
 		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
 
-		/** @var array|bool|null $slugger */
+		/** @var array|bool|string|null $slugger */
 		$slugger = Configure::read('Tags.slugBehavior');
 		if (!$slugger) {
 			return;
