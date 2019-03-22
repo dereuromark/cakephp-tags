@@ -19,8 +19,9 @@ class Tagged extends Entity {
 	 *
 	 * @var array
 	 */
-	public $accessible = [
-		'*' => false,
+	protected $_accessible = [
+		'id' => false,
+		'*' => true,
 	];
 
 }

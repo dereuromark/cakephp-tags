@@ -19,9 +19,11 @@ class Tag extends Entity {
 	 *
 	 * @var array
 	 */
-	public $accessible = [
-		'*' => false,
-		'label' => true,
+	protected $_accessible = [
+		'id' => false,
+		'slug' => false,
+		'counter' => false,
+		'*' => true,
 	];
 
 }
