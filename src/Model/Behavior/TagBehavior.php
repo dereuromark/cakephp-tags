@@ -101,14 +101,15 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException
 	 */
 	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
-		$field = $this->getConfig('field', $this->getConfig('tagsAssoc.propertyName'));
-		$options['accessibleFields']['tags'] = true;
+		$field = $this->getConfig('field');
+		$property = $this->getConfig('tagsAssoc.propertyName');
+		$options['accessibleFields'][$property] = true;
 
 		if (isset($data[$field])) {
-			$data['tags'] = $this->normalizeTags($data[$field]);
-		} elseif ($field !== 'tags') {
-			if (isset($data['tags']) && is_string($data['tags'])) {
-				throw new RuntimeException('Your `tags` property is malformed (expected array instead of string). You configured to save list of tags in `' . $field . '` field.');
+			$data[$property] = $this->normalizeTags($data[$field]);
+		} elseif ($field !== $property) {
+			if (isset($data[$property]) && !is_array($data[$property])) {
+				throw new RuntimeException('Your `' . $property . '` property is malformed (expected array instead of string). You configured to save list of tags in `' . $field . '` field.');
 			}
 		}
 
@@ -127,13 +128,14 @@ class TagBehavior extends Behavior {
 		$query->formatResults(function ($results) {
 			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {
-				$field = $this->_config['field'];
+				$field = $this->getConfig('field');
+				$property = $this->getConfig('tagsAssoc.propertyName');
 
-				if (!$row instanceOf Entity && !isset($row['tags'])) {
+				if (!$row instanceOf Entity && !isset($row[$property])) {
 					return $row;
 				}
 
-				$row[$field] = $this->prepareTagsForOutput((array)$row['tags']);
+				$row[$field] = $this->prepareTagsForOutput((array)$row[$property]);
 				if ($row instanceOf Entity) {
 					$row->setDirty($field, false);
 				}
