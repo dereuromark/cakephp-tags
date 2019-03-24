@@ -57,6 +57,7 @@ class TagBehavior extends Behavior {
 		],
 		'finderField' => 'tag',
 		'fkModelField' => 'fk_model',
+		'fkModelAlias' => null,
 	];
 
 	/**
@@ -187,7 +188,8 @@ class TagBehavior extends Behavior {
 		$table = $this->_table;
 		$tableAlias = $this->_table->getAlias();
 
-		$assocConditions = [$taggedAlias . '.' . $this->getConfig('fkModelField') => $table->getAlias()];
+		$modelAlias = $this->getConfig('fkModelAlias') ?: $tableAlias;
+		$assocConditions = [$taggedAlias . '.' . $this->getConfig('fkModelField') => $modelAlias];
 
 		if (!$table->hasAssociation($taggedAlias)) {
 			$table->hasMany($taggedAlias, $taggedAssoc + [
@@ -199,7 +201,7 @@ class TagBehavior extends Behavior {
 		if (!$table->hasAssociation($tagsAlias)) {
 			$table->belongsToMany($tagsAlias, $tagsAssoc + [
 				'through' => $table->{$taggedAlias}->getTarget(),
-				'conditions' => $assocConditions
+				'conditions' => $assocConditions,
 			]);
 		}
 
@@ -353,7 +355,9 @@ class TagBehavior extends Behavior {
 
 		$result = [];
 
-		$common = ['_joinData' => [$this->getConfig('fkModelField') => $this->_table->getAlias()]];
+		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
+
+		$common = ['_joinData' => [$this->getConfig('fkModelField') => $modelAlias]];
 		$namespace = $this->getConfig('namespace');
 		if ($namespace) {
 			$common += compact('namespace');

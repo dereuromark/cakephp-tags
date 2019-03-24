@@ -4,6 +4,7 @@ namespace Tags\Test\TestCase\Model\Table;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Cake\Utility\Hash;
 use Tools\Utility\Text;
 
 class TagsTableTest extends TestCase {
@@ -14,7 +15,9 @@ class TagsTableTest extends TestCase {
 	 * @var array
 	 */
 	public $fixtures = [
-		'plugin.tags.tags',
+		'plugin.Tags.Tags',
+		'plugin.Tags.Tagged',
+		'plugin.Tags.MultiTagsRecords',
 	];
 
 	/**
@@ -74,6 +77,33 @@ class TagsTableTest extends TestCase {
 
 		$this->Tags->saveOrFail($tag);
 		$this->assertSame('Foo-Baa', $tag->slug);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMultipleTagsPerModel() {
+		TableRegistry::clear();
+
+		$table = TableRegistry::get('MultiTagsRecords');
+
+		$entity = $table->newEntity([
+			'name' => 'Föö Bää',
+			'one_list' => 'x,y',
+			'two_list' => '12, 66',
+		]);
+		$one = Hash::extract($entity->one, '{n}.label');
+		$this->assertSame(['x', 'y'], $one);
+
+		$two = Hash::extract($entity->two, '{n}.label');
+		$this->assertSame(['12', '66'], $two);
+
+		$table->saveOrFail($entity);
+
+		$entity = $table->get($entity->id, ['contain' => ['TagsOne', 'TagsTwo']]);
+
+		$this->assertSame('x, y', $entity->one_list);
+		$this->assertSame('12, 66', $entity->two_list);
 	}
 
 }

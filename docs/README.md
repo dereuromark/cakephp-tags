@@ -28,27 +28,27 @@ echo $this->Tag->control();
 Your edit action needs to contain the Tags relation to display existing tags into the form:
 ```php
 // Inside get() call in the action
-	'contain' => ['Tags'],
+    'contain' => ['Tags'],
 ```
 This is also important for the patching part to avoid the ORM trying to re-add existing ones.
 
 So a controller "edit" action usually still looks like always:
 ```php
-	$article = $this->Article->get($id, [
-		'contain' => ['Tags'],
-	]);
-	if ($this->request->is(['patch', 'post', 'put'])) {
-		$article = $this->Articles->patchEntity($article, $this->request->getData());
-		if ($this->Articles->save($article)) {
-			$this->Flash->success(__('Post and its tags has been saved.'));
+    $article = $this->Article->get($id, [
+        'contain' => ['Tags'],
+    ]);
+    if ($this->request->is(['patch', 'post', 'put'])) {
+        $article = $this->Articles->patchEntity($article, $this->request->getData());
+        if ($this->Articles->save($article)) {
+            $this->Flash->success(__('Post and its tags has been saved.'));
 
-			return $this->redirect(['action' => 'view', $id]);
-		}
-		$this->Flash->error(__('The post could not be saved. Please, try again.'));
-	}
+            return $this->redirect(['action' => 'view', $id]);
+        }
+        $this->Flash->error(__('The post could not be saved. Please, try again.'));
+    }
 
-	$tags = $this->Articles->Tags->find('list', ['keyField' => 'slug']);
-	$this->set(compact('article', 'tags'));
+    $tags = $this->Articles->Tags->find('list', ['keyField' => 'slug']);
+    $this->set(compact('article', 'tags'));
 ```
 
 Enjoy tagging!
@@ -125,17 +125,17 @@ Make sure, that - when updating instead of creating tags - you contained the exi
 It should look somewhat like this before patching:
 ```
 object(App\Model\Entity\Post) {
-	...
-	'tags' => [
-		object(Tags\Model\Entity\Tag) {
-			'id' => 1,
-			...
-			'_joinData' => object(Tags\Model\Entity\Tagged) {
-				...
-			}
-		},
-		...
-	]
+    ...
+    'tags' => [
+        object(Tags\Model\Entity\Tag) {
+            'id' => 1,
+            ...
+            '_joinData' => object(Tags\Model\Entity\Tagged) {
+                ...
+            }
+        },
+        ...
+    ]
 }
 ```
 
@@ -154,13 +154,13 @@ echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
 In your table's searchManager() configuration you will need a small callback config:
 ```php
 $searchManager
-	...
-	->callback('tag', [
-		'callback' => function (Query $query, array $args, $manager) {
-			// Here you would have to remap $args if key isn't the expected "tag"
-			$query->find('tagged', $args);
-		}
-	]);
+    ...
+    ->callback('tag', [
+        'callback' => function (Query $query, array $args, $manager) {
+            // Here you would have to remap $args if key isn't the expected "tag"
+            $query->find('tagged', $args);
+        }
+    ]);
 ```
 
 ##### Finding records without tags
@@ -175,14 +175,58 @@ echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
 ```
 Then you just have to switch the query inside the callback in the case of `-1`:
 ```php
-	'callback' => function (Query $query, array $args, $manager) {
-		if ($args['tag'] === '-1') {
-			$query->find('untagged');
-		} else {
-			$query->find('tagged', $args);
-		}
-	}
+    'callback' => function (Query $query, array $args, $manager) {
+        if ($args['tag'] === '-1') {
+            $query->find('untagged');
+        } else {
+            $query->find('tagged', $args);
+        }
+    }
 ```
+
+#### Multiple tags per model
+To have a behavior attached with different "tags" multiple times, a few config keys have to be overwritten or set.
+
+Let's imagine MultiTagsRecords table and `one`, `two` tag collections.
+```php
+    $this->addBehavior('TagsOne', [
+        'className' => 'Tags.Tag',
+        'fkModelAlias' => 'MultiTagsRecordsOne',
+        'field' => 'one_list',
+        'tagsAlias' => 'TagsOne',
+        'taggedAlias' => 'TaggedOne',
+        'taggedCounter' => false,
+        'tagsAssoc' => [
+            'propertyName' => 'one',
+        ],
+        'implementedFinders' => [
+            ...
+        ],
+        'implementedMethods' => [
+            ...
+        ],
+    ]);
+    $this->addBehavior('TagsTwo', [
+        'className' => 'Tags.Tag',
+        'fkModelAlias' => 'MultiTagsRecordsTwo',
+        'field' => 'two_list',
+        'tagsAlias' => 'TagsTwo',
+        'taggedAlias' => 'TaggedTwo',
+        'taggedCounter' => false,
+        'tagsAssoc' => [
+            'propertyName' => 'two',
+        ],
+        'implementedFinders' => [
+            ...
+        ],
+        'implementedMethods' => [
+            ...
+        ],
+    ]);
+```
+
+They important config key here is `fkModelAlias` which has to be unique per tag collection and therefore per loaded behavior instance.
+
 
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
@@ -246,8 +290,8 @@ The only manual annotation you will have to add, is the `tag_list` for the entit
 You do not necessarily need to have:
 ```php
 protected $_accessible = [
-	'*' => true,
-	'id' => false,
+    '*' => true,
+    'id' => false,
 ];
 ```
 The TagsBehavior will usually automatically make the needed `tags` field accessible for patching.
