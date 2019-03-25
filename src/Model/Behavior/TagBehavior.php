@@ -284,7 +284,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param string|array
+	 * @param string|array $config
 	 * @return array
 	 */
 	protected function _getTaggedCounterConfig($config) {
