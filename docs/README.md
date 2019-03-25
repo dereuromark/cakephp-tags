@@ -255,6 +255,29 @@ If you, for some reason, still need to use UUIDs, please copy over the schema to
 Make sure you didn't add any validation like "numeric" here, only "scalar" ideally.
 See the test cases (and fixtures for UUIDs) for details.
 
+### Entity Routing
+If you create your own APP Tags controller, you can easily have EntityRouting set up for it:
+```php
+$routes->connect('/tag/:slug', ['controller' => 'Tags', 'action' => 'view'], ['routeClass' => 'EntityRoute']);
+```
+In your templates you can then build URLs with the entities passed along directly:
+```php
+echo $this->Html->link($tag->label,
+    [
+        'controller' => 'Tags',
+        'action' => 'view',
+        '_entity' => $tag
+    ]
+);
+```
+
+Defining a route name you could even just use the short form `'_name' => 'my-tag-alias', '_entity' => $tag` for the links:
+```php
+$routes->get('/tag/:slug', ['controller' => 'Tags', 'action' => 'view'], 'my-tag-alias');
+```
+
+For details see [Core docs](https://book.cakephp.org/3.0/en/development/routing.html#entity-routing).
+
 ## Tips
 
 ### IDE support/help
