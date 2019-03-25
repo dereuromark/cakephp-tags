@@ -25,11 +25,13 @@ class MultiTagsRecordsTable extends Table {
 			'field' => 'one_list',
 			'tagsAlias' => 'TagsOne',
 			'taggedAlias' => 'TaggedOne',
-			'taggedCounter' => false,
+			'taggedCounter' => 'one_count',
 			'tagsAssoc' => [
 				'propertyName' => 'one',
 			],
 			'implementedFinders' => [
+				'taggedOne' => 'findByTag',
+				'untaggedOne' => 'findUntagged',
 			],
 			'implementedMethods' => [
 			],
@@ -40,11 +42,13 @@ class MultiTagsRecordsTable extends Table {
 			'field' => 'two_list',
 			'tagsAlias' => 'TagsTwo',
 			'taggedAlias' => 'TaggedTwo',
-			'taggedCounter' => false,
+			'taggedCounter' => 'two_count',
 			'tagsAssoc' => [
 				'propertyName' => 'two',
 			],
 			'implementedFinders' => [
+				'taggedTwo' => 'findByTag',
+				'untaggedTwo' => 'findUntagged',
 			],
 			'implementedMethods' => [
 			],

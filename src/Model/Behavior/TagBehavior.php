@@ -251,6 +251,7 @@ class TagBehavior extends Behavior {
 			$taggedTable->addBehavior('CounterCache');
 		}
 
+		/** @var \Cake\ORM\Behavior\CounterCacheBehavior $counterCache */
 		$counterCache = $taggedTable->behaviors()->CounterCache;
 
 		if (!$counterCache->getConfig($tagsAlias)) {
@@ -261,7 +262,9 @@ class TagBehavior extends Behavior {
 			return;
 		}
 
-		foreach ($config['taggedCounter'] as $field => $o) {
+		$taggedCounterConfig = $this->_getTaggedCounterConfig($config['taggedCounter']);
+
+		foreach ($taggedCounterConfig as $field => $o) {
 			if (!$this->_table->hasField($field)) {
 				throw new RuntimeException(sprintf(
 					'Field "%s" does not exist in table "%s"',
@@ -269,14 +272,27 @@ class TagBehavior extends Behavior {
 					$this->_table->getTable()
 				));
 			}
-		}
-		if (!$counterCache->getConfig($taggedAlias)) {
-			$field = key($config['taggedCounter']);
-			$config['taggedCounter'][$field]['conditions'] = [
-				$taggedTable->aliasField($this->getConfig('fkModelField')) => $this->_table->getAlias()
+
+			$modelAlias = $config['fkModelAlias'] ?: $this->_table->getAlias();
+			$taggedCounterConfig[$field]['conditions'] = [
+				$taggedTable->aliasField($this->getConfig('fkModelField')) => $modelAlias,
 			];
-			$counterCache->setConfig($this->_table->getAlias(), $config['taggedCounter']);
 		}
+		if (!$counterCache->getConfig($this->_table->getAlias())) {
+			$counterCache->setConfig($this->_table->getAlias(), $taggedCounterConfig);
+		}
+	}
+
+	/**
+	 * @param string|array
+	 * @return array
+	 */
+	protected function _getTaggedCounterConfig($config) {
+		if (!is_array($config)) {
+			return [$config => ['conditions' => []]];
+		}
+
+		return $config;
 	}
 
 	/**
@@ -325,17 +341,18 @@ class TagBehavior extends Behavior {
 	 * @return \Cake\ORM\Query
 	 */
 	public function findUntagged(Query $query, array $options) {
-		$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->getConfig('taggedCounter')) : [];
+		$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->_getTaggedCounterConfig($this->getConfig('taggedCounter'))) : [];
 		$options += [
 			'counterField' => $taggedCounters ? reset($taggedCounters) : null,
 		];
 
+		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
 		if ($options['counterField']) {
 			return $query->where([$this->_table->getAlias() . '.' . $options['counterField'] => 0]);
 		}
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
-		$conditions = [$this->getConfig('fkModelField') => $this->_table->getAlias()];
+		$conditions = [$this->getConfig('fkModelField') => $modelAlias];
 		$this->_table->hasOne('NoTags', ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions]);
 		$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
 

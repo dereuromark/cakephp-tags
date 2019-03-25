@@ -90,20 +90,33 @@ class TagsTableTest extends TestCase {
 		$entity = $table->newEntity([
 			'name' => 'Föö Bää',
 			'one_list' => 'x,y',
-			'two_list' => '12, 66',
+			'two_list' => '12, 66, 98',
 		]);
 		$one = Hash::extract($entity->one, '{n}.label');
 		$this->assertSame(['x', 'y'], $one);
 
 		$two = Hash::extract($entity->two, '{n}.label');
-		$this->assertSame(['12', '66'], $two);
+		$this->assertSame(['12', '66', '98'], $two);
 
 		$table->saveOrFail($entity);
 
 		$entity = $table->get($entity->id, ['contain' => ['TagsOne', 'TagsTwo']]);
 
 		$this->assertSame('x, y', $entity->one_list);
-		$this->assertSame('12, 66', $entity->two_list);
+		$this->assertSame('12, 66, 98', $entity->two_list);
+
+		$this->assertSame(2, $entity->one_count);
+		$this->assertSame(3, $entity->two_count);
+
+		$untagged = $table->find('untaggedOne')->count();
+		$this->assertSame(2, $untagged);
+		$tagged = $table->find('taggedOne', ['tag' => 'x'])->first();
+		$this->assertSame($entity->id, $tagged->id);
+
+		$untagged = $table->find('untaggedTwo')->count();
+		$this->assertSame(2, $untagged);
+		$tagged = $table->find('taggedTwo', ['tag' => '66'])->first();
+		$this->assertSame($entity->id, $tagged->id);
 	}
 
 }
