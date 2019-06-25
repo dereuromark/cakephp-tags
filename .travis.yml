@@ -4,7 +4,7 @@ php:
   - 5.6
   - 7.3
 
-sudo: false
+dist: trusty
 
 env:
   global:
@@ -29,6 +29,10 @@ matrix:
     - php: 7.2
       env: CODECOVERAGE=1 DEFAULT=0
 
+services:
+  - postgresql
+  - mysql
+  
 before_script:
   - if [[ $PREFER_LOWEST != 1 ]]; then composer install --prefer-source --no-interaction ; fi
   - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction ; fi
