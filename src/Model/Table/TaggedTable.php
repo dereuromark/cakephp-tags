@@ -7,6 +7,7 @@ use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
+use Cake\Validation\Validator;
 
 /**
  * @property \Tags\Model\Table\TagsTable|\Cake\ORM\Association\BelongsTo $Tags
@@ -37,6 +38,29 @@ class TaggedTable extends Table {
 			'propertyName' => 'tag',
 		]);
 		$this->addBehavior('Timestamp');
+	}
+
+	/**
+	 * Default validation rules.
+	 *
+	 * @param \Cake\Validation\Validator $validator Validator instance.
+	 * @return \Cake\Validation\Validator
+	 */
+	public function validationDefault(Validator $validator) {
+		$validator
+			->scalar('id')
+			->allowEmpty('id', 'create');
+
+		$validator
+			->notBlank('fk_model');
+
+		$validator
+			->notBlank('fk_id');
+
+		$validator
+			->notBlank('tag_id');
+
+		return $validator;
 	}
 
 	/**
