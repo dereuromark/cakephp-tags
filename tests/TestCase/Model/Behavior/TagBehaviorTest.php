@@ -36,7 +36,7 @@ class TagBehaviorTest extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$table = TableRegistry::get('Tags.Muffins', ['table' => 'tags_muffins']);
+		$table = TableRegistry::get('Tags.Muffins');
 		$table->addBehavior('Tags.Tag');
 
 		$this->Table = $table;
@@ -76,16 +76,32 @@ class TagBehaviorTest extends TestCase {
 	public function testSave() {
 		$data = [
 			'name' => 'New',
-			'tag_list' => 'Shiny, Awesome'
+			'tag_list' => 'Shiny Thing, Awesome',
 		];
 		$entity = $this->Table->newEntity($data);
 		$this->Table->saveOrFail($entity);
 
 		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
 		$tags = Hash::extract($taggedRows, '{n}.tag.label');
-		$this->assertSame(['Awesome', 'Shiny'], $tags);
+		$this->assertSame(['Awesome', 'Shiny Thing'], $tags);
+		$tags = Hash::extract($taggedRows, '{n}.tag.slug');
+		$this->assertSame(['Awesome', 'Shiny-Thing'], $tags);
 
 		$this->assertSame($this->Table->getAlias(), $taggedRows[0]['fk_model']);
+
+		// Re-adding with same tags reuses existing tags
+		$data = [
+			'name' => 'Another',
+			'tag_list' => 'Shiny Thing, Awesome',
+		];
+		$entity = $this->Table->newEntity($data);
+
+		/** @var \Tags\Model\Entity\Tag $tag */
+		foreach ($entity->tags as $tag) {
+			//FIXME
+			//$this->assertFalse($tag->isNew());
+		}
+		$this->Table->saveOrFail($entity);
 	}
 
 	/**
@@ -96,7 +112,7 @@ class TagBehaviorTest extends TestCase {
 	public function testSaveWithGuarding() {
 		$data = [
 			'name' => 'New',
-			'tag_list' => 'Shiny, Awesome'
+			'tag_list' => 'Shiny, Awesome',
 		];
 
 		$entity = $this->Table->newEntity();
@@ -118,7 +134,7 @@ class TagBehaviorTest extends TestCase {
 	public function testSavingDuplicates() {
 		$entity = $this->Table->newEntity([
 			'name' => 'Duplicate Tags?',
-			'tag_list' => 'Color, Dark Color'
+			'tag_list' => 'Color, Dark Color',
 		]);
 		$this->Table->saveOrFail($entity);
 
@@ -137,7 +153,7 @@ class TagBehaviorTest extends TestCase {
 	public function testSavingWithWrongKey() {
 		$this->Table->newEntity([
 			'name' => 'Duplicate Tags?',
-			'tags' => 'X, Y'
+			'tags' => 'X, Y',
 		]);
 	}
 
@@ -198,26 +214,29 @@ class TagBehaviorTest extends TestCase {
 		$expected = [
 			0 => [
 				'_joinData' => [
-					'fk_model' => 'Muffins'
+					'fk_model' => 'Muffins',
 				],
 				'label' => 'foo',
-				'slug' => 'foo'
+				'slug' => 'foo',
+				'namespace' => null,
 			],
 			1 => [
 				'_joinData' => [
-					'fk_model' => 'Muffins'
+					'fk_model' => 'Muffins',
 				],
 				//'namespace' => '3',
 				'slug' => '3-foobar',
 				'label' => '3:foobar',
+				'namespace' => null,
 			],
 			2 => [
 				'_joinData' => [
-					'fk_model' => 'Muffins'
+					'fk_model' => 'Muffins',
 				],
 				'label' => 'bar',
-				'slug' => 'bar'
-			]
+				'slug' => 'bar',
+				'namespace' => null,
+			],
 		];
 		$this->assertEquals($expected, $result);
 
@@ -225,18 +244,20 @@ class TagBehaviorTest extends TestCase {
 		$expected = [
 			0 => [
 				'_joinData' => [
-					'fk_model' => 'Muffins'
+					'fk_model' => 'Muffins',
 				],
 				'label' => 'foo',
-				'slug' => 'foo'
+				'slug' => 'foo',
+				'namespace' => null,
 			],
 			1 => [
 				'_joinData' => [
-					'fk_model' => 'Muffins'
+					'fk_model' => 'Muffins',
 				],
 				'label' => 'bar',
-				'slug' => 'bar'
-			]
+				'slug' => 'bar',
+				'namespace' => null,
+			],
 		];
 
 		$this->assertEquals($expected, $result);
@@ -249,6 +270,7 @@ class TagBehaviorTest extends TestCase {
 				],
 				'label' => 'first',
 				'slug' => 'first',
+				'namespace' => null,
 			],
 		];
 		$this->assertEquals($expected, $result);
@@ -371,6 +393,8 @@ class TagBehaviorTest extends TestCase {
 		];
 
 		$counter = $this->Table->Tags->get(1)->counter;
+		$this->assertSame(3, $counter);
+
 		$entity = $this->Table->newEntity($data);
 
 		$this->Table->saveOrFail($entity);
@@ -392,7 +416,7 @@ class TagBehaviorTest extends TestCase {
 		$this->Table->Tagged->removeBehavior('CounterCache');
 
 		$this->Table->addBehavior('Tags.Tag', [
-			'taggedCounter' => false
+			'taggedCounter' => false,
 		]);
 
 		$count = $this->Table->get(1)->tag_count;
@@ -418,8 +442,8 @@ class TagBehaviorTest extends TestCase {
 		$table = TableRegistry::get('Tags.Buns', ['table' => 'tags_buns']);
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => [
-				'non_existent' => []
-			]
+				'non_existent' => [],
+			],
 		]);
 	}
 
@@ -450,7 +474,6 @@ class TagBehaviorTest extends TestCase {
 	 */
 	public function testFinderTagged() {
 		$result = $this->Table->Tags->find('all')->where(['slug' => 'color'])->distinct()->toArray();
-		//FIXME: should not be duplicated
 		$this->assertCount(1, $result);
 
 		$tag = [

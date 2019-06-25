@@ -4,6 +4,7 @@ namespace Tags\Model\Table;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\ORM\Table;
+use Cake\Validation\Validator;
 use RuntimeException;
 
 /**
@@ -55,6 +56,26 @@ class TagsTable extends Table {
 			$slugger = key($slugger);
 		}
 		$this->addBehavior($slugger, $config);
+	}
+
+	/**
+	 * Default validation rules.
+	 *
+	 * @param \Cake\Validation\Validator $validator Validator instance.
+	 * @return \Cake\Validation\Validator
+	 */
+	public function validationDefault(Validator $validator) {
+		$validator
+			->scalar('id')
+			->allowEmpty('id', 'create');
+
+		$validator
+			->notBlank('slug');
+
+		$validator
+			->notBlank('label');
+
+		return $validator;
 	}
 
 }

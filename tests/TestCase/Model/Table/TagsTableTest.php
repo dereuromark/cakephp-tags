@@ -86,12 +86,14 @@ class TagsTableTest extends TestCase {
 		TableRegistry::clear();
 
 		$table = TableRegistry::get('MultiTagsRecords');
-
 		$entity = $table->newEntity([
 			'name' => 'Föö Bää',
 			'one_list' => 'x,y',
 			'two_list' => '12, 66, 98',
 		]);
+		$this->assertNotEmpty($entity->one);
+		$this->assertNotEmpty($entity->two);
+
 		$one = Hash::extract($entity->one, '{n}.label');
 		$this->assertSame(['x', 'y'], $one);
 

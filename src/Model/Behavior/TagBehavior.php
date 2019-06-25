@@ -106,6 +106,9 @@ class TagBehavior extends Behavior {
 		$property = $this->getConfig('tagsAssoc.propertyName');
 		$options['accessibleFields'][$property] = true;
 
+		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['slug'] = true;
+		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['id'] = true;
+
 		if (isset($data[$field])) {
 			$data[$property] = $this->normalizeTags($data[$field]);
 		} elseif ($field !== $property) {
@@ -117,6 +120,12 @@ class TagBehavior extends Behavior {
 		if (isset($data[$field]) && empty($data[$field])) {
 			unset($data[$field]);
 		}
+		/*
+		$x = array_keys($options['associated'], $property);
+		foreach ($x as $k => $v) {
+			unset($options['associated'][$v]);
+		}
+		*/
 	}
 
 	/**
@@ -208,14 +217,14 @@ class TagBehavior extends Behavior {
 		if (!$table->{$tagsAlias}->hasAssociation($tableAlias)) {
 			$table->{$tagsAlias}
 				->belongsToMany($tableAlias, [
-					'className' => $table->getTable(),
+					'className' => get_class($table),
 				] + $tagsAssoc);
 		}
 
 		if (!$table->{$taggedAlias}->hasAssociation($tableAlias)) {
 			$table->{$taggedAlias}
 				->belongsTo($tableAlias, [
-					'className' => $table->getTable(),
+					'className' => get_class($table),
 					'foreignKey' => $tagsAssoc['foreignKey'],
 					'conditions' => $assocConditions,
 					'joinType' => 'INNER',
@@ -376,12 +385,8 @@ class TagBehavior extends Behavior {
 
 		$common = ['_joinData' => [$this->getConfig('fkModelField') => $modelAlias]];
 		$namespace = $this->getConfig('namespace');
-		if ($namespace) {
-			$common += compact('namespace');
-		}
 
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
-		$primaryKey = $tagsTable->getPrimaryKey();
 		$displayField = $tagsTable->getDisplayField();
 
 		foreach ($tags as $tag) {
@@ -391,14 +396,17 @@ class TagBehavior extends Behavior {
 			}
 			$tagKey = $this->_getTagKey($tag);
 			$existingTag = $this->_tagExists($tagKey);
-			if (!empty($existingTag)) {
+			if ($existingTag) {
 				$result[] = $common + ['id' => $existingTag];
 				continue;
 			}
-			list($id, $label) = $this->_normalizeTag($tag);
-			$result[] = $common + compact(empty($id) ? $displayField : $primaryKey) + [
+			list($customNamespace, $label) = $this->_normalizeTag($tag);
+
+			$result[] = $common + [
 				'slug' => $tagKey,
-			];
+				'namespace' => $customNamespace ?: $namespace,
+				'label' => $label,
+			] + compact($displayField);
 		}
 
 		return $result;
@@ -411,7 +419,7 @@ class TagBehavior extends Behavior {
 	 * @return string
 	 */
 	protected function _getTagKey($tag) {
-		return strtolower(Text::slug($tag));
+		return mb_strtolower(Text::slug($tag));
 	}
 
 	/**
@@ -422,6 +430,7 @@ class TagBehavior extends Behavior {
 	 */
 	protected function _tagExists($tag) {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
+
 		$result = $tagsTable->find()
 			->where([
 				$tagsTable->aliasField('slug') => $tag,
@@ -430,9 +439,11 @@ class TagBehavior extends Behavior {
 				$tagsTable->aliasField($tagsTable->getPrimaryKey())
 			])
 			->first();
-		if (!empty($result)) {
+
+		if ($result) {
 			return $result->id;
 		}
+
 		return null;
 	}
 
