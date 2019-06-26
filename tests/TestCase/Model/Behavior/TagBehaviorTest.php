@@ -99,7 +99,7 @@ class TagBehaviorTest extends TestCase {
 		/** @var \Tags\Model\Entity\Tag $tag */
 		foreach ($entity->tags as $tag) {
 			//FIXME
-			//$this->assertFalse($tag->isNew());
+			$this->assertFalse($tag->isNew());
 		}
 		$this->Table->saveOrFail($entity);
 	}
