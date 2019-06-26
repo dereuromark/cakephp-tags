@@ -79,6 +79,9 @@ class TagBehaviorTest extends TestCase {
 			'tag_list' => 'Shiny Thing, Awesome',
 		];
 		$entity = $this->Table->newEntity($data);
+
+		debug($entity);
+
 		$this->Table->saveOrFail($entity);
 
 		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
@@ -95,6 +98,8 @@ class TagBehaviorTest extends TestCase {
 			'tag_list' => 'Shiny Thing, Awesome',
 		];
 		$entity = $this->Table->newEntity($data);
+
+		debug($entity);
 
 		/** @var \Tags\Model\Entity\Tag $tag */
 		foreach ($entity->tags as $tag) {
