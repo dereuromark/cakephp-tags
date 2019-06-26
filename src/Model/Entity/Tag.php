@@ -21,7 +21,6 @@ class Tag extends Entity {
 	 */
 	protected $_accessible = [
 		'id' => false,
-		'slug' => false,
 		'counter' => false,
 		'*' => true,
 	];

@@ -105,8 +105,6 @@ class TagBehavior extends Behavior {
 		$field = $this->getConfig('field');
 		$property = $this->getConfig('tagsAssoc.propertyName');
 		$options['accessibleFields'][$property] = true;
-
-		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['slug'] = true;
 		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['id'] = true;
 
 		if (isset($data[$field])) {
@@ -120,12 +118,6 @@ class TagBehavior extends Behavior {
 		if (isset($data[$field]) && empty($data[$field])) {
 			unset($data[$field]);
 		}
-		/*
-		$x = array_keys($options['associated'], $property);
-		foreach ($x as $k => $v) {
-			unset($options['associated'][$v]);
-		}
-		*/
 	}
 
 	/**
@@ -371,7 +363,7 @@ class TagBehavior extends Behavior {
 	/**
 	 * Normalizes tags.
 	 *
-	 * @param array|string $tags List of tags as an array or a delimited string (comma by default).
+	 * @param string[]|string $tags List of tags as an array or a delimited string (comma by default).
 	 * @return array Normalized tags valid to be marshaled.
 	 */
 	public function normalizeTags($tags) {
@@ -389,12 +381,18 @@ class TagBehavior extends Behavior {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
 		$displayField = $tagsTable->getDisplayField();
 
+		$keys = [];
 		foreach ($tags as $tag) {
 			$tag = trim($tag);
 			if (empty($tag)) {
 				continue;
 			}
 			$tagKey = $this->_getTagKey($tag);
+			if (in_array($tagKey, $keys, true)) {
+				continue;
+			}
+			$keys[] = $tagKey;
+
 			$existingTag = $this->_tagExists($tagKey);
 			if ($existingTag) {
 				$result[] = $common + ['id' => $existingTag];
