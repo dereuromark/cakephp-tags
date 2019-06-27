@@ -423,15 +423,15 @@ class TagBehavior extends Behavior {
 	/**
 	 * Checks if a tag already exists and returns the id if yes.
 	 *
-	 * @param string $tag Tag key.
+	 * @param string $slug Tag key.
 	 * @return null|int
 	 */
-	protected function _tagExists($tag) {
+	protected function _tagExists($slug) {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
 
 		$result = $tagsTable->find()
 			->where([
-				$tagsTable->aliasField('slug') => $tag,
+				$tagsTable->aliasField('slug') => $slug,
 			])
 			->select([
 				$tagsTable->aliasField($tagsTable->getPrimaryKey())

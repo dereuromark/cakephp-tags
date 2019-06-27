@@ -70,7 +70,12 @@ class TagsTable extends Table {
 			->allowEmpty('id', 'create');
 
 		$validator
-			->notBlank('slug');
+			->notBlank('slug')
+			->add('slug', 'isUnique', [
+				'rule' => ['validateUnique', ['scope' => 'namespace']],
+				'message' => __('Already exists'),
+				'provider' => 'table'
+			]);
 
 		$validator
 			->notBlank('label');
