@@ -39,11 +39,11 @@ class TagsTable extends Table {
 		}
 		if ($slugger === true) {
 			if (Plugin::loaded('Tools')) {
-				$this->addBehavior('Tools.Slugged');
+				 //$this->addBehavior('Tools.Slugged');
 				return;
 			}
 			if (Plugin::loaded('Muffin/Slug')) {
-				$this->addBehavior('Muffin/Slug.Slug');
+				//$this->addBehavior('Muffin/Slug.Slug');
 				return;
 			}
 

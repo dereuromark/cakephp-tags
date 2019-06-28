@@ -73,7 +73,7 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function testSave() {
+	public function testSaveAndReuse() {
 		$data = [
 			'name' => 'New',
 			'tag_list' => 'Shiny Thing, Awesome',
@@ -87,8 +87,8 @@ class TagBehaviorTest extends TestCase {
 		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
 		$tags = Hash::extract($taggedRows, '{n}.tag.label');
 		$this->assertSame(['Awesome', 'Shiny Thing'], $tags);
-		$tags = Hash::extract($taggedRows, '{n}.tag.slug');
-		$this->assertSame(['Awesome', 'Shiny-Thing'], $tags);
+		$slugs = Hash::extract($taggedRows, '{n}.tag.slug');
+		$this->assertSame(['awesome', 'shiny-thing'], $slugs);
 
 		$this->assertSame($this->Table->getAlias(), $taggedRows[0]['fk_model']);
 
@@ -107,6 +107,8 @@ class TagBehaviorTest extends TestCase {
 			$this->assertFalse($tag->isNew());
 		}
 		$this->Table->saveOrFail($entity);
+
+		debug($this->Table->Tagged->Tags->find()->all()->toArray());
 	}
 
 	/**
@@ -148,6 +150,24 @@ class TagBehaviorTest extends TestCase {
 		$this->assertEquals(1, $count);
 		$count = $Tags->find()->where(['label' => 'Dark Color'])->count();
 		$this->assertEquals(1, $count);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSavingDuplicatesCaseInsensitive() {
+		$entity = $this->Table->newEntity([
+			'name' => 'Duplicate Tags!',
+			'tag_list' => 'Color, Dark Color, color',
+		]);
+		$this->Table->saveOrFail($entity);
+
+		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'Dark Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'color'])->count();
+		$this->assertEquals(0, $count);
 	}
 
 	/**
@@ -482,7 +502,7 @@ class TagBehaviorTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testSaveWithSlug() {
+	public function _testSaveWithSlug() {
 		$tag = [
 			'label' => 'X Y',
 		];
