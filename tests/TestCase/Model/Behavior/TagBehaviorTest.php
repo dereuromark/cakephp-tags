@@ -1,11 +1,13 @@
 <?php
 namespace Tags\Test\TestCase\Model\Behavior;
 
+use Cake\Core\Configure;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Cake\Utility\Text;
 
 class TagBehaviorTest extends TestCase {
 
@@ -490,18 +492,25 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * This works fine on MySQL and other case insensitive DBs.
-	 * For Postgres make sure the slugger returns a lower-cased version!
-	 *
 	 * @return void
 	 */
-	public function _testSaveWithSlug() {
-		$tag = [
-			'label' => 'X Y',
+	public function testSaveWithSlugger() {
+		$this->Table->removeBehavior('Tag');
+
+		$this->Table->addBehavior('Tags.Tag', [
+			'slug' => function ($tag) {
+				return Text::slug($tag);
+			},
+		]);
+
+		$data = [
+			'name' => 'Muffin',
+			'tag_list' => 'Foo Bar',
 		];
-		$tag = $this->Table->Tags->newEntity($tag);
-		$result = $this->Table->Tags->save($tag);
-		$this->assertSame('X-Y', $result->slug);
+		$entity = $this->Table->newEntity($data);
+		$result = $this->Table->save($entity);
+
+		$this->assertSame('Foo-Bar', $result->tags[0]->slug);
 	}
 
 	/**

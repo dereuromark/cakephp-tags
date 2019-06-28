@@ -32,18 +32,21 @@ class TagsTable extends Table {
 		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
 
-		/** @var array|bool|string|null $slugger */
+		/**
+		 * @deprecated Should not be used anymore.
+		 * @var array|bool|string|null $slugger
+		 */
 		$slugger = Configure::read('Tags.slugBehavior');
 		if (!$slugger) {
 			return;
 		}
 		if ($slugger === true) {
 			if (Plugin::loaded('Tools')) {
-				 //$this->addBehavior('Tools.Slugged');
+				$this->addBehavior('Tools.Slugged');
 				return;
 			}
 			if (Plugin::loaded('Muffin/Slug')) {
-				//$this->addBehavior('Muffin/Slug.Slug');
+				$this->addBehavior('Muffin/Slug.Slug');
 				return;
 			}
 
