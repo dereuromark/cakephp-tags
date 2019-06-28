@@ -58,6 +58,7 @@ class TagBehavior extends Behavior {
 		'finderField' => 'tag',
 		'fkModelField' => 'fk_model',
 		'fkModelAlias' => null,
+		'slug' => null,
 	];
 
 	/**
@@ -417,6 +418,14 @@ class TagBehavior extends Behavior {
 	 * @return string
 	 */
 	protected function _getTagKey($tag) {
+		$slug = $this->getConfig('slug');
+		if ($slug) {
+			if (!is_callable($slug)) {
+				throw new RuntimeException('You must use a valid callable for custom slugging.');
+			}
+			return $slug($tag);
+		}
+
 		return mb_strtolower(Text::slug($tag));
 	}
 

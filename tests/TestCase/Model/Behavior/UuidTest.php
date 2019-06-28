@@ -68,7 +68,7 @@ class UuidTest extends TestCase {
 		$this->assertCount(2, $savedRecord->tags);
 
 		$tags = $table->Tags->find()->orderAsc('slug')->all()->toArray();
-		$expected = ['Bar', 'Foo'];
+		$expected = ['bar', 'foo'];
 		$this->assertSame($expected, Hash::extract($tags, '{n}.slug'));
 	}
 
