@@ -1,7 +1,6 @@
 <?php
 namespace Tags\Test\TestCase\Model\Behavior;
 
-use Cake\Core\Configure;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\TableRegistry;
@@ -163,6 +162,39 @@ class TagBehaviorTest extends TestCase {
 		$this->assertEquals(1, $count);
 		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'color'])->count();
 		$this->assertEquals(0, $count);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSaveManyDuplicates() {
+		$entities = [
+			$this->Table->newEntity([
+				'name' => 'Duplicate Tags!',
+				'tag_list' => 'Color, Dark Color',
+			]),
+			$this->Table->newEntity([
+				'name' => 'Duplicate Tags 2!',
+				'tag_list' => 'Dark Color, Light Color',
+			]),
+			$this->Table->newEntity([
+				'name' => 'Duplicate Tags 3!',
+				'tag_list' => 'Light Color, New Color',
+			]),
+		];
+		$result = $this->Table->saveMany($entities);
+		$this->assertTrue((bool)$result);
+
+		$Tags = $this->Table->Tagged->Tags;
+
+		$count = $Tags->find()->where(['label' => 'Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $Tags->find()->where(['label' => 'Dark Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $Tags->find()->where(['label' => 'Light Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $Tags->find()->where(['label' => 'New Color'])->count();
+		$this->assertEquals(1, $count);
 	}
 
 	/**

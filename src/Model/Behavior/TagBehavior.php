@@ -3,8 +3,10 @@ namespace Tags\Model\Behavior;
 
 use ArrayObject;
 use Cake\Core\Configure;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\QueryInterface;
 use Cake\Event\Event;
+use Cake\Event\EventInterface;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Query;
@@ -47,6 +49,7 @@ class TagBehavior extends Behavior {
 		'implementedEvents' => [
 			'Model.beforeMarshal' => 'beforeMarshal',
 			'Model.beforeFind' => 'beforeFind',
+			'Model.beforeSave' => 'beforeSave',
 		],
 		'implementedMethods' => [
 			'normalizeTags' => 'normalizeTags',
@@ -118,6 +121,41 @@ class TagBehavior extends Behavior {
 
 		if (isset($data[$field]) && empty($data[$field])) {
 			unset($data[$field]);
+		}
+	}
+
+	/**
+	 * Modifies the entity before it is saved so that translated fields are persisted
+	 * in the database too.
+	 *
+	 * @param \Cake\Event\EventInterface $event The beforeSave event that was fired
+	 * @param \Cake\Datasource\EntityInterface $entity The entity that is going to be saved
+	 * @param \ArrayObject $options the options passed to the save method
+	 *
+	 * @return void
+	 */
+	public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options) {
+		if (empty($entity->tags)) {
+			return;
+		}
+
+		/**
+		 * @var \Tags\Model\Entity\Tag $tag
+		 */
+		foreach ($entity->tags as $k => $tag) {
+			if (!$tag->isNew()) {
+				continue;
+			}
+
+			$existing = $this->_tagExists($tag->slug);
+			if (!$existing) {
+				continue;
+			}
+
+			$joinData = $tag->_joinData;
+			$tag = $existing;
+			$tag->_joinData = $joinData;
+			$entity->tags[$k] = $tag;
 		}
 	}
 
@@ -396,7 +434,7 @@ class TagBehavior extends Behavior {
 
 			$existingTag = $this->_tagExists($tagKey);
 			if ($existingTag) {
-				$result[] = $common + ['id' => $existingTag];
+				$result[] = $common + ['id' => $existingTag->id];
 				continue;
 			}
 			list($customNamespace, $label) = $this->_normalizeTag($tag);
@@ -430,10 +468,10 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Checks if a tag already exists and returns the id if yes.
+	 * Checks if a tag already exists and returns the entity if so.
 	 *
 	 * @param string $slug Tag key.
-	 * @return null|int
+	 * @return \Cake\Datasource\EntityInterface|null
 	 */
 	protected function _tagExists($slug) {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
@@ -443,12 +481,12 @@ class TagBehavior extends Behavior {
 				$tagsTable->aliasField('slug') => $slug,
 			])
 			->select([
-				$tagsTable->aliasField($tagsTable->getPrimaryKey())
+				$tagsTable->aliasField($tagsTable->getPrimaryKey()),
 			])
 			->first();
 
 		if ($result) {
-			return $result->id;
+			return $result;
 		}
 
 		return null;
@@ -478,7 +516,7 @@ class TagBehavior extends Behavior {
 
 		return [
 			trim($namespace),
-			trim($label)
+			trim($label),
 		];
 	}
 
