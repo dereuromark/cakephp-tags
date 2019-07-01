@@ -6,6 +6,7 @@ use Cake\ORM\Association\HasMany;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Cake\Utility\Text;
 
 class TagBehaviorTest extends TestCase {
 
@@ -73,19 +74,20 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function testSave() {
+	public function testSaveAndReuse() {
 		$data = [
 			'name' => 'New',
 			'tag_list' => 'Shiny Thing, Awesome',
 		];
 		$entity = $this->Table->newEntity($data);
+
 		$this->Table->saveOrFail($entity);
 
 		$taggedRows = $this->Table->Tagged->find()->contain('Tags')->where(['fk_id' => $entity->id])->all()->toArray();
 		$tags = Hash::extract($taggedRows, '{n}.tag.label');
 		$this->assertSame(['Awesome', 'Shiny Thing'], $tags);
-		$tags = Hash::extract($taggedRows, '{n}.tag.slug');
-		$this->assertSame(['Awesome', 'Shiny-Thing'], $tags);
+		$slugs = Hash::extract($taggedRows, '{n}.tag.slug');
+		$this->assertSame(['awesome', 'shiny-thing'], $slugs);
 
 		$this->assertSame($this->Table->getAlias(), $taggedRows[0]['fk_model']);
 
@@ -98,8 +100,7 @@ class TagBehaviorTest extends TestCase {
 
 		/** @var \Tags\Model\Entity\Tag $tag */
 		foreach ($entity->tags as $tag) {
-			//FIXME
-			//$this->assertFalse($tag->isNew());
+			$this->assertFalse($tag->isNew());
 		}
 		$this->Table->saveOrFail($entity);
 	}
@@ -142,6 +143,57 @@ class TagBehaviorTest extends TestCase {
 		$count = $Tags->find()->where(['label' => 'Color'])->count();
 		$this->assertEquals(1, $count);
 		$count = $Tags->find()->where(['label' => 'Dark Color'])->count();
+		$this->assertEquals(1, $count);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSavingDuplicatesCaseInsensitive() {
+		$entity = $this->Table->newEntity([
+			'name' => 'Duplicate Tags!',
+			'tag_list' => 'Color, Dark Color, color',
+		]);
+		$this->Table->saveOrFail($entity);
+
+		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'Dark Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'color'])->count();
+		$this->assertEquals(0, $count);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSaveManyDuplicates() {
+		$entities = [
+			$this->Table->newEntity([
+				'name' => 'Duplicate Tags!',
+				'tag_list' => 'Color, Dark Color',
+			]),
+			$this->Table->newEntity([
+				'name' => 'Duplicate Tags 2!',
+				'tag_list' => 'Dark Color, Light Color',
+			]),
+			$this->Table->newEntity([
+				'name' => 'Duplicate Tags 3!',
+				'tag_list' => 'Light Color, New Color',
+			]),
+		];
+		$result = $this->Table->saveMany($entities);
+		$this->assertTrue((bool)$result);
+
+		$Tags = $this->Table->Tagged->Tags;
+
+		$count = $Tags->find()->where(['label' => 'Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $Tags->find()->where(['label' => 'Dark Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $Tags->find()->where(['label' => 'Light Color'])->count();
+		$this->assertEquals(1, $count);
+		$count = $Tags->find()->where(['label' => 'New Color'])->count();
 		$this->assertEquals(1, $count);
 	}
 
@@ -472,18 +524,25 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * This works fine on MySQL and other case insensitive DBs.
-	 * For Postgres make sure the slugger returns a lower-cased version!
-	 *
 	 * @return void
 	 */
-	public function testSaveWithSlug() {
-		$tag = [
-			'label' => 'X Y',
+	public function testSaveWithSlugger() {
+		$this->Table->removeBehavior('Tag');
+
+		$this->Table->addBehavior('Tags.Tag', [
+			'slug' => function ($tag) {
+				return Text::slug($tag);
+			},
+		]);
+
+		$data = [
+			'name' => 'Muffin',
+			'tag_list' => 'Foo Bar',
 		];
-		$tag = $this->Table->Tags->newEntity($tag);
-		$result = $this->Table->Tags->save($tag);
-		$this->assertSame('X-Y', $result->slug);
+		$entity = $this->Table->newEntity($data);
+		$result = $this->Table->save($entity);
+
+		$this->assertSame('Foo-Bar', $result->tags[0]->slug);
 	}
 
 	/**

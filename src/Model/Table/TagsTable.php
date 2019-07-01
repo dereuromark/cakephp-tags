@@ -32,7 +32,10 @@ class TagsTable extends Table {
 		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
 
-		/** @var array|bool|string|null $slugger */
+		/**
+		 * @deprecated Should not be used anymore.
+		 * @var array|bool|string|null $slugger
+		 */
 		$slugger = Configure::read('Tags.slugBehavior');
 		if (!$slugger) {
 			return;
@@ -70,7 +73,12 @@ class TagsTable extends Table {
 			->allowEmpty('id', 'create');
 
 		$validator
-			->notBlank('slug');
+			->notBlank('slug')
+			->add('slug', 'isUnique', [
+				'rule' => ['validateUnique', ['scope' => 'namespace']],
+				'message' => __('Already exists'),
+				'provider' => 'table'
+			]);
 
 		$validator
 			->notBlank('label');

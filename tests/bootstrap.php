@@ -81,5 +81,3 @@ Cake\Datasource\ConnectionManager::setConfig('test', [
 ]);
 
 Configure::write('debug', true);
-
-Configure::write('Tags.slugBehavior', true);
