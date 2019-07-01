@@ -454,6 +454,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * @param string $tag Tag label.
 	 * @return string
+	 * @throws \RuntimeException
 	 */
 	protected function _getTagKey($tag) {
 		$slug = $this->getConfig('slug');
