@@ -255,6 +255,9 @@ If you, for some reason, still need to use UUIDs, please copy over the schema to
 Make sure you didn't add any validation like "numeric" here, only "scalar" ideally.
 See the test cases (and fixtures for UUIDs) for details.
 
+If you would like to tag (at least) one model that uses an UUID as a primary key, you will need to adjust the migration and change the foreign key field `fk_id` from `integer` to `uuid` as well.
+This will work with UUIDs as well as with AIIDs.
+
 ### Entity Routing
 If you create your own APP Tags controller, you can easily have EntityRouting set up for it:
 ```php
