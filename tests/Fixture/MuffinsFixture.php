@@ -22,11 +22,11 @@ class MuffinsFixture extends TestFixture {
 	 */
 	public $records = [
 		[
-			'name' => 'blue',
+			'name' => 'Blue',
 			'tag_count' => 2,
 		],
 		[
-			'name' => 'red',
+			'name' => 'Red',
 			'tag_count' => 1,
 		],
 	];

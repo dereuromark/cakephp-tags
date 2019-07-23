@@ -58,10 +58,10 @@ class TagBehavior extends Behavior {
 			'tagged' => 'findByTag',
 			'untagged' => 'findUntagged',
 		],
-		'finderField' => 'tag',
+		'finderField' => null, // Set to a specific field, e.g. `tag` for using tag name, defaults to `slug`
 		'fkModelField' => 'fk_model',
 		'fkModelAlias' => null,
-		'slug' => null,
+		'slug' => null, // Slugging mechanism, defaults to core internal way
 	];
 
 	/**
@@ -336,10 +336,16 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Customer finder method.
+	 * Customer finder method using slug/tag lookup.
+	 *
+	 * It accepts both string or array (multiple strings) for the slug/tag value(s).
+	 *
+	 * {finderField} via config can be either 'slug' or 'label' of Tags table. For BC reasons also 'tag'.
 	 *
 	 * Usage:
 	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
+	 * or:
+	 *   $query->find('tagged', ['{finderField}' => ['one', 'two']);
 	 *
 	 * @param \Cake\ORM\Query $query
 	 * @param array $options
@@ -347,16 +353,27 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException
 	 */
 	public function findByTag(Query $query, array $options) {
-		if (!isset($options[$this->getConfig('finderField')])) {
-			throw new RuntimeException('Key not present');
+		$finderField = $optionsKey = $this->getConfig('finderField');
+		if (!$finderField || $finderField === 'tag') {
+			// For BC
+			$finderField = 'slug';
+			$optionsKey = 'tag';
 		}
-		$slug = $options[$this->getConfig('finderField')];
-		if (empty($slug)) {
+
+		if (!isset($options[$optionsKey])) {
+			throw new RuntimeException(sprintf('Expected key `%s` not present in find(\'tagged\') options argument.', $optionsKey));
+		}
+		$field = $options[$optionsKey];
+		if (empty($field)) {
 			return $query;
 		}
-		$query->matching($this->getConfig('tagsAlias'), function (QueryInterface $q) use ($slug) {
+		$query->matching($this->getConfig('tagsAlias'), function (QueryInterface $q) use ($field, $finderField) {
+			$key = $this->getConfig('tagsAlias') . '.' . $finderField;
+			if (is_array($field)) {
+				$key .= ' IN';
+			}
 			return $q->where([
-				$this->getConfig('tagsAlias') . '.slug' => $slug,
+				$key => $field,
 			]);
 		});
 

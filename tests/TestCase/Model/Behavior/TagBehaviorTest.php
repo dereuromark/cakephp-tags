@@ -561,9 +561,49 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(2, $result);
 
-		$result = $this->Table->find('tagged', ['tag' => 'color'])->toArray();
+		$result = $this->Table->find('tagged', ['tag' => 'color'])->orderAsc($this->Table->aliasField('name'))->toArray();
 
-		$expected = ['blue', 'red'];
+		$expected = ['Blue', 'Red'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFinderTaggedLabel() {
+		$this->Table->behaviors()->Tag->setConfig('finderField', 'label');
+
+		$tag = [
+			'label' => 'x',
+		];
+		$tag = $this->Table->Tags->newEntity($tag);
+		$this->Table->Tags->save($tag);
+
+		$result = $this->Table->find('tagged', ['label' => 'Color'])->orderAsc($this->Table->aliasField('name'))->toArray();
+
+		$expected = ['Blue', 'Red'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFinderTaggedArray() {
+		$entity = $this->Table->newEntity([
+			'name' => 'Shiny',
+			'tag_list' => 'Beautiful',
+		]);
+		$this->Table->saveOrFail($entity);
+
+		$tag = [
+			'label' => 'x',
+		];
+		$tag = $this->Table->Tags->newEntity($tag);
+		$this->Table->Tags->save($tag);
+
+		$result = $this->Table->find('tagged', ['tag' => ['color', 'beautiful']])->orderAsc($this->Table->aliasField('name'))->toArray();
+
+		$expected = ['Blue', 'Red', 'Shiny'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
 	}
 
