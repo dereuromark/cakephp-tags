@@ -76,6 +76,9 @@ They can also be combined/stacked with other custom finders, of course.
 ```php
 $taggedRecords = $this->Records->find('tagged', ['tag' => 'tag-slug']);
 ```
+It also accepts an array here to match any of these tags given.
+
+Note: If you want to use label lookup instead of slug lookup, you need to configure the `finderField`.
 
 #### Untagged
 ```php
