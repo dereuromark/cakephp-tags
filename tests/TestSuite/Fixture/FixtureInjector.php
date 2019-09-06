@@ -9,6 +9,7 @@ use PHPUnit\Framework\Test;
  * are composed inside a Test Suite
  */
 class FixtureInjector extends CakeFixtureInjector {
+
 	/**
 	 * Unloads fixtures from the test case.
 	 *
