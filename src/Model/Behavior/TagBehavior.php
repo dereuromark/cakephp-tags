@@ -172,12 +172,12 @@ class TagBehavior extends Behavior {
 				$field = $this->getConfig('field');
 				$property = $this->getConfig('tagsAssoc.propertyName');
 
-				if (!$row instanceOf Entity && !isset($row[$property])) {
+				if (!$row instanceof Entity && !isset($row[$property])) {
 					return $row;
 				}
 
 				$row[$field] = $this->prepareTagsForOutput((array)$row[$property]);
-				if ($row instanceOf Entity) {
+				if ($row instanceof Entity) {
 					$row->setDirty($field, false);
 				}
 				return $row;
