@@ -28,7 +28,7 @@ class TagCloudHelper extends Helper {
 	 * @var array
 	 */
 	public $helpers = [
-		'Html'
+		'Html',
 	];
 
 	/**
@@ -45,7 +45,7 @@ class TagCloudHelper extends Helper {
 		'named' => 'by',
 		'templates' => [
 			'wrapper' => '<ul{{attrs}}>{{content}}</ul>',
-			'item' => '<li style="font-size: {{size}}%">{{content}}</li>'
+			'item' => '<li style="font-size: {{size}}%">{{content}}</li>',
 		],
 	];
 

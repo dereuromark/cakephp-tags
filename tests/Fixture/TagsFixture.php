@@ -26,7 +26,7 @@ class TagsFixture extends TestFixture {
 			'slug' => ['type' => 'unique', 'columns' => ['slug', 'namespace'], 'length' => []],
 		],
 		'_options' => [
-			'collation' => 'utf8_unicode_ci'
+			'collation' => 'utf8_unicode_ci',
 		],
 	];
 

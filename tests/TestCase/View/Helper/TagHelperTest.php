@@ -76,7 +76,7 @@ class TagHelperTest extends TestCase {
 
 		$entity = TableRegistry::get('Tags.Tagged')->newEntity();
 		$entity->tag_list = [
-			'One', 'Two'
+			'One', 'Two',
 		];
 		$this->TagHelper->Form->create($entity);
 

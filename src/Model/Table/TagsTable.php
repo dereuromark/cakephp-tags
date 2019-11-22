@@ -77,7 +77,7 @@ class TagsTable extends Table {
 			->add('slug', 'isUnique', [
 				'rule' => ['validateUnique', ['scope' => 'namespace']],
 				'message' => __('Already exists'),
-				'provider' => 'table'
+				'provider' => 'table',
 			]);
 
 		$validator

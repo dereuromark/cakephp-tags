@@ -100,7 +100,7 @@ class TaggedTable extends Table {
 			'contain' => 'Tags',
 			//'conditions' => array(),
 			'fields' => $fields,
-			'group' => $groupBy
+			'group' => $groupBy,
 		];
 
 		$query->formatResults(function (CollectionInterface $results) {
