@@ -1,4 +1,5 @@
 <?php
+
 namespace Tags\Test\TestCase\View\Helper;
 
 use Cake\Http\ServerRequest as Request;

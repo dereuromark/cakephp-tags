@@ -1,4 +1,5 @@
 <?php
+
 namespace Tags\Model\Table;
 
 use ArrayObject;

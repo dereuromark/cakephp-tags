@@ -1,4 +1,5 @@
 <?php
+
 namespace Tags\Test\TestCase\Model\Table;
 
 use Cake\Core\Configure;

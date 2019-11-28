@@ -1,4 +1,5 @@
 <?php
+
 namespace Tags\Test\TestCase\Model\Behavior;
 
 use Cake\Cache\Cache;

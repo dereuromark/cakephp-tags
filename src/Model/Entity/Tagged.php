@@ -1,4 +1,5 @@
 <?php
+
 namespace Tags\Model\Entity;
 
 use Cake\ORM\Entity;

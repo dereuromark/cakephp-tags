@@ -1,4 +1,5 @@
 <?php
+
 namespace Tags\Test\TestSuite\Fixture;
 
 use Cake\TestSuite\Fixture\FixtureInjector as CakeFixtureInjector;
