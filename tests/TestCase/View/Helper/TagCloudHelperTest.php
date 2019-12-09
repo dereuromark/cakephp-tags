@@ -16,8 +16,8 @@ class TagCloudHelperTest extends TestCase {
 	 * @var array
 	 */
 	public $fixtures = [
-		'plugin.tags.tagged',
-		'plugin.tags.tags',
+		'plugin.Tags.Tagged',
+		'plugin.Tags.Tags',
 	];
 
 	/**
@@ -98,7 +98,7 @@ class TagCloudHelperTest extends TestCase {
 		$result = $this->Helper->display($tags, $options, ['class' => 'tag-cloud']);
 
 		$expected = <<<HTML
-<ul class="tag-cloud">		
+<ul class="tag-cloud">
 <li style="font-size: 80%"><a href="/?by=Foo" id="tag-1">Foo</a></li>
 <li style="font-size: 160%"><a href="/?by=Bar" id="tag-2">Bar</a></li>
 <li style="font-size: 120%"><a href="/?by=X-Y-Z" id="tag-3">X Y Z</a></li>

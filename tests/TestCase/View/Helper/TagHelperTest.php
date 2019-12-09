@@ -17,7 +17,7 @@ class TagHelperTest extends TestCase {
 	 * @var array
 	 */
 	public $fixtures = [
-		'plugin.tags.tagged',
+		'plugin.Tags.Tagged',
 	];
 
 	/**

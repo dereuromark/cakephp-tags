@@ -15,8 +15,8 @@ class TaggedTableTest extends TestCase {
 	 * @var array
 	 */
 	public $fixtures = [
-		'plugin.tags.tags',
-		'plugin.tags.tagged',
+		'plugin.Tags.Tags',
+		'plugin.Tags.Tagged',
 	];
 
 	/**

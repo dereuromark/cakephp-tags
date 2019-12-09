@@ -16,7 +16,7 @@
     <listeners>
         <listener class="Tags\Test\TestSuite\Fixture\FixtureInjector">
             <arguments>
-                <object class="Cake\TestSuite\Fixture\FixtureManager" />
+                <object class="Cake\TestSuite\Fixture\FixtureManager"/>
             </arguments>
         </listener>
     </listeners>
