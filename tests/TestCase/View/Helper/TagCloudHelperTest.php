@@ -42,6 +42,9 @@ class TagCloudHelperTest extends TestCase {
 		$response = new Response();
 		$this->View = new View($request, $response);
 		$this->Helper = new TagCloudHelper($this->View);
+
+		// Needed only for fake requests (tests)
+		$this->Helper->setConfig('url', ['controller' => 'MyController']);
 	}
 
 	/**
@@ -99,9 +102,9 @@ class TagCloudHelperTest extends TestCase {
 
 		$expected = <<<HTML
 <ul class="tag-cloud">
-<li style="font-size: 80%"><a href="/?by=Foo" id="tag-1">Foo</a></li>
-<li style="font-size: 160%"><a href="/?by=Bar" id="tag-2">Bar</a></li>
-<li style="font-size: 120%"><a href="/?by=X-Y-Z" id="tag-3">X Y Z</a></li>
+<li style="font-size: 80%"><a href="/my-controller?by=Foo" id="tag-1">Foo</a></li>
+<li style="font-size: 160%"><a href="/my-controller?by=Bar" id="tag-2">Bar</a></li>
+<li style="font-size: 120%"><a href="/my-controller?by=X-Y-Z" id="tag-3">X Y Z</a></li>
 </ul>
 HTML;
 		$expected = str_replace(["\t", "\n", "\r"], '', $expected);
