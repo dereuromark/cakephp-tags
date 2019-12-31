@@ -18,7 +18,7 @@ class FixtureInjector extends CakeFixtureInjector {
 	 * @param float $time current time
 	 * @return void
 	 */
-	public function endTest(Test $test, $time) {
+	public function endTest(Test $test, float $time): void {
 		parent::endTest($test, $time);
 
 		$this->_fixtureManager->shutDown();

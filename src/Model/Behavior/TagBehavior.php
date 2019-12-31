@@ -83,7 +83,7 @@ class TagBehavior extends Behavior {
 	 * @param array $config Configuration array.
 	 * @return void
 	 */
-	public function initialize(array $config) {
+	public function initialize(array $config): void {
 		$this->bindAssociations();
 		$this->attachCounters();
 	}
@@ -93,7 +93,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * @return array Events list.
 	 */
-	public function implementedEvents() {
+	public function implementedEvents(): array {
 		return $this->getConfig('implementedEvents');
 	}
 
@@ -341,7 +341,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * It accepts both string or array (multiple strings) for the slug/tag value(s).
 	 *
-	 * {finderField} via config can be either 'slug' or 'label' of Tags table. For BC reasons also 'tag'.
+	 * {finderField} via config can be either 'slug' or 'label' of Tags table. Defaults to slug.
 	 *
 	 * Usage:
 	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
@@ -355,10 +355,8 @@ class TagBehavior extends Behavior {
 	 */
 	public function findByTag(Query $query, array $options) {
 		$finderField = $optionsKey = $this->getConfig('finderField');
-		if (!$finderField || $finderField === 'tag') {
-			// For BC
-			$finderField = 'slug';
-			$optionsKey = 'tag';
+		if (!$finderField) {
+			$finderField = $optionsKey = 'slug';
 		}
 
 		if (!isset($options[$optionsKey])) {

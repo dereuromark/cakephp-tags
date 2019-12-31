@@ -61,7 +61,7 @@ class TaggedFixture extends TestFixture {
 	/**
 	 * @return void
 	 */
-	public function init() {
+	public function init(): void {
 		$created = $modified = date('Y-m-d H:i:s');
 		array_walk($this->records, function (&$record) use ($created, $modified) {
 			$record += compact('created', 'modified');

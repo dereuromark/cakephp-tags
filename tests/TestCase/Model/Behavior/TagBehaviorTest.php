@@ -8,13 +8,14 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
 use Cake\Utility\Text;
+use RuntimeException;
 
 class TagBehaviorTest extends TestCase {
 
 	/**
 	 * @var array
 	 */
-	public $fixtures = [
+	protected $fixtures = [
 		'plugin.Tags.Tags',
 		'plugin.Tags.Tagged',
 		'plugin.Tags.Buns',
@@ -35,7 +36,7 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$table = TableRegistry::get('Tags.Muffins');
@@ -48,7 +49,7 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		TableRegistry::clear();
 		unset($this->Behavior);
@@ -117,7 +118,7 @@ class TagBehaviorTest extends TestCase {
 			'tag_list' => 'Shiny, Awesome',
 		];
 
-		$entity = $this->Table->newEntity();
+		$entity = $this->Table->newEmptyEntity();
 		$entity->setAccess('tags', false);
 
 		$entity = $this->Table->patchEntity($entity, $data);
@@ -216,11 +217,11 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \RuntimeException
-	 *
 	 * @return void
 	 */
 	public function testSavingWithWrongKey() {
+		$this->expectException(RuntimeException::class);
+
 		$this->Table->newEntity([
 			'name' => 'Duplicate Tags?',
 			'tags' => 'X, Y',
@@ -504,12 +505,14 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
-	 * @expectedException \RuntimeException
-	 * @expectedExceptionMessage Field "non_existent" does not exist in table "tags_buns"
 	 * @return void
 	 */
 	public function testCounterCacheFieldException() {
 		$table = TableRegistry::get('Tags.Buns', ['table' => 'tags_buns']);
+
+		$this->expectException(RuntimeException::class);
+		$this->expectExceptionMessage('Field "non_existent" does not exist in table "tags_buns"');
+
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => [
 				'non_existent' => [],
@@ -562,7 +565,7 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(2, $result);
 
-		$result = $this->Table->find('tagged', ['tag' => 'color'])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['slug' => 'color'])->orderAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Blue', 'Red'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
@@ -602,7 +605,7 @@ class TagBehaviorTest extends TestCase {
 		$tag = $this->Table->Tags->newEntity($tag);
 		$this->Table->Tags->save($tag);
 
-		$result = $this->Table->find('tagged', ['tag' => ['color', 'beautiful']])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['slug' => ['color', 'beautiful']])->orderAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Blue', 'Red', 'Shiny'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));

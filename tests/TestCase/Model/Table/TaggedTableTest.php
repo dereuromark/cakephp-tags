@@ -14,7 +14,7 @@ class TaggedTableTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	public $fixtures = [
+	protected $fixtures = [
 		'plugin.Tags.Tags',
 		'plugin.Tags.Tagged',
 	];
@@ -29,7 +29,7 @@ class TaggedTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->Tagged = TableRegistry::get('Tags.Tagged', ['table' => 'tags_tagged']);
 	}
@@ -39,7 +39,7 @@ class TaggedTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		unset($this->Tagged);
 		TableRegistry::clear();

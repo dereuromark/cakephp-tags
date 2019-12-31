@@ -31,7 +31,7 @@ class TaggedTable extends Table {
 	 * @param array $config Config options
 	 * @return void
 	 */
-	public function initialize(array $config) {
+	public function initialize(array $config): void {
 		$this->setTable('tags_tagged');
 		$this->belongsTo('Tags', [
 			'className' => 'Tags.Tags',
@@ -47,10 +47,10 @@ class TaggedTable extends Table {
 	 * @param \Cake\Validation\Validator $validator Validator instance.
 	 * @return \Cake\Validation\Validator
 	 */
-	public function validationDefault(Validator $validator) {
+	public function validationDefault(Validator $validator): Validator {
 		$validator
 			->scalar('id')
-			->allowEmpty('id', 'create');
+			->allowEmptyString('id', 'create');
 
 		$validator
 			->notBlank('fk_model');
@@ -93,13 +93,7 @@ class TaggedTable extends Table {
 		$options = [
 			'minSize' => 10,
 			'maxSize' => 20,
-			//'page' => '',
-			//'limit' => '',
-			//'order' => '',
-			//'joins' => array(),
-			//'offset' => '',
 			'contain' => 'Tags',
-			//'conditions' => array(),
 			'fields' => $fields,
 			'group' => $groupBy,
 		];

@@ -9,7 +9,6 @@
 
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
-use Cake\Routing\DispatcherFactory;
 
 if (!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);
@@ -17,6 +16,7 @@ if (!defined('DS')) {
 define('ROOT', dirname(__DIR__));
 define('APP_DIR', 'src');
 // Point app constants to the test app.
+define('TESTS', ROOT . DS . 'tests' . DS);
 define('TEST_ROOT', ROOT . DS . 'tests' . DS . 'test_app' . DS);
 define('APP', TEST_ROOT . APP_DIR . DS);
 define('TEST_FILES', ROOT . DS . 'tests' . DS . 'test_files' . DS);
@@ -24,7 +24,7 @@ define('TMP', ROOT . DS . 'tmp' . DS);
 if (!is_dir(TMP)) {
 	mkdir(TMP, 0770, true);
 }
-define('CONFIG', TEST_ROOT . DS . 'config' . DS);
+define('CONFIG', TESTS . 'config' . DS);
 define('LOGS', TMP . 'logs' . DS);
 define('CACHE', TMP . 'cache' . DS);
 define('CAKE_CORE_INCLUDE_PATH', ROOT . '/vendor/cakephp/cakephp');
@@ -34,13 +34,13 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 require CORE_PATH . 'config/bootstrap.php';
 Cake\Core\Configure::write('App', [
 	'namespace' => 'App',
+	'encoding' => 'utf-8',
 ]);
 
-Plugin::load('Tags', ['path' => dirname(dirname(__FILE__)) . DS]);
-Plugin::load('Tools', ['path' => dirname(dirname(__FILE__)) . '/vendor/dereuromark/cakephp-tools/']);
+Plugin::getCollection()->add(new Tags\Plugin());
+Plugin::getCollection()->add(new Tools\Plugin());
 
-DispatcherFactory::add('Routing');
-DispatcherFactory::add('ControllerFactory');
+require 'tests/config/routes.php';
 
 $cache = [
 	'default' => [
@@ -70,11 +70,8 @@ if (!getenv('db_class')) {
 }
 Cake\Datasource\ConnectionManager::setConfig('test', [
 	'className' => 'Cake\Database\Connection',
-	'driver' => getenv('db_class'),
-	'dsn' => getenv('db_dsn'),
-	'database' => getenv('db_database'),
-	'username' => getenv('db_username'),
-	'password' => getenv('db_password'),
+	'driver' => getenv('db_class') ?: null,
+	'dsn' => getenv('db_dsn') ?: null,
 	'timezone' => 'UTC',
 	'quoteIdentifiers' => true,
 	'cacheMetadata' => true,

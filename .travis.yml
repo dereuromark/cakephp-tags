@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - 5.6
+  - 7.2
   - 7.4
 
 env:
@@ -14,13 +14,13 @@ matrix:
   fast_finish: true
 
   include:
-    - php: 7.2
+    - php: 7.3
       env: DB=pgsql db_dsn='postgres://postgres@127.0.0.1/cakephp_test'
 
-    - php: 7.1
+    - php: 7.3
       env: DB=sqlite db_dsn='sqlite:///:memory:'
 
-    - php: 5.6
+    - php: 7.2
       env: PREFER_LOWEST=1
 
     - php: 7.3
@@ -33,6 +33,9 @@ services:
   - postgresql
   - mysql
 
+before_install:
+  - phpenv config-rm xdebug.ini
+
 before_script:
   - if [[ $PREFER_LOWEST != 1 ]]; then composer install --prefer-source --no-interaction ; fi
   - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction ; fi
@@ -40,7 +43,7 @@ before_script:
   - if [[ $DB == 'mysql' ]]; then mysql -e 'CREATE DATABASE cakephp_test;' ; fi
   - if [[ $DB == 'pgsql' ]]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres ; fi
 
-  - if [[ $CHECKS != 1 ]]; then composer require --dev phpunit/phpunit:"^5.7.14|^6.0" ; fi
+  - if [[ $CHECKS != 1 ]]; then composer require --dev phpunit/phpunit:"^8.3" ; fi
 
 script:
   - if [[ $DEFAULT == 1 ]]; then vendor/bin/phpunit; fi
@@ -48,9 +51,11 @@ script:
   - if [[ $CHECKS == 1 ]]; then composer phpstan-setup && composer phpstan ; fi
   - if [[ $CHECKS == 1 ]]; then composer cs-check ; fi
 
-  - if [[ $CODECOVERAGE == 1 ]]; then vendor/bin/phpunit --coverage-clover=clover.xml || true ; fi
-  - if [[ $CODECOVERAGE == 1 ]]; then wget -O codecov.sh https://codecov.io/bash ; fi
-  - if [[ $CODECOVERAGE == 1 ]]; then bash codecov.sh ; fi
+  - if [[ $CODECOVERAGE == 1 ]]; then phpdbg -qrr vendor/bin/phpunit --coverage-clover=clover.xml; fi
 
-notifications:
-  email: false
+after_success:
+  - if [[ $CODECOVERAGE == 1 ]]; then bash <(curl -s https://codecov.io/bash); fi
+
+cache:
+  directories:
+    - $HOME/.composer/cache

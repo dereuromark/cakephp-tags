@@ -2,8 +2,11 @@
 
 namespace Tags\Test\TestCase\View\Helper;
 
+use Cake\Http\Response;
 use Cake\Http\ServerRequest as Request;
-use Cake\TestSuite\Stub\Response;
+use Cake\Routing\RouteBuilder;
+use Cake\Routing\Router;
+use Cake\Routing\Route\DashedRoute;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Tags\View\Helper\TagCloudHelper;
@@ -15,7 +18,7 @@ class TagCloudHelperTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	public $fixtures = [
+	protected $fixtures = [
 		'plugin.Tags.Tagged',
 		'plugin.Tags.Tags',
 	];
@@ -35,7 +38,7 @@ class TagCloudHelperTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$request = new Request();
@@ -44,7 +47,11 @@ class TagCloudHelperTest extends TestCase {
 		$this->Helper = new TagCloudHelper($this->View);
 
 		// Needed only for fake requests (tests)
-		$this->Helper->setConfig('url', ['controller' => 'MyController']);
+		$this->Helper->setConfig('url', ['controller' => 'MyController', 'action' => 'index']);
+
+		Router::scope('/', function (RouteBuilder $routes) {
+			$routes->fallbacks(DashedRoute::class);
+		});
 	}
 
 	/**
@@ -52,7 +59,7 @@ class TagCloudHelperTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		unset($this->Helper);
 	}

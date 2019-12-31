@@ -66,7 +66,7 @@ in this case is equivalent with the manual version of
 echo $this->Form->control('tag_list', ['type' => 'select', 'multiple' => true, 'options' => ..., 'val' => ...]);
 ```
 
-If you need more customization, use the `tags` property directly. 
+If you need more customization, use the `tags` property directly.
 When saving the tags, they need to be in the normalized form then on patching.
 
 ### Custom finders
@@ -238,7 +238,6 @@ Or you can dynamically set it on each `addBehavior()` method call as well as whe
 The most important ones are:
 
 - `'taggedCounter'`: Set to false if you don't need a counter cache field in your tagged table.
-- `'slugBehavior'`: `true`/`false` (`true` = auto detect slugging, set to behavior otherwise, e.g. `'MyPlugin.MyCustomSlugger'`) //@deprecated
 - `'strategy'`: `'string'`/`'array'`
 - `'delimiter'` - Separating the tags, e.g.: `','`
 - `'separator'`: For namespace prefix, e.g.: `':'`
@@ -258,8 +257,6 @@ If you want to use custom slugging, use the `'slug'` callable you can provide to
     return (new CustomSlugger())->slug($tag);
 }
 ```
-
-Note: Do not mix this with the deprecated `'slugBehavior'` config for TagsTable, as this will create invalid records.
 
 ### UUIDs
 By default, the plugin works with AIIDs (auto-incremental IDs). This usually suffices, as the tags are usually not exposes via ID, but via slug.
@@ -283,7 +280,7 @@ echo $this->Html->link($tag->label,
     [
         'controller' => 'Tags',
         'action' => 'view',
-        '_entity' => $tag
+        '_entity' => $tag,
     ]
 );
 ```

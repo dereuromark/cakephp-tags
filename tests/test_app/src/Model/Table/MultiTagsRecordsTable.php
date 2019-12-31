@@ -18,7 +18,7 @@ class MultiTagsRecordsTable extends Table {
 	 * @param array $config
 	 * @return void
 	 */
-	public function initialize(array $config) {
+	public function initialize(array $config): void {
 		$this->addBehavior('TagsOne', [
 			'className' => 'Tags.Tag',
 			'fkModelAlias' => 'MultiTagsRecordsOne',

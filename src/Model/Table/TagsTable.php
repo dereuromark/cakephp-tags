@@ -2,11 +2,8 @@
 
 namespace Tags\Model\Table;
 
-use Cake\Core\Configure;
-use Cake\Core\Plugin;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use RuntimeException;
 
 /**
  * @method \Tags\Model\Entity\Tag get($primaryKey, $options = [])
@@ -28,38 +25,10 @@ class TagsTable extends Table {
 	 * @return void
 	 * @throws \RuntimeException
 	 */
-	public function initialize(array $config) {
+	public function initialize(array $config): void {
 		$this->setTable('tags_tags');
 		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
-
-		/**
-		 * @deprecated Should not be used anymore.
-		 * @var array|bool|string|null $slugger
-		 */
-		$slugger = Configure::read('Tags.slugBehavior');
-		if (!$slugger) {
-			return;
-		}
-		if ($slugger === true) {
-			if (Plugin::loaded('Tools')) {
-				$this->addBehavior('Tools.Slugged');
-				return;
-			}
-			if (Plugin::loaded('Muffin/Slug')) {
-				$this->addBehavior('Muffin/Slug.Slug');
-				return;
-			}
-
-			throw new RuntimeException('Auto-slug behavior not found, plugin not loaded.');
-		}
-
-		$config = [];
-		if (!is_string($slugger)) {
-			$config = current($slugger);
-			$slugger = key($slugger);
-		}
-		$this->addBehavior($slugger, $config);
 	}
 
 	/**
@@ -68,10 +37,10 @@ class TagsTable extends Table {
 	 * @param \Cake\Validation\Validator $validator Validator instance.
 	 * @return \Cake\Validation\Validator
 	 */
-	public function validationDefault(Validator $validator) {
+	public function validationDefault(Validator $validator): Validator {
 		$validator
 			->scalar('id')
-			->allowEmpty('id', 'create');
+			->allowEmptyString('id', 'create');
 
 		$validator
 			->notBlank('slug')

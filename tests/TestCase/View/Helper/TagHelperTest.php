@@ -2,9 +2,9 @@
 
 namespace Tags\Test\TestCase\View\Helper;
 
+use Cake\Http\Response;
 use Cake\Http\ServerRequest as Request;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\Stub\Response;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Tags\View\Helper\TagHelper;
@@ -16,7 +16,7 @@ class TagHelperTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	public $fixtures = [
+	protected $fixtures = [
 		'plugin.Tags.Tagged',
 	];
 
@@ -35,7 +35,7 @@ class TagHelperTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$request = new Request();
@@ -49,7 +49,7 @@ class TagHelperTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		unset($this->TagHelper);
 	}
@@ -75,7 +75,7 @@ class TagHelperTest extends TestCase {
 		$expected = '<div class="input select"><label for="tag-list">Tags</label><input type="hidden" name="tag_list" value=""/><select name="tag_list[]" multiple="multiple" id="tag-list"></select></div>';
 		$this->assertSame($expected, $result);
 
-		$entity = TableRegistry::get('Tags.Tagged')->newEntity();
+		$entity = TableRegistry::get('Tags.Tagged')->newEmptyEntity();
 		$entity->tag_list = [
 			'One', 'Two',
 		];

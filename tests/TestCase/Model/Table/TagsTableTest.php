@@ -2,7 +2,6 @@
 
 namespace Tags\Test\TestCase\Model\Table;
 
-use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
@@ -15,7 +14,7 @@ class TagsTableTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	public $fixtures = [
+	protected $fixtures = [
 		'plugin.Tags.Tags',
 		'plugin.Tags.Tagged',
 		'plugin.Tags.MultiTagsRecords',
@@ -31,7 +30,7 @@ class TagsTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		$this->Tags = TableRegistry::get('Tags.Tags');
 	}
@@ -41,7 +40,7 @@ class TagsTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		unset($this->Tags);
 		TableRegistry::clear();
@@ -66,11 +65,11 @@ class TagsTableTest extends TestCase {
 	 * @return void
 	 */
 	public function testCustomSluggerWithConfig() {
-		$slugBehavior = ['Tools.Slugged' => ['mode' => [Text::class, 'slug']]];
-		Configure::write('Tags.slugBehavior', $slugBehavior);
+		$behaviors = ['Tools.Slugged' => ['mode' => [Text::class, 'slug']]];
 		TableRegistry::clear();
 
 		$this->Tags = TableRegistry::get('Tags.Tags');
+		$this->Tags->addBehaviors($behaviors);
 
 		$tag = $this->Tags->newEntity([
 			'label' => 'Föö Bää',
@@ -113,12 +112,12 @@ class TagsTableTest extends TestCase {
 
 		$untagged = $table->find('untaggedOne')->count();
 		$this->assertSame(2, $untagged);
-		$tagged = $table->find('taggedOne', ['tag' => 'x'])->first();
+		$tagged = $table->find('taggedOne', ['slug' => 'x'])->first();
 		$this->assertSame($entity->id, $tagged->id);
 
 		$untagged = $table->find('untaggedTwo')->count();
 		$this->assertSame(2, $untagged);
-		$tagged = $table->find('taggedTwo', ['tag' => '66'])->first();
+		$tagged = $table->find('taggedTwo', ['slug' => '66'])->first();
 		$this->assertSame($entity->id, $tagged->id);
 	}
 

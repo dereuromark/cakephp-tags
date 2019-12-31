@@ -12,7 +12,7 @@ class UuidTest extends TestCase {
 	/**
 	 * @var array
 	 */
-	public $fixtures = [
+	protected $fixtures = [
 		'plugin.Tags.UuidTags',
 		'plugin.Tags.UuidTagged',
 		'plugin.Tags.UuidPosts',
@@ -21,7 +21,7 @@ class UuidTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		Cache::clearAll();
 
 		parent::setUp();
@@ -30,7 +30,7 @@ class UuidTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		TableRegistry::clear();
 
