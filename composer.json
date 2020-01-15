@@ -39,7 +39,8 @@
 	},
 	"require-dev": {
 		"dereuromark/cakephp-tools": "dev-cake4",
-		"cakephp/migrations": "^3.0.0",
+		"robmorgan/phinx": "0.next-dev as 0.12",
+		"cakephp/migrations": "4.x-dev as 3.0.0",
 		"fig-r/psr2r-sniffer": "dev-master"
 	},
 	"autoload": {
@@ -55,7 +56,6 @@
 		}
 	},
 	"prefer-stable": true,
-	"minimum-stability": "dev",
 	"scripts": {
 		"test": "php phpunit.phar",
 		"test-setup": "[ ! -f phpunit.phar ] && wget https://phar.phpunit.de/phpunit-8.4.3.phar && mv phpunit-8.4.3.phar phpunit.phar || true",
