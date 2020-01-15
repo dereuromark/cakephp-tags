@@ -25,7 +25,7 @@ class TagHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	public $helpers = [
+	protected $helpers = [
 		'Form',
 	];
 
