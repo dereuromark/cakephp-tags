@@ -61,7 +61,7 @@ class TagCloudHelper extends Helper {
 	 *  - maxSize: size of the heaviest tag [default: 160]
 	 *  - minSize: size of the lightest tag [default: 80]
 	 *  - url: an array containing the default url
-	 *  - named: the named parameter used to send the tag [default: by].
+	 *  - named: the named parameter query string used to send the tag [default: by].
 	 *
 	 * @param array $tags Tag array to display.
 	 * @param array $options Display options.
@@ -69,7 +69,7 @@ class TagCloudHelper extends Helper {
 	 * @return string
 	 */
 	public function display(array $tags, array $options = [], array $attrs = []) {
-		if (empty($tags)) {
+		if (!$tags) {
 			return '';
 		}
 		$options += $this->_config;
@@ -82,11 +82,11 @@ class TagCloudHelper extends Helper {
 
 		// find the range of values
 		$spread = $maxWeight - $minWeight;
-		if ($spread == 0) {
+		if ($spread === 0) {
 			$spread = 1;
 		}
 
-		if ($options['shuffle'] == true) {
+		if ($options['shuffle']) {
 			shuffle($tags);
 		}
 
@@ -134,7 +134,7 @@ class TagCloudHelper extends Helper {
 		$minWeight = min($weights);
 
 		$spread = $maxWeight - $minWeight;
-		if ($spread == 0) {
+		if ($spread === 0) {
 			$spread = 1;
 		}
 
@@ -158,7 +158,7 @@ class TagCloudHelper extends Helper {
 	 * @return array|string Tag URL.
 	 */
 	protected function _tagUrl($tag, $options) {
-		$options['url'][$options['named']] = $tag[$options['tagModel']]['slug'];
+		$options['url']['?'][$options['named']] = $tag[$options['tagModel']]['slug'];
 
 		return $options['url'];
 	}
