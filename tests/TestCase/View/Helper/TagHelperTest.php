@@ -57,7 +57,7 @@ class TagHelperTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function testControl() {
+	public function testControlStringEmpty() {
 		$result = $this->TagHelper->control();
 
 		$expected = '<div class="input text"><label for="tag-list">Tags</label><input type="text" name="tag_list" id="tag-list"/></div>';
@@ -67,15 +67,42 @@ class TagHelperTest extends TestCase {
 	/**
 	 * @return void
 	 */
-	public function testControlArray() {
+	public function testControlString() {
+		$entity = TableRegistry::getTableLocator()->get('Tags.Tagged')->newEntity();
+		$entity->tag_list = 'One, Two';
+
+		$this->TagHelper->Form->create($entity);
+
+		$result = $this->TagHelper->control();
+		$expected = <<<HTML
+<div class="input text">
+	<label for="tag-list">Tags</label>
+	<input type="text" name="tag_list" id="tag-list" value="One, Two"/>
+</div>
+HTML;
+		$expected = str_replace(["\t", "\n", "\r"], '', $expected);
+		$this->assertTextEquals($expected, $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testControlArrayEmpty() {
 		$this->TagHelper->setConfig('strategy', 'array');
+
 		$result = $this->TagHelper->control();
 
-		// Empty one
 		$expected = '<div class="input select"><label for="tag-list">Tags</label><input type="hidden" name="tag_list" value=""/><select name="tag_list[]" multiple="multiple" id="tag-list"></select></div>';
 		$this->assertSame($expected, $result);
+	}
 
-		$entity = TableRegistry::get('Tags.Tagged')->newEntity();
+	/**
+	 * @return void
+	 */
+	public function testControlArray() {
+		$this->TagHelper->setConfig('strategy', 'array');
+
+		$entity = TableRegistry::getTableLocator()->get('Tags.Tagged')->newEntity();
 		$entity->tag_list = [
 			'One', 'Two',
 		];

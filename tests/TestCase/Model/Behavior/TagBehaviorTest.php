@@ -294,7 +294,6 @@ class TagBehaviorTest extends TestCase {
 				'_joinData' => [
 					'fk_model' => 'Muffins',
 				],
-				//'namespace' => '3',
 				'slug' => '3-foobar',
 				'label' => '3:foobar',
 				'namespace' => null,
@@ -347,6 +346,41 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testNormalizeTagsNamespaced() {
+		$this->Behavior->setConfig('separator', ':');
+		$result = $this->Behavior->normalizeTags('foo, 3:foobar, foo:bar');
+		$expected = [
+			0 => [
+				'_joinData' => [
+					'fk_model' => 'Muffins',
+				],
+				'label' => 'foo',
+				'slug' => 'foo',
+				'namespace' => null,
+			],
+			1 => [
+				'_joinData' => [
+					'fk_model' => 'Muffins',
+				],
+				'slug' => '3-foobar',
+				'label' => 'foobar',
+				'namespace' => '3',
+			],
+			2 => [
+				'_joinData' => [
+					'fk_model' => 'Muffins',
+				],
+				'label' => 'bar',
+				'slug' => 'foo-bar',
+				'namespace' => 'foo',
+			],
+		];
+		$this->assertEquals($expected, $result);
+	}
+
+		/**
 	 * @return void
 	 */
 	public function testMarshalingOnlyNewTags() {

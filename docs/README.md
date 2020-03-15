@@ -66,7 +66,7 @@ in this case is equivalent with the manual version of
 echo $this->Form->control('tag_list', ['type' => 'select', 'multiple' => true, 'options' => ..., 'val' => ...]);
 ```
 
-If you need more customization, use the `tags` property directly. 
+If you need more customization, use the `tags` property directly.
 When saving the tags, they need to be in the normalized form then on patching.
 
 ### Custom finders
@@ -229,7 +229,13 @@ Let's imagine MultiTagsRecords table and `one`, `two` tag collections.
 ```
 
 They important config key here is `fkModelAlias` which has to be unique per tag collection and therefore per loaded behavior instance.
+Also make sure the finders and methods have been aliases to unique ones.
 
+As for your helper call, that one now needs also to be loaded twice.
+Or you use the inline config:
+```php
+echo $this->Tag->control(['field' => 'other_list']);
+```
 
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
@@ -241,7 +247,8 @@ The most important ones are:
 - `'slugBehavior'`: `true`/`false` (`true` = auto detect slugging, set to behavior otherwise, e.g. `'MyPlugin.MyCustomSlugger'`) //@deprecated
 - `'strategy'`: `'string'`/`'array'`
 - `'delimiter'` - Separating the tags, e.g.: `','`
-- `'separator'`: For namespace prefix, e.g.: `':'`
+- `'namespace'` - `'string'` to use for internal namespace column. Do not use together with separator if you want to keep it internal. Otherwise it will become the default namespace and visible.
+- `'separator'`: For namespace prefix, e.g.: `':'`. With this set the namespace will be parsed from the tag.
 
 You can set them globally using Configure and the `Tags` config key.
 

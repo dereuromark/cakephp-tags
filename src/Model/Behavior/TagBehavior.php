@@ -199,7 +199,7 @@ class TagBehavior extends Behavior {
 		$tags = [];
 
 		foreach ($data as $tag) {
-			if ($this->_config['namespace']) {
+			if ($this->_config['namespace'] && $this->_config['separator'] !== null) {
 				$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
 			} else {
 				$tags[] = $tag['label'];
@@ -519,8 +519,8 @@ class TagBehavior extends Behavior {
 	 * @return array The tag's ID and label.
 	 */
 	protected function _normalizeTag($tag) {
-		$namespace = null;
-		$label = $tag;
+		$namespacePart = null;
+		$labelPart = $tag;
 		$separator = $this->getConfig('separator');
 		if ($separator === null) {
 			return [
@@ -530,12 +530,12 @@ class TagBehavior extends Behavior {
 		}
 
 		if (strpos($tag, $separator) !== false) {
-			list($namespace, $label) = explode($separator, $tag);
+			list($namespacePart, $labelPart) = explode($separator, $tag, 2);
 		}
 
 		return [
-			trim($namespace),
-			trim($label),
+			trim($namespacePart),
+			trim($labelPart),
 		];
 	}
 
