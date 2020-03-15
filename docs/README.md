@@ -229,7 +229,13 @@ Let's imagine MultiTagsRecords table and `one`, `two` tag collections.
 ```
 
 They important config key here is `fkModelAlias` which has to be unique per tag collection and therefore per loaded behavior instance.
+Also make sure the finders and methods have been aliases to unique ones.
 
+As for your helper call, that one now needs also to be loaded twice.
+Or you use the inline config:
+```php
+echo $this->Tag->control(['field' => 'other_list']);
+```
 
 ## Configuration
 You can set the configuration globally in your app.php using the "Tags" key.
@@ -240,7 +246,8 @@ The most important ones are:
 - `'taggedCounter'`: Set to false if you don't need a counter cache field in your tagged table.
 - `'strategy'`: `'string'`/`'array'`
 - `'delimiter'` - Separating the tags, e.g.: `','`
-- `'separator'`: For namespace prefix, e.g.: `':'`
+- `'namespace'` - `'string'` to use for internal namespace column. Do not use together with separator if you want to keep it internal. Otherwise it will become the default namespace and visible.
+- `'separator'`: For namespace prefix, e.g.: `':'`. With this set the namespace will be parsed from the tag.
 
 You can set them globally using Configure and the `Tags` config key.
 
