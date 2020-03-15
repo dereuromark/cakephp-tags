@@ -380,7 +380,7 @@ class TagBehaviorTest extends TestCase {
 		$this->assertEquals($expected, $result);
 	}
 
-		/**
+	/**
 	 * @return void
 	 */
 	public function testMarshalingOnlyNewTags() {
