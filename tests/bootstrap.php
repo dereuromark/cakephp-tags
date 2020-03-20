@@ -33,14 +33,14 @@ define('CAKE', CORE_PATH . APP_DIR . DS);
 require dirname(__DIR__) . '/vendor/autoload.php';
 require CORE_PATH . 'config/bootstrap.php';
 Cake\Core\Configure::write('App', [
-	'namespace' => 'App',
+	'namespace' => 'TestApp',
 	'encoding' => 'utf-8',
 ]);
 
 Plugin::getCollection()->add(new Tags\Plugin());
 Plugin::getCollection()->add(new Tools\Plugin());
 
-require 'tests/config/routes.php';
+require __DIR__ . '/config/routes.php';
 
 $cache = [
 	'default' => [

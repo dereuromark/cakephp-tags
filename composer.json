@@ -52,7 +52,7 @@
 	"autoload-dev": {
 		"psr-4": {
 			"Tags\\Test\\": "tests/",
-			"App\\": "tests/test_app/src/"
+			"TestApp\\": "tests/test_app/src/"
 		}
 	},
 	"prefer-stable": true,
