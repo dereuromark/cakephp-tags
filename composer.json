@@ -39,8 +39,8 @@
 	},
 	"require-dev": {
 		"dereuromark/cakephp-tools": "^2.0.0",
-		"robmorgan/phinx": "0.next-dev as 0.12",
-		"cakephp/migrations": "4.x-dev as 3.0.0",
+		"robmorgan/phinx": "^0.12",
+		"cakephp/migrations": "^3.0.0@beta",
 		"fig-r/psr2r-sniffer": "dev-master"
 	},
 	"autoload": {
