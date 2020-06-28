@@ -22,8 +22,8 @@ class TagsTable extends Table {
 	 * Initialize table config.
 	 *
 	 * @param array $config Config options
-	 * @return void
 	 * @throws \RuntimeException
+	 * @return void
 	 */
 	public function initialize(array $config): void {
 		$this->setTable('tags_tags');

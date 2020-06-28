@@ -425,7 +425,8 @@ class TagBehaviorTest extends TestCase {
 
 		$data = [
 			'name' => 'Muffin',
-			'tags' => ['_ids' => [
+			'tags' => [
+'_ids' => [
 				'1',
 				'2',
 			]],

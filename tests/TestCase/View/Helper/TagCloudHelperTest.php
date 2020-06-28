@@ -4,9 +4,9 @@ namespace Tags\Test\TestCase\View\Helper;
 
 use Cake\Http\Response;
 use Cake\Http\ServerRequest as Request;
+use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
-use Cake\Routing\Route\DashedRoute;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Tags\View\Helper\TagCloudHelper;

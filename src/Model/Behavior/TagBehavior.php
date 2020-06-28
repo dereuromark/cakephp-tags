@@ -103,8 +103,8 @@ class TagBehavior extends Behavior {
 	 * @param \Cake\Event\Event $event The Model.beforeMarshal event.
 	 * @param \ArrayObject $data Data.
 	 * @param \ArrayObject $options Options.
-	 * @return void
 	 * @throws \RuntimeException
+	 * @return void
 	 */
 	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
 		$field = $this->getConfig('field');
@@ -181,6 +181,7 @@ class TagBehavior extends Behavior {
 				if ($row instanceof Entity) {
 					$row->setDirty($field, false);
 				}
+
 				return $row;
 			});
 		});
@@ -278,8 +279,8 @@ class TagBehavior extends Behavior {
 	 * Attaches the `CounterCache` behavior to the `Tagged` table to keep counts
 	 * on both the `Tags` and the tagged entities.
 	 *
-	 * @return void
 	 * @throws \RuntimeException If configured counter cache field does not exist in table.
+	 * @return void
 	 */
 	public function attachCounters() {
 		$config = $this->getConfig();
@@ -350,8 +351,8 @@ class TagBehavior extends Behavior {
 	 *
 	 * @param \Cake\ORM\Query $query
 	 * @param array $options
-	 * @return \Cake\ORM\Query
 	 * @throws \RuntimeException
+	 * @return \Cake\ORM\Query
 	 */
 	public function findByTag(Query $query, array $options) {
 		$finderField = $optionsKey = $this->getConfig('finderField');
@@ -371,6 +372,7 @@ class TagBehavior extends Behavior {
 			if (is_array($field)) {
 				$key .= ' IN';
 			}
+
 			return $q->where([
 				$key => $field,
 			]);
@@ -451,9 +453,10 @@ class TagBehavior extends Behavior {
 			$existingTag = $this->_tagExists($tagKey);
 			if ($existingTag) {
 				$result[] = $common + ['id' => $existingTag->id];
+
 				continue;
 			}
-			list($customNamespace, $label) = $this->_normalizeTag($tag);
+			[$customNamespace, $label] = $this->_normalizeTag($tag);
 
 			$result[] = $common + [
 				'slug' => $tagKey,
@@ -469,8 +472,8 @@ class TagBehavior extends Behavior {
 	 * Generates the unique tag key.
 	 *
 	 * @param string $tag Tag label.
-	 * @return string
 	 * @throws \RuntimeException
+	 * @return string
 	 */
 	protected function _getTagKey($tag) {
 		$slug = $this->getConfig('slug');
@@ -478,6 +481,7 @@ class TagBehavior extends Behavior {
 			if (!is_callable($slug)) {
 				throw new RuntimeException('You must use a valid callable for custom slugging.');
 			}
+
 			return $slug($tag);
 		}
 
@@ -528,7 +532,7 @@ class TagBehavior extends Behavior {
 		}
 
 		if (strpos($tag, $separator) !== false) {
-			list($namespacePart, $labelPart) = explode($separator, $tag, 2);
+			[$namespacePart, $labelPart] = explode($separator, $tag, 2);
 		}
 
 		return [
