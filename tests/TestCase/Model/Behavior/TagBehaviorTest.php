@@ -668,7 +668,7 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function testFinderUntaggedWithoutCounterField() {
-		$table = TableRegistry::get('Tags.CounterlessMuffins', ['table' => 'tags_counterless_muffins']);
+		$table = TableRegistry::get('Tags.CounterlessMuffins');
 
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => false,

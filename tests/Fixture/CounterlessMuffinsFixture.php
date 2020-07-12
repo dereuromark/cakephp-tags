@@ -7,11 +7,6 @@ use Cake\TestSuite\Fixture\TestFixture;
 class CounterlessMuffinsFixture extends TestFixture {
 
 	/**
-	 * @var string
-	 */
-	public $table = 'tags_counterless_muffins';
-
-	/**
 	 * @var array
 	 */
 	public $fields = [
