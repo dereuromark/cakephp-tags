@@ -60,6 +60,8 @@ class TagBehavior extends Behavior {
 			'untagged' => 'findUntagged',
 		],
 		'finderField' => null, // Set to a specific field, e.g. `tag` for using tag name, defaults to `slug`
+		'andSeparator' => '+', // For tagged finder - or e.g. &
+		'orSeparator' => ',', // For tagged finder - or e.g. |
 		'fkModelField' => 'fk_model',
 		'fkModelAlias' => null,
 		'slug' => null, // Slugging mechanism, defaults to core internal way
@@ -363,22 +365,25 @@ class TagBehavior extends Behavior {
 		if (!isset($options[$optionsKey])) {
 			throw new RuntimeException(sprintf('Expected key `%s` not present in find(\'tagged\') options argument.', $optionsKey));
 		}
-		$field = $options[$optionsKey];
-		if (empty($field)) {
+		$filterValue = $options[$optionsKey];
+		if (!$filterValue) {
 			return $query;
 		}
-		$query->matching($this->getConfig('tagsAlias'), function (QueryInterface $q) use ($field, $finderField) {
-			$key = $this->getConfig('tagsAlias') . '.' . $finderField;
-			if (is_array($field)) {
-				$key .= ' IN';
-			}
 
-			return $q->where([
-				$key => $field,
-			]);
-		});
+		$subQuery = $this->buildQuerySnippet($filterValue, $finderField);
+		if (is_string($subQuery)) {
+			$query->matching($this->getConfig('tagsAlias'), function (QueryInterface $q) use ($finderField, $subQuery) {
+				$key = $this->getConfig('tagsAlias') . '.' . $finderField;
 
-		return $query;
+				return $q->where([
+					$key => $subQuery,
+				]);
+			});
+
+			return $query;
+		}
+
+		return $query->where(['id IN' => $subQuery]);
 	}
 
 	/**
@@ -539,6 +544,79 @@ class TagBehavior extends Behavior {
 			trim($namespacePart),
 			trim($labelPart),
 		];
+	}
+
+	/**
+	 * @param string|string[] $filterValue
+	 * @param string $finderField
+	 *
+	 * @return \Cake\ORM\Query|string
+	 */
+	protected function buildQuerySnippet($filterValue, string $finderField) {
+		$key = $this->getConfig('tagsAlias') . '.' . $finderField;
+
+		if (is_array($filterValue)) {
+			$taggedAlias = $this->getConfig('taggedAlias');
+			$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
+			$conditions = [
+				$key . ' IN' => $filterValue,
+			];
+
+			return $this->_table->{$taggedAlias}->find()
+				->contain([$this->getConfig('tagsAlias')])
+				->select($taggedAlias . '.' . $foreignKey)
+				->where($conditions);
+		}
+
+		if ($this->getConfig('andSeparator') && strpos($filterValue, $this->getConfig('andSeparator')) !== false) {
+			$andValues = $this->parseFilter($filterValue, $this->getConfig('andSeparator'));
+
+			$taggedAlias = $this->getConfig('taggedAlias');
+			$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
+			$conditions = [
+				$key . ' IN' => $andValues,
+			];
+
+			return $this->_table->{$taggedAlias}->find()
+				->contain([$this->getConfig('tagsAlias')])
+				->group($taggedAlias . '.' . $foreignKey)
+				->having('COUNT(*) = ' . count($andValues))
+				->select($taggedAlias . '.' . $foreignKey)
+				->where($conditions);
+		}
+
+		if ($this->getConfig('orSeparator') && strpos($filterValue, $this->getConfig('orSeparator')) !== false) {
+			$orValues = $this->parseFilter($filterValue, $this->getConfig('orSeparator'));
+			$taggedAlias = $this->getConfig('taggedAlias');
+			$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
+			$conditions = [
+				$key . ' IN' => $orValues,
+			];
+
+			return $this->_table->{$taggedAlias}->find()
+				->contain([$this->getConfig('tagsAlias')])
+				->select($taggedAlias . '.' . $foreignKey)
+				->where($conditions);
+		}
+
+		return $filterValue;
+	}
+
+	/**
+	 * @param string $filterValue
+	 * @param string $operator
+	 *
+	 * @return string[]
+	 */
+	protected function parseFilter(string $filterValue, string $operator) {
+		$pieces = explode($operator, $filterValue);
+
+		$elements = [];
+		foreach ($pieces as $piece) {
+			$elements[] = trim($piece);
+		}
+
+		return array_unique($elements);
 	}
 
 }

@@ -166,6 +166,24 @@ $searchManager
     ]);
 ```
 
+##### Or/And
+
+Using `orSeparator`/`andSeparator` config, one can also filter by multiple tags at once:
+```php
+// Records that have either "one" or "two" tag
+$query->find('tagged', ['slug' => 'one,two']);
+
+// Records that have both "one" and "two" tag
+$query->find('tagged', ['slug' => 'one+two']);
+```
+
+For this to be used inside Search plugin, you would usually generate URLs like this:
+```php
+$this->Html->link('Title', ['?' => ['tag'=> 'one,two']]);
+$this->Html->link('Title', ['?' => ['tag'=> 'one+two']]);
+```
+Inside the URLs the special chars will automatically be URLencoded.
+
 ##### Finding records without tags
 You can use the untagged finder here inside the search callback.
 For this the `tag_count` field (and check for 0) is the quickest and easiest. It will otherwise
@@ -245,15 +263,21 @@ The most important ones are:
 
 - `'taggedCounter'`: Set to false if you don't need a counter cache field in your tagged table.
 - `'strategy'`: `'string'`/`'array'`
-- `'delimiter'` - Separating the tags, e.g.: `','`
+- `'delimiter'` - Separating the tags in input elements or as string list, e.g.: `','`
 - `'namespace'` - `'string'` to use for internal namespace column. Do not use together with separator if you want to keep it internal. Otherwise it will become the default namespace and visible.
 - `'separator'`: For namespace prefix, e.g.: `':'`. With this set the namespace will be parsed from the tag.
+- `'andSeparator'` - Allows AND filtering, e.g.: `'+'` or `'&'`
+- `'orSeparator'` - Allows OR filtering, e.g.: `','` or `'|'`
 
 You can set them globally using Configure and the `Tags` config key.
 
 If you need also to pass options to the slug behavior, use an array config for it:
 ```php
-'slugBehavior' => ['Tools.Slugged' => ['mode' => [Text::class, 'slug'], ...],
+'slugBehavior' => [
+    'Tools.Slugged' => [
+        'mode' => [Text::class, 'slug'],
+        ...
+],
 ```
 
 ### Custom slugging

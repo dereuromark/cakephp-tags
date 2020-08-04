@@ -609,6 +609,51 @@ class TagBehaviorTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testFinderTaggedWithOr() {
+		$entity = $this->Table->newEntity([
+			'name' => 'Heavy',
+			'tag_list' => 'color,weight',
+		]);
+		$this->Table->saveOrFail($entity);
+
+		$result = $this->Table->Tags->find('all')->where(['slug IN' => ['color', 'weight']])->distinct()->toArray();
+		$this->assertCount(2, $result);
+
+		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
+		$this->assertCount(4, $result);
+
+		$result = $this->Table->find('tagged', ['slug' => 'color,weight'])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$this->assertCount(3, $result);
+
+		$expected = ['Blue', 'Heavy', 'Red'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFinderTaggedWithAnd() {
+		$entity = $this->Table->newEntity([
+			'name' => 'Heavy',
+			'tag_list' => 'color,weight',
+		]);
+		$this->Table->saveOrFail($entity);
+
+		$result = $this->Table->Tags->find('all')->where(['slug IN' => ['color', 'weight']])->distinct()->toArray();
+		$this->assertCount(2, $result);
+
+		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
+		$this->assertCount(4, $result);
+
+		$result = $this->Table->find('tagged', ['slug' => 'color+weight'])->orderAsc($this->Table->aliasField('name'))->toArray();
+
+		$expected = ['Heavy'];
+		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testFinderTaggedLabel() {
 		$this->Table->behaviors()->Tag->setConfig('finderField', 'label');
 
@@ -630,7 +675,7 @@ class TagBehaviorTest extends TestCase {
 	public function testFinderTaggedArray() {
 		$entity = $this->Table->newEntity([
 			'name' => 'Shiny',
-			'tag_list' => 'Beautiful',
+			'tag_list' => 'Color,Beautiful',
 		]);
 		$this->Table->saveOrFail($entity);
 
