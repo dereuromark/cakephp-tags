@@ -430,7 +430,7 @@ class TagBehavior extends Behavior {
 	 */
 	public function normalizeTags($tags) {
 		if (is_string($tags)) {
-			$tags = explode($this->getConfig('delimiter'), $tags);
+			$tags = explode($this->getConfig('delimiter'), $tags) ?: [];
 		}
 
 		$result = [];
@@ -523,15 +523,15 @@ class TagBehavior extends Behavior {
 	 * from a tag in case it exists.
 	 *
 	 * @param string $tag Tag.
-	 * @return array The tag's ID and label.
+	 * @return string[] The tag's ID and label.
 	 */
 	protected function _normalizeTag($tag) {
 		$namespacePart = null;
 		$labelPart = $tag;
-		$separator = $this->getConfig('separator');
+		$separator = (string)$this->getConfig('separator') ?: null;
 		if ($separator === null) {
 			return [
-				null,
+				'',
 				$tag,
 			];
 		}
@@ -541,7 +541,7 @@ class TagBehavior extends Behavior {
 		}
 
 		return [
-			trim($namespacePart),
+			trim((string)$namespacePart),
 			trim($labelPart),
 		];
 	}
@@ -609,7 +609,7 @@ class TagBehavior extends Behavior {
 	 * @return string[]
 	 */
 	protected function parseFilter(string $filterValue, string $operator) {
-		$pieces = explode($operator, $filterValue);
+		$pieces = explode($operator, $filterValue) ?: [];
 
 		$elements = [];
 		foreach ($pieces as $piece) {

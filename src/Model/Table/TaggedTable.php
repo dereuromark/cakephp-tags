@@ -118,6 +118,7 @@ class TaggedTable extends Table {
 			'minSize' => 10,
 			'maxSize' => 20,
 		];
+		/** @var array $weights */
 		$weights = Hash::extract($entities, '{n}.counter');
 		if ($weights) {
 			$maxWeight = max($weights);
