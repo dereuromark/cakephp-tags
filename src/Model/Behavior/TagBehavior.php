@@ -383,7 +383,9 @@ class TagBehavior extends Behavior {
 			return $query;
 		}
 
-		return $query->where(['id IN' => $subQuery]);
+		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
+
+		return $query->where([$modelAlias . '.id IN' => $subQuery]);
 	}
 
 	/**
