@@ -83,7 +83,7 @@ class TagCloudHelper extends Helper {
 
 		// find the range of values
 		$spread = $maxWeight - $minWeight;
-		if ($spread === 0) {
+		if ($spread <= 0) {
 			$spread = 1;
 		}
 
