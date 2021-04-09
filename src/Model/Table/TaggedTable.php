@@ -146,7 +146,7 @@ class TaggedTable extends Table {
 	 * If you don't want that, don't call parent when overwriting it in extending classes
 	 * or just set the order to an empty array. This will only trigger for order clause of null.
 	 *
-	 * @param \Cake\Event\Event $event
+	 * @param \Cake\Event\EventInterface $event
 	 * @param \Cake\ORM\Query $query
 	 * @param \ArrayObject $options
 	 * @param bool $primary

@@ -102,7 +102,7 @@ class TagBehavior extends Behavior {
 	/**
 	 * Before marshal callback
 	 *
-	 * @param \Cake\Event\Event $event The Model.beforeMarshal event.
+	 * @param \Cake\Event\EventInterface $event The Model.beforeMarshal event.
 	 * @param \ArrayObject $data Data.
 	 * @param \ArrayObject $options Options.
 	 * @throws \RuntimeException
@@ -163,7 +163,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param \Cake\Event\Event $event
+	 * @param \Cake\Event\EventInterface $event
 	 * @param \Cake\ORM\Query $query
 	 * @param \ArrayObject $options
 	 * @return \Cake\ORM\Query
