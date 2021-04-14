@@ -6,7 +6,6 @@ use ArrayObject;
 use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\QueryInterface;
-use Cake\Event\Event;
 use Cake\Event\EventInterface;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
@@ -108,7 +107,7 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException
 	 * @return void
 	 */
-	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) {
+	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options) {
 		$field = $this->getConfig('field');
 		$property = $this->getConfig('tagsAssoc.propertyName');
 		$options['accessibleFields'][$property] = true;
@@ -168,7 +167,7 @@ class TagBehavior extends Behavior {
 	 * @param \ArrayObject $options
 	 * @return \Cake\ORM\Query
 	 */
-	public function beforeFind(Event $event, Query $query, ArrayObject $options) {
+	public function beforeFind(EventInterface $event, Query $query, ArrayObject $options) {
 		$query->formatResults(function ($results) {
 			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {

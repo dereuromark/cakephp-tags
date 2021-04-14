@@ -4,7 +4,7 @@ namespace Tags\Model\Table;
 
 use ArrayObject;
 use Cake\Collection\CollectionInterface;
-use Cake\Event\Event;
+use Cake\Event\EventInterface;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -152,7 +152,7 @@ class TaggedTable extends Table {
 	 * @param bool $primary
 	 * @return \Cake\ORM\Query
 	 */
-	public function beforeFind(Event $event, Query $query, ArrayObject $options, $primary) {
+	public function beforeFind(EventInterface $event, Query $query, ArrayObject $options, $primary) {
 		$order = $query->clause('order');
 		if ($order !== null) {
 			return $query;
