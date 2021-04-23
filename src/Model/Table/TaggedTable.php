@@ -93,16 +93,16 @@ class TaggedTable extends Table {
 		$options = [
 			'minSize' => 10,
 			'maxSize' => 20,
-			//'page' => '',
-			//'limit' => '',
-			//'order' => '',
-			//'joins' => array(),
-			//'offset' => '',
 			'contain' => 'Tags',
-			//'conditions' => array(),
 			'fields' => $fields,
 			'group' => $groupBy,
 		];
+		if ($query->clause('where') === null) {
+			$query->where(['Tags.id IS NOT' => null]);
+		}
+		if ($query->clause('order') === null) {
+			$query->orderAsc('Tags.label');
+		}
 
 		$query->formatResults(function (CollectionInterface $results) {
 			$results = static::calculateWeights($results->toArray());
@@ -124,6 +124,7 @@ class TaggedTable extends Table {
 			'minSize' => 10,
 			'maxSize' => 20,
 		];
+		/** @var array $weights */
 		$weights = Hash::extract($entities, '{n}.counter');
 		if ($weights) {
 			$maxWeight = max($weights);
