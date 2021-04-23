@@ -97,6 +97,12 @@ class TaggedTable extends Table {
 			'fields' => $fields,
 			'group' => $groupBy,
 		];
+		if ($query->clause('where') === null) {
+			$query->where(['Tags.id IS NOT' => null]);
+		}
+		if ($query->clause('order') === null) {
+			$query->orderAsc('Tags.label');
+		}
 
 		$query->formatResults(function (CollectionInterface $results) {
 			$results = static::calculateWeights($results->toArray());
