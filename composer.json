@@ -41,7 +41,8 @@
 		"dereuromark/cakephp-tools": "^2.0.0",
 		"robmorgan/phinx": "^0.12",
 		"cakephp/migrations": "^3.0.0",
-		"fig-r/psr2r-sniffer": "dev-master"
+		"fig-r/psr2r-sniffer": "dev-master",
+		"spryker/code-sniffer": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
