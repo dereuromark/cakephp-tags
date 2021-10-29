@@ -8,10 +8,10 @@ use Cake\Validation\Validator;
 /**
  * @method \Tags\Model\Entity\Tag get($primaryKey, $options = [])
  * @method \Tags\Model\Entity\Tag newEntity($data = null, array $options = [])
- * @method \Tags\Model\Entity\Tag[] newEntities(array $data, array $options = [])
+ * @method array<\Tags\Model\Entity\Tag> newEntities(array $data, array $options = [])
  * @method \Tags\Model\Entity\Tag|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
  * @method \Tags\Model\Entity\Tag patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \Tags\Model\Entity\Tag[] patchEntities($entities, array $data, array $options = [])
+ * @method array<\Tags\Model\Entity\Tag> patchEntities($entities, array $data, array $options = [])
  * @method \Tags\Model\Entity\Tag findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior

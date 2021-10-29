@@ -105,7 +105,7 @@ class TagCloudHelper extends Helper {
 			$content = $this->Html->link(
 				$tag[$options['tagModel']]['label'],
 				$this->_tagUrl($tag, $options),
-				['id' => 'tag-' . $tag[$options['tagModel']]['id']]
+				['id' => 'tag-' . $tag[$options['tagModel']]['id']],
 			);
 			$data = compact('size', 'content');
 			$cloud[] = $this->templater()->format('item', $data);

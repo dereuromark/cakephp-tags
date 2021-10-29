@@ -15,10 +15,10 @@ use Cake\Validation\Validator;
  *
  * @method \Tags\Model\Entity\Tagged get($primaryKey, $options = [])
  * @method \Tags\Model\Entity\Tagged newEntity($data = null, array $options = [])
- * @method \Tags\Model\Entity\Tagged[] newEntities(array $data, array $options = [])
+ * @method array<\Tags\Model\Entity\Tagged> newEntities(array $data, array $options = [])
  * @method \Tags\Model\Entity\Tagged|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
  * @method \Tags\Model\Entity\Tagged patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \Tags\Model\Entity\Tagged[] patchEntities($entities, array $data, array $options = [])
+ * @method array<\Tags\Model\Entity\Tagged> patchEntities($entities, array $data, array $options = [])
  * @method \Tags\Model\Entity\Tagged findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior

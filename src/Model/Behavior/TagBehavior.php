@@ -312,7 +312,7 @@ class TagBehavior extends Behavior {
 				throw new RuntimeException(sprintf(
 					'Field "%s" does not exist in table "%s"',
 					$field,
-					$this->_table->getTable()
+					$this->_table->getTable(),
 				));
 			}
 
@@ -426,7 +426,7 @@ class TagBehavior extends Behavior {
 	/**
 	 * Normalizes tags.
 	 *
-	 * @param string[]|string $tags List of tags as an array or a delimited string (comma by default).
+	 * @param array<string>|string $tags List of tags as an array or a delimited string (comma by default).
 	 * @return array Normalized tags valid to be marshaled.
 	 */
 	public function normalizeTags($tags) {
@@ -524,7 +524,7 @@ class TagBehavior extends Behavior {
 	 * from a tag in case it exists.
 	 *
 	 * @param string $tag Tag.
-	 * @return string[] The tag's ID and label.
+	 * @return array<string> The tag's ID and label.
 	 */
 	protected function _normalizeTag($tag) {
 		$namespacePart = null;
@@ -548,7 +548,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param string|string[] $filterValue
+	 * @param string|array<string> $filterValue
 	 * @param string $finderField
 	 *
 	 * @return \Cake\ORM\Query|string
@@ -607,7 +607,7 @@ class TagBehavior extends Behavior {
 	 * @param string $filterValue
 	 * @param string $operator
 	 *
-	 * @return string[]
+	 * @return array<string>
 	 */
 	protected function parseFilter(string $filterValue, string $operator) {
 		$pieces = explode($operator, $filterValue) ?: [];
