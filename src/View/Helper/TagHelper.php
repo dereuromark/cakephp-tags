@@ -30,7 +30,7 @@ class TagHelper extends Helper {
 	];
 
 	/**
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $_defaultConfig = [
 		'field' => 'tag_list',

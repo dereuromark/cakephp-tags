@@ -18,7 +18,7 @@ class Tag extends Entity {
 	/**
 	 * List of properties that can be mass assigned.
 	 *
-	 * @var array
+	 * @var array<string, bool>
 	 */
 	protected $_accessible = [
 		'id' => false,

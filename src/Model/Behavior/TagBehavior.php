@@ -19,7 +19,7 @@ class TagBehavior extends Behavior {
 	/**
 	 * Configuration.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $_defaultConfig = [
 		'field' => 'tag_list',
@@ -195,7 +195,7 @@ class TagBehavior extends Behavior {
 	 * initialization of data for text input
 	 *
 	 * @param array $data Tag data array to convert to string.
-	 * @return string|array
+	 * @return array|string
 	 */
 	public function prepareTagsForOutput(array $data) {
 		$tags = [];
@@ -327,7 +327,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param string|array $config
+	 * @param array|string $config
 	 * @return array
 	 */
 	protected function _getTaggedCounterConfig($config) {
@@ -548,7 +548,7 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param string|array<string> $filterValue
+	 * @param array<string>|string $filterValue
 	 * @param string $finderField
 	 *
 	 * @return \Cake\ORM\Query|string

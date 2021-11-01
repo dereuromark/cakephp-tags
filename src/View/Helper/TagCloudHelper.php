@@ -32,7 +32,7 @@ class TagCloudHelper extends Helper {
 	];
 
 	/**
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	protected $_defaultConfig = [
 		'tagModel' => 'tag',
