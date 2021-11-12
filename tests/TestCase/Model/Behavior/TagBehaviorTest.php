@@ -426,10 +426,11 @@ class TagBehaviorTest extends TestCase {
 		$data = [
 			'name' => 'Muffin',
 			'tags' => [
-'_ids' => [
-				'1',
-				'2',
-			]],
+				'_ids' => [
+					'1',
+					'2',
+				],
+			],
 		];
 
 		$entity = $this->Table->newEntity($data);
