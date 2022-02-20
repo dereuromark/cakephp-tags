@@ -50,7 +50,7 @@ class TagHelper extends Helper {
 	/**
 	 * Convenience method for tag list form input.
 	 *
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 *
 	 * @return string
 	 */

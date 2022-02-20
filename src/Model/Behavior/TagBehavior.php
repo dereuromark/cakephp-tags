@@ -351,7 +351,7 @@ class TagBehavior extends Behavior {
 	 *   $query->find('tagged', ['{finderField}' => ['one', 'two']);
 	 *
 	 * @param \Cake\ORM\Query $query
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 * @throws \RuntimeException
 	 * @return \Cake\ORM\Query
 	 */
@@ -401,7 +401,7 @@ class TagBehavior extends Behavior {
 	 * It will automatically do the live lookup if you do not have any counter cache fields.
 	 *
 	 * @param \Cake\ORM\Query $query
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 * @return \Cake\ORM\Query
 	 */
 	public function findUntagged(Query $query, array $options) {

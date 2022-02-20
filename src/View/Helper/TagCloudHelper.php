@@ -64,7 +64,7 @@ class TagCloudHelper extends Helper {
 	 *  - named: the named parameter query string used to send the tag [default: by].
 	 *
 	 * @param array $tags Tag array to display.
-	 * @param array $options Display options.
+	 * @param array<string, mixed> $options Display options.
 	 * @param array $attrs For ul element
 	 * @return string
 	 */
@@ -155,7 +155,7 @@ class TagCloudHelper extends Helper {
 	 * Generates the URL for a tag
 	 *
 	 * @param array $tag Tag to generate URL for.
-	 * @param array $options Tag options.
+	 * @param array<string, mixed> $options Tag options.
 	 * @return array|string Tag URL.
 	 */
 	protected function _tagUrl($tag, $options) {
