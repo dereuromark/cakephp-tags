@@ -2,8 +2,13 @@
 
 namespace Tags\Model\Table;
 
+use ArrayObject;
+use Cake\Core\Configure;
+use Cake\Event\EventInterface;
 use Cake\ORM\Table;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
+use RuntimeException;
 
 /**
  * @method \Tags\Model\Entity\Tag get($primaryKey, $options = [])
@@ -54,6 +59,37 @@ class TagsTable extends Table {
 			->notBlank('label');
 
 		return $validator;
+	}
+
+	/**
+	 * @param \Cake\Event\EventInterface $event
+	 * @param \ArrayObject $data
+	 * @param \ArrayObject $options
+	 *
+	 * @return void
+	 */
+	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options): void {
+		if (isset($data['label']) && isset($data['slug']) && $data['slug'] === 0) {
+			$data['slug'] = $this->slug($data['label']);
+		}
+	}
+
+	/**
+	 * @param string $label
+	 *
+	 * @return string
+	 */
+	protected function slug(string $label): string {
+		$slug = Configure::read('Tags.slug');
+		if ($slug) {
+			if (!is_callable($slug)) {
+				throw new RuntimeException('You must use a valid callable for custom slugging.');
+			}
+
+			return $slug($label);
+		}
+
+		return mb_strtolower(Text::slug($label));
 	}
 
 }

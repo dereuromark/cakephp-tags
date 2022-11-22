@@ -604,13 +604,15 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
+	 * @phpstan-param non-empty-string $operator
+	 *
 	 * @param string $filterValue
 	 * @param string $operator
 	 *
 	 * @return array<string>
 	 */
 	protected function parseFilter(string $filterValue, string $operator) {
-		$pieces = explode($operator, $filterValue) ?: [];
+		$pieces = explode($operator, $filterValue);
 
 		$elements = [];
 		foreach ($pieces as $piece) {
