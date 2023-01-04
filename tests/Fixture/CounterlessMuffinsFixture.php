@@ -9,7 +9,7 @@ class CounterlessMuffinsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
 		'name' => ['type' => 'string', 'length' => 255],
 		'_constraints' => [
@@ -20,7 +20,7 @@ class CounterlessMuffinsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		[
 			'name' => 'blue',
 		],

@@ -12,7 +12,7 @@ class UuidTest extends TestCase {
 	/**
 	 * @var array
 	 */
-	protected $fixtures = [
+	protected array $fixtures = [
 		'plugin.Tags.UuidTags',
 		'plugin.Tags.UuidTagged',
 		'plugin.Tags.UuidPosts',

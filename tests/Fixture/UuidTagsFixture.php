@@ -9,12 +9,12 @@ class UuidTagsFixture extends TestFixture {
 	/**
 	 * @var string
 	 */
-	public $table = 'tags_tags';
+	public string $table = 'tags_tags';
 
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'uuid', 'length' => 36, 'null' => false],
 		'namespace' => ['type' => 'string', 'length' => 255, 'null' => true],
 		'slug' => ['type' => 'string', 'length' => 255],
@@ -31,7 +31,7 @@ class UuidTagsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		/*
 		[
 			'namespace' => null,

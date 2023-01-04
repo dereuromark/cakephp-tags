@@ -9,7 +9,7 @@ use Cake\Datasource\QueryInterface;
 use Cake\Event\EventInterface;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
 use RuntimeException;
@@ -21,7 +21,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $_defaultConfig = [
+	protected array $_defaultConfig = [
 		'field' => 'tag_list',
 		'strategy' => 'string',
 		'delimiter' => ',',
@@ -131,13 +131,13 @@ class TagBehavior extends Behavior {
 	 * in the database too.
 	 *
 	 * @param \Cake\Event\EventInterface $event The beforeSave event that was fired
-	 * @param \Cake\Datasource\EntityInterface $entity The entity that is going to be saved
+	 * @param \Tags\Model\Entity\Tag $entity The entity that is going to be saved
 	 * @param \ArrayObject $options the options passed to the save method
 	 *
 	 * @return void
 	 */
 	public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options) {
-		if (empty($entity->tags)) {
+		if (!isset($entity->tags)) {
 			return;
 		}
 
@@ -163,11 +163,11 @@ class TagBehavior extends Behavior {
 
 	/**
 	 * @param \Cake\Event\EventInterface $event
-	 * @param \Cake\ORM\Query $query
+	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param \ArrayObject $options
-	 * @return \Cake\ORM\Query
+	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function beforeFind(EventInterface $event, Query $query, ArrayObject $options) {
+	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options) {
 		$query->formatResults(function ($results) {
 			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {
@@ -221,7 +221,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * @return void
 	 */
-	public function bindAssociations() {
+	public function bindAssociations(): void {
 		$config = $this->getConfig();
 		$tagsAlias = $config['tagsAlias'];
 		$tagsAssoc = $config['tagsAssoc'];
@@ -283,7 +283,7 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException If configured counter cache field does not exist in table.
 	 * @return void
 	 */
-	public function attachCounters() {
+	public function attachCounters(): void {
 		$config = $this->getConfig();
 		$tagsAlias = $config['tagsAlias'];
 		$taggedAlias = $config['taggedAlias'];
@@ -330,7 +330,7 @@ class TagBehavior extends Behavior {
 	 * @param array|string $config
 	 * @return array
 	 */
-	protected function _getTaggedCounterConfig($config) {
+	protected function _getTaggedCounterConfig($config): array {
 		if (!is_array($config)) {
 			return [$config => ['conditions' => []]];
 		}
@@ -350,12 +350,12 @@ class TagBehavior extends Behavior {
 	 * or:
 	 *   $query->find('tagged', ['{finderField}' => ['one', 'two']);
 	 *
-	 * @param \Cake\ORM\Query $query
+	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param array<string, mixed> $options
 	 * @throws \RuntimeException
-	 * @return \Cake\ORM\Query
+	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findByTag(Query $query, array $options) {
+	public function findByTag(SelectQuery $query, array $options): SelectQuery {
 		$finderField = $optionsKey = $this->getConfig('finderField');
 		if (!$finderField) {
 			$finderField = $optionsKey = 'slug';
@@ -400,11 +400,11 @@ class TagBehavior extends Behavior {
 	 * Set 'counterField' to false to do a live lookup in the pivot table.
 	 * It will automatically do the live lookup if you do not have any counter cache fields.
 	 *
-	 * @param \Cake\ORM\Query $query
+	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param array<string, mixed> $options
-	 * @return \Cake\ORM\Query
+	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findUntagged(Query $query, array $options) {
+	public function findUntagged(SelectQuery $query, array $options): SelectQuery {
 		$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->_getTaggedCounterConfig($this->getConfig('taggedCounter'))) : [];
 		$options += [
 			'counterField' => $taggedCounters ? reset($taggedCounters) : null,
@@ -429,7 +429,7 @@ class TagBehavior extends Behavior {
 	 * @param array<string>|string $tags List of tags as an array or a delimited string (comma by default).
 	 * @return array Normalized tags valid to be marshaled.
 	 */
-	public function normalizeTags($tags) {
+	public function normalizeTags($tags): array {
 		if (is_string($tags)) {
 			$tags = explode($this->getConfig('delimiter'), $tags) ?: [];
 		}
@@ -481,7 +481,7 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException
 	 * @return string
 	 */
-	protected function _getTagKey($tag) {
+	protected function _getTagKey(string $tag): string {
 		$slug = $this->getConfig('slug');
 		if ($slug) {
 			if (!is_callable($slug)) {
@@ -500,7 +500,7 @@ class TagBehavior extends Behavior {
 	 * @param string $slug Tag key.
 	 * @return \Cake\Datasource\EntityInterface|null
 	 */
-	protected function _tagExists($slug) {
+	protected function _tagExists(string $slug) {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
 
 		$result = $tagsTable->find()
@@ -526,7 +526,7 @@ class TagBehavior extends Behavior {
 	 * @param string $tag Tag.
 	 * @return array<string> The tag's ID and label.
 	 */
-	protected function _normalizeTag($tag) {
+	protected function _normalizeTag(string $tag): array {
 		$namespacePart = null;
 		$labelPart = $tag;
 		$separator = (string)$this->getConfig('separator') ?: null;
@@ -551,7 +551,7 @@ class TagBehavior extends Behavior {
 	 * @param array<string>|string $filterValue
 	 * @param string $finderField
 	 *
-	 * @return \Cake\ORM\Query|string
+	 * @return \Cake\ORM\Query\SelectQuery|string
 	 */
 	protected function buildQuerySnippet($filterValue, string $finderField) {
 		$key = $this->getConfig('tagsAlias') . '.' . $finderField;

@@ -18,7 +18,7 @@ class TagCloudHelperTest extends TestCase {
 	 *
 	 * @var array
 	 */
-	protected $fixtures = [
+	protected array $fixtures = [
 		'plugin.Tags.Tagged',
 		'plugin.Tags.Tags',
 	];
@@ -49,7 +49,7 @@ class TagCloudHelperTest extends TestCase {
 		// Needed only for fake requests (tests)
 		$this->Helper->setConfig('url', ['controller' => 'MyController', 'action' => 'index']);
 
-		Router::scope('/', function (RouteBuilder $routes) {
+		Router::scope('/', function (RouteBuilder $routes): void {
 			$routes->fallbacks(DashedRoute::class);
 		});
 	}

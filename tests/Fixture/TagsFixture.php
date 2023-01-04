@@ -9,12 +9,12 @@ class TagsFixture extends TestFixture {
 	/**
 	 * @var string
 	 */
-	public $table = 'tags_tags';
+	public string $table = 'tags_tags';
 
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'integer', 'length' => 11, 'autoIncrement' => true],
 		'namespace' => ['type' => 'string', 'collate' => 'utf8_unicode_ci', 'length' => 255, 'null' => true],
 		'slug' => ['type' => 'string', 'collate' => 'utf8_unicode_ci', 'length' => 255],
@@ -34,7 +34,7 @@ class TagsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		[
 			'namespace' => null,
 			'slug' => 'color',

@@ -9,12 +9,12 @@ class UuidPostsFixture extends TestFixture {
 	/**
 	 * @var string
 	 */
-	public $table = 'tags_posts';
+	public string $table = 'tags_posts';
 
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'uuid', 'length' => 36, 'null' => false],
 		'name' => ['type' => 'string', 'length' => 255],
 		'_constraints' => [
@@ -25,7 +25,7 @@ class UuidPostsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		/*
 		[
 			'name' => 'blue',

@@ -9,7 +9,7 @@ class MultiTagsRecordsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
 		'name' => ['type' => 'string', 'length' => 255],
 		'one_count' => ['type' => 'integer', 'null' => false, 'default' => 0],
@@ -22,7 +22,7 @@ class MultiTagsRecordsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		[
 			'name' => 'square',
 			'one_count' => 0,

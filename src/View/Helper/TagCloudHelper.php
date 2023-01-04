@@ -27,14 +27,14 @@ class TagCloudHelper extends Helper {
 	/**
 	 * @var array
 	 */
-	protected $helpers = [
+	protected array $helpers = [
 		'Html',
 	];
 
 	/**
 	 * @var array<string, mixed>
 	 */
-	protected $_defaultConfig = [
+	protected array $_defaultConfig = [
 		'tagModel' => 'tag',
 		'shuffle' => true,
 		'extract' => '{n}.weight',

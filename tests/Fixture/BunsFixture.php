@@ -9,12 +9,12 @@ class BunsFixture extends TestFixture {
 	/**
 	 * @var string
 	 */
-	public $table = 'tags_buns';
+	public string $table = 'tags_buns';
 
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
 		'name' => ['type' => 'string', 'length' => 255],
 		'tag_count' => ['type' => 'integer', 'null' => false, 'default' => 0],
@@ -26,7 +26,7 @@ class BunsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		[
 			'name' => 'square',
 			'tag_count' => 1,

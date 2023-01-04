@@ -25,14 +25,14 @@ class TagHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	protected $helpers = [
+	protected array $helpers = [
 		'Form',
 	];
 
 	/**
 	 * @var array<string, mixed>
 	 */
-	protected $_defaultConfig = [
+	protected array $_defaultConfig = [
 		'field' => 'tag_list',
 		'strategy' => 'string',
 	];

@@ -9,8 +9,8 @@ use Cake\ORM\Entity;
  * @property int $tag_id
  * @property int $fk_id
  * @property string $fk_model
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property \Cake\I18n\DateTime $created
+ * @property \Cake\I18n\DateTime $modified
  * @property \Tags\Model\Entity\Tag $tags
  */
 class Tagged extends Entity {
@@ -20,7 +20,7 @@ class Tagged extends Entity {
 	 *
 	 * @var array<string, bool>
 	 */
-	protected $_accessible = [
+	protected array $_accessible = [
 		'id' => false,
 		'*' => true,
 	];

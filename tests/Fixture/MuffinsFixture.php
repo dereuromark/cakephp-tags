@@ -9,7 +9,7 @@ class MuffinsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $fields = [
+	public array $fields = [
 		'id' => ['type' => 'integer', 'length' => 10, 'autoIncrement' => true],
 		'name' => ['type' => 'string', 'length' => 255],
 		'tag_count' => ['type' => 'integer', 'null' => false, 'default' => 0],
@@ -21,7 +21,7 @@ class MuffinsFixture extends TestFixture {
 	/**
 	 * @var array
 	 */
-	public $records = [
+	public array $records = [
 		[
 			'name' => 'Blue',
 			'tag_count' => 2,

@@ -5,7 +5,7 @@ namespace Tags\Model\Table;
 use ArrayObject;
 use Cake\Collection\CollectionInterface;
 use Cake\Event\EventInterface;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
@@ -72,10 +72,10 @@ class TaggedTable extends Table {
 	 * 'maxSize' to the query. This value can be used in the view to control the
 	 * size of the tag font.
 	 *
-	 * @param \Cake\ORM\Query $query Query array.
-	 * @return \Cake\ORM\Query
+	 * @param \Cake\ORM\Query\SelectQuery $query Query array.
+	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findCloud(Query $query) {
+	public function findCloud(SelectQuery $query) {
 		$groupBy = ['Tagged.tag_id', 'Tags.id', 'Tags.slug', 'Tags.label'];
 		$fields = $groupBy;
 		$fields['counter'] = $query->func()->count('*');
@@ -153,12 +153,12 @@ class TaggedTable extends Table {
 	 * or just set the order to an empty array. This will only trigger for order clause of null.
 	 *
 	 * @param \Cake\Event\EventInterface $event
-	 * @param \Cake\ORM\Query $query
+	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param \ArrayObject $options
 	 * @param bool $primary
-	 * @return \Cake\ORM\Query
+	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function beforeFind(EventInterface $event, Query $query, ArrayObject $options, $primary) {
+	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options, $primary): SelectQuery {
 		$order = $query->clause('order');
 		if ($order !== null) {
 			return $query;
