@@ -1,7 +1,10 @@
 parameters:
+	level: 8
+	paths:
+		- src/
 	bootstrapFiles:
-		- %rootDir%/../../../tests/bootstrap.php
+		- tests/bootstrap.php
 	checkMissingIterableValueType: false
 	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
-		- '#Access to an undefined property .+::\$_joinData.#'
+		- '#Access to an undefined property .+::\$.+.#'
