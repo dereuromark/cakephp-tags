@@ -39,7 +39,7 @@
 	},
 	"require-dev": {
 		"dereuromark/cakephp-tools": "dev-cake5",
-		"robmorgan/phinx": "dev-cake5",
+		"robmorgan/phinx": "1.x-dev",
 		"cakephp/migrations": "4.x-dev",
 		"phpunit/phpunit": "^9.5",
 		"fig-r/psr2r-sniffer": "dev-next"
