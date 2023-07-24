@@ -7,8 +7,10 @@
  * installed as a dependency of an application.
  */
 
+use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
+use Cake\Datasource\ConnectionManager;
 
 if (!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);
@@ -32,7 +34,7 @@ define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . APP_DIR . DS);
 require dirname(__DIR__) . '/vendor/autoload.php';
 require CORE_PATH . 'config/bootstrap.php';
-Cake\Core\Configure::write('App', [
+Configure::write('App', [
 	'namespace' => 'TestApp',
 	'encoding' => 'utf-8',
 ]);
@@ -61,14 +63,14 @@ $cache = [
 		'duration' => '+10 seconds',
 	],
 ];
-Cake\Cache\Cache::setConfig($cache);
+Cache::setConfig($cache);
 
 // Ensure default test connection is defined
 if (!getenv('db_class')) {
 	putenv('db_class=Cake\Database\Driver\Sqlite');
 	putenv('db_dsn=sqlite::memory:');
 }
-Cake\Datasource\ConnectionManager::setConfig('test', [
+ConnectionManager::setConfig('test', [
 	'className' => 'Cake\Database\Connection',
 	'driver' => getenv('db_class') ?: null,
 	'dsn' => getenv('db_dsn') ?: null,
