@@ -11,6 +11,8 @@ use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
+use Tags\Plugin as TagsPlugin;
+use Tools\Plugin as ToolsPlugin;
 
 if (!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);
@@ -39,8 +41,8 @@ Configure::write('App', [
 	'encoding' => 'utf-8',
 ]);
 
-Plugin::getCollection()->add(new Tags\Plugin());
-Plugin::getCollection()->add(new Tools\Plugin());
+Plugin::getCollection()->add(new TagsPlugin());
+Plugin::getCollection()->add(new ToolsPlugin());
 
 require __DIR__ . '/config/routes.php';
 
