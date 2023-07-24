@@ -6,24 +6,24 @@
 		<ini name="error_reporting" value="16383"/>
 	</php>
 
-    <testsuites>
-        <testsuite name="tags">
-            <directory>tests/</directory>
-        </testsuite>
-    </testsuites>
+	<testsuites>
+		<testsuite name="tags">
+			<directory>tests/</directory>
+		</testsuite>
+	</testsuites>
 
-    <!-- Setup a listener for fixtures -->
-    <listeners>
-        <listener class="Tags\Test\TestSuite\Fixture\FixtureInjector">
-            <arguments>
-                <object class="Cake\TestSuite\Fixture\FixtureManager"/>
-            </arguments>
-        </listener>
-    </listeners>
+	<!-- Setup a listener for fixtures -->
+	<listeners>
+		<listener class="Tags\Test\TestSuite\Fixture\FixtureInjector">
+			<arguments>
+				<object class="Cake\TestSuite\Fixture\FixtureManager"/>
+			</arguments>
+		</listener>
+	</listeners>
 
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
+	<coverage>
+		<include>
+			<directory suffix=".php">src/</directory>
+		</include>
+	</coverage>
 </phpunit>
