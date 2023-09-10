@@ -15,12 +15,12 @@
     </testsuites>
 
 	<extensions>
-		<extension class="\Cake\TestSuite\Fixture\PHPUnitExtension"/>
+		<bootstrap class="Cake\TestSuite\Fixture\Extension\PHPUnitExtension"/>
 	</extensions>
 
-    <filter>
-        <whitelist>
+    <source>
+        <include>
             <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
+        </include>
+    </source>
 </phpunit>
