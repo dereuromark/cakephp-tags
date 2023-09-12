@@ -8,19 +8,19 @@
 		<env name="FIXTURE_SCHEMA_METADATA" value="tests/schema.php"/>
 	</php>
 
-    <testsuites>
-        <testsuite name="tags">
-            <directory>tests/</directory>
-        </testsuite>
-    </testsuites>
+	<testsuites>
+		<testsuite name="tags">
+			<directory>tests/</directory>
+		</testsuite>
+	</testsuites>
 
 	<extensions>
 		<bootstrap class="Cake\TestSuite\Fixture\Extension\PHPUnitExtension"/>
 	</extensions>
 
-    <source>
-        <include>
-            <directory suffix=".php">src/</directory>
-        </include>
-    </source>
+	<source>
+		<include>
+			<directory suffix=".php">src/</directory>
+		</include>
+	</source>
 </phpunit>

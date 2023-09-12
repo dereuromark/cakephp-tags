@@ -36,6 +36,7 @@ class TagCloudHelper extends Helper {
 	 */
 	protected array $_defaultConfig = [
 		'tagModel' => 'tag',
+		'labelKey' => 'label',
 		'shuffle' => true,
 		'extract' => '{n}.weight',
 		'maxSize' => 160,
@@ -102,11 +103,21 @@ class TagCloudHelper extends Helper {
 			);
 			$size = $tag['size'] = ceil($size);
 
-			$content = $this->Html->link(
-				$tag[$options['tagModel']]['label'],
-				$this->_tagUrl($tag, $options),
-				['id' => 'tag-' . $tag[$options['tagModel']]['id']],
-			);
+			if ($options['tagModel']) {
+				$label = $tag[$options['tagModel']][$options['labelKey']];
+			} else {
+				$label = $tag[$options['labelKey']];
+			}
+
+			if ($this->getConfig('url') !== false) {
+				$content = $this->Html->link(
+					$label,
+					$this->_tagUrl($tag, $options),
+					['id' => 'tag-' . $tag[$options['tagModel']]['id']],
+				);
+			} else {
+				$content = h($label);
+			}
 			$data = compact('size', 'content');
 			$cloud[] = $this->templater()->format('item', $data);
 		}
