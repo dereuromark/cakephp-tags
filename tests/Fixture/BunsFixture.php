@@ -7,11 +7,6 @@ use Cake\TestSuite\Fixture\TestFixture;
 class BunsFixture extends TestFixture {
 
 	/**
-	 * @var string
-	 */
-	public string $table = 'tags_buns';
-
-	/**
 	 * @var array
 	 */
 	public array $fields = [

@@ -31,7 +31,7 @@ class TaggedTableTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->Tagged = TableRegistry::get('Tags.Tagged', ['table' => 'tags_tagged']);
+		$this->Tagged = TableRegistry::getTableLocator()->get('Tags.Tagged');
 	}
 
 	/**
@@ -42,7 +42,7 @@ class TaggedTableTest extends TestCase {
 	public function tearDown(): void {
 		parent::tearDown();
 		unset($this->Tagged);
-		TableRegistry::clear();
+		//TableRegistry::clear();
 	}
 
 	/**

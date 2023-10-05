@@ -32,7 +32,7 @@ class TagsTableTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->Tags = TableRegistry::get('Tags.Tags');
+		$this->Tags = TableRegistry::getTableLocator()->get('Tags.Tags');
 	}
 
 	/**
@@ -43,7 +43,7 @@ class TagsTableTest extends TestCase {
 	public function tearDown(): void {
 		parent::tearDown();
 		unset($this->Tags);
-		TableRegistry::clear();
+		//TableRegistry::clear();
 	}
 
 	/**
@@ -66,9 +66,9 @@ class TagsTableTest extends TestCase {
 	 */
 	public function testCustomSluggerWithConfig() {
 		$behaviors = ['Tools.Slugged' => ['mode' => [Text::class, 'slug']]];
-		TableRegistry::clear();
+		//TableRegistry::clear();
 
-		$this->Tags = TableRegistry::get('Tags.Tags');
+		$this->Tags = TableRegistry::getTableLocator()->get('Tags.Tags');
 		$this->Tags->addBehaviors($behaviors);
 
 		$tag = $this->Tags->newEntity([
@@ -83,9 +83,9 @@ class TagsTableTest extends TestCase {
 	 * @return void
 	 */
 	public function testMultipleTagsPerModel() {
-		TableRegistry::clear();
+		//TableRegistry::clear();
 
-		$table = TableRegistry::get('MultiTagsRecords');
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
 		$entity = $table->newEntity([
 			'name' => 'Föö Bää',
 			'one_list' => 'x,y',

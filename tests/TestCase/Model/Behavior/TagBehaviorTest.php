@@ -39,7 +39,7 @@ class TagBehaviorTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$table = TableRegistry::get('Tags.Muffins');
+		$table = TableRegistry::getTableLocator()->get('Tags.Muffins');
 		$table->addBehavior('Tags.Tag');
 
 		$this->Table = $table;
@@ -51,7 +51,7 @@ class TagBehaviorTest extends TestCase {
 	 */
 	public function tearDown(): void {
 		parent::tearDown();
-		TableRegistry::clear();
+		//TableRegistry::clear();
 		unset($this->Behavior);
 	}
 
@@ -544,10 +544,10 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function testCounterCacheFieldException() {
-		$table = TableRegistry::get('Tags.Buns', ['table' => 'tags_buns']);
+		$table = TableRegistry::getTableLocator()->get('Tags.Buns', ['table' => 'buns']);
 
 		$this->expectException(RuntimeException::class);
-		$this->expectExceptionMessage('Field "non_existent" does not exist in table "tags_buns"');
+		$this->expectExceptionMessage('Field "non_existent" does not exist in table "buns"');
 
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => [
@@ -714,7 +714,7 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function testFinderUntaggedWithoutCounterField() {
-		$table = TableRegistry::get('Tags.CounterlessMuffins');
+		$table = TableRegistry::getTableLocator()->get('Tags.CounterlessMuffins');
 
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => false,

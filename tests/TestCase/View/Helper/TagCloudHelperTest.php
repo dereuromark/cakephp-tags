@@ -49,7 +49,8 @@ class TagCloudHelperTest extends TestCase {
 		// Needed only for fake requests (tests)
 		$this->Helper->setConfig('url', ['controller' => 'MyController', 'action' => 'index']);
 
-		Router::scope('/', function (RouteBuilder $routes): void {
+		$builder = Router::createRouteBuilder('/');
+		$builder->scope('/', function (RouteBuilder $routes): void {
 			$routes->fallbacks(DashedRoute::class);
 		});
 	}

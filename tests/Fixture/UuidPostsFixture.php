@@ -9,7 +9,7 @@ class UuidPostsFixture extends TestFixture {
 	/**
 	 * @var string
 	 */
-	public string $table = 'tags_posts';
+	public string $table = 'uuid_posts';
 
 	/**
 	 * @var array

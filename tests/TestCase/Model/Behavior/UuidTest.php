@@ -32,7 +32,7 @@ class UuidTest extends TestCase {
 	 */
 	public function tearDown(): void {
 		parent::tearDown();
-		TableRegistry::clear();
+		//TableRegistry::clear();
 
 		Cache::clearAll();
 	}
@@ -41,7 +41,7 @@ class UuidTest extends TestCase {
 	 * @return void
 	 */
 	public function testUuids() {
-		$table = TableRegistry::get('Posts', ['table' => 'tags_posts']);
+		$table = TableRegistry::getTableLocator()->get('Posts', ['table' => 'uuid_posts']);
 
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => false,
