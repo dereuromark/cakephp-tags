@@ -41,10 +41,17 @@ class UuidTest extends TestCase {
 	 * @return void
 	 */
 	public function testUuids() {
-		$table = TableRegistry::getTableLocator()->get('Posts', ['table' => 'uuid_posts']);
+		$table = TableRegistry::getTableLocator()->get('UuidPosts', ['table' => 'uuid_posts']);
 
 		$table->addBehavior('Tags.Tag', [
 			'taggedCounter' => false,
+			'tagsAssoc' => [
+				'className' => 'UuidTags',
+				'joinTable' => 'uuid_tagged',
+			],
+			'taggedAssoc' => [
+				'className' => 'UuidTagged',
+			],
 		]);
 
 		$record = [
