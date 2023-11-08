@@ -2,6 +2,7 @@
 /composer.phar
 /phpunit.phar
 .phpunit.result.cache
+/.phpunit.cache/
 /plugins/
 /vendor/
 /.idea/
