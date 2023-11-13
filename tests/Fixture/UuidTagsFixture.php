@@ -24,7 +24,7 @@ class UuidTagsFixture extends TestFixture {
 		'modified' => ['type' => 'datetime', 'null' => true],
 		'_constraints' => [
 			'primary' => ['type' => 'primary', 'columns' => ['id']],
-			'slug' => ['type' => 'unique', 'columns' => ['slug', 'namespace'], 'length' => []],
+			'uuid-slug' => ['type' => 'unique', 'columns' => ['slug', 'namespace'], 'length' => []],
 		],
 	];
 
