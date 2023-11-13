@@ -101,7 +101,7 @@ class TaggedTable extends Table {
 			$query->where(['Tags.id IS NOT' => null]);
 		}
 		if ($query->clause('order') === null) {
-			$query->orderAsc('Tags.label');
+			$query->orderbyAsc('Tags.label');
 		}
 
 		$query->formatResults(function (CollectionInterface $results) {
@@ -175,8 +175,8 @@ class TaggedTable extends Table {
 			$order = $this->order;
 		}
 
-		if (!empty($order)) {
-			$query->order($order);
+		if ($order) {
+			$query->orderBy($order);
 		}
 
 		return $query;

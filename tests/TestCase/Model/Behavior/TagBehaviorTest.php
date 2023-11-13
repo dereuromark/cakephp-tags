@@ -606,7 +606,7 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(2, $result);
 
-		$result = $this->Table->find('tagged', ['slug' => 'color'])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['slug' => 'color'])->orderByAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Blue', 'Red'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
@@ -628,7 +628,7 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(4, $result);
 
-		$result = $this->Table->find('tagged', ['slug' => 'color,weight'])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['slug' => 'color,weight'])->orderByAsc($this->Table->aliasField('name'))->toArray();
 		$this->assertCount(3, $result);
 
 		$expected = ['Blue', 'Heavy', 'Red'];
@@ -651,7 +651,7 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(4, $result);
 
-		$result = $this->Table->find('tagged', ['slug' => 'color+weight'])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['slug' => 'color+weight'])->orderByAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Heavy'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
@@ -669,7 +669,7 @@ class TagBehaviorTest extends TestCase {
 		$tag = $this->Table->Tags->newEntity($tag);
 		$this->Table->Tags->save($tag);
 
-		$result = $this->Table->find('tagged', ['label' => 'Color'])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['label' => 'Color'])->orderByAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Blue', 'Red'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
@@ -691,7 +691,7 @@ class TagBehaviorTest extends TestCase {
 		$tag = $this->Table->Tags->newEntity($tag);
 		$this->Table->Tags->save($tag);
 
-		$result = $this->Table->find('tagged', ['slug' => ['color', 'beautiful']])->orderAsc($this->Table->aliasField('name'))->toArray();
+		$result = $this->Table->find('tagged', ['slug' => ['color', 'beautiful']])->orderByAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Blue', 'Red', 'Shiny'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
