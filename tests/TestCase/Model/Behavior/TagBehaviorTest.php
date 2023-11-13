@@ -2,6 +2,8 @@
 
 namespace Tags\Test\TestCase\Model\Behavior;
 
+use Cake\Database\Driver\Mysql;
+use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\TableRegistry;
@@ -159,11 +161,14 @@ class TagBehaviorTest extends TestCase {
 		$this->Table->saveOrFail($entity);
 
 		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'Color'])->count();
-		$this->assertEquals(1, $count);
+		$this->assertSame(1, $count);
 		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'Dark Color'])->count();
-		$this->assertEquals(1, $count);
+		$this->assertSame(1, $count);
 		$count = $this->Table->Tagged->Tags->find()->where(['label' => 'color'])->count();
-		$this->assertEquals(0, $count);
+
+		$config = ConnectionManager::getConfig('test');
+		$expected = $config['driver'] === Mysql::class ? 1 : 0;
+		$this->assertSame($expected, $count);
 	}
 
 	/**
