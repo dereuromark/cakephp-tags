@@ -23,7 +23,7 @@ class TaggedFixture extends TestFixture {
 		'modified' => ['type' => 'datetime', 'null' => false],
 		'_constraints' => [
 			'primary' => ['type' => 'primary', 'columns' => ['id']],
-			'tag_id' => ['type' => 'unique', 'columns' => ['tag_id', 'fk_id', 'fk_model'], 'length' => []],
+			'tag-id' => ['type' => 'unique', 'columns' => ['tag_id', 'fk_id', 'fk_model'], 'length' => []],
 		],
 	];
 

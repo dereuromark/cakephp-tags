@@ -23,7 +23,7 @@ class UuidTaggedFixture extends TestFixture {
 		'modified' => ['type' => 'datetime', 'null' => true],
 		'_constraints' => [
 			'primary' => ['type' => 'primary', 'columns' => ['id']],
-			'tag_id' => ['type' => 'unique', 'columns' => ['tag_id', 'fk_id', 'fk_model'], 'length' => []],
+			'uuid-tag-id' => ['type' => 'unique', 'columns' => ['tag_id', 'fk_id', 'fk_model'], 'length' => []],
 		],
 	];
 
