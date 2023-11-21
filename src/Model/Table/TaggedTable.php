@@ -11,16 +11,21 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
- * @property \Tags\Model\Table\TagsTable|\Cake\ORM\Association\BelongsTo $Tags
+ * @property \Tags\Model\Table\TagsTable&\Cake\ORM\Association\BelongsTo $Tags
  *
- * @method \Tags\Model\Entity\Tagged get($primaryKey, $options = [])
- * @method \Tags\Model\Entity\Tagged newEntity($data = null, array $options = [])
+ * @method \Tags\Model\Entity\Tagged get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
+ * @method \Tags\Model\Entity\Tagged newEntity(array $data, array $options = [])
  * @method array<\Tags\Model\Entity\Tagged> newEntities(array $data, array $options = [])
- * @method \Tags\Model\Entity\Tagged|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Tags\Model\Entity\Tagged|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
  * @method \Tags\Model\Entity\Tagged patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method array<\Tags\Model\Entity\Tagged> patchEntities($entities, array $data, array $options = [])
- * @method \Tags\Model\Entity\Tagged findOrCreate($search, callable $callback = null, $options = [])
- *
+ * @method array<\Tags\Model\Entity\Tagged> patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \Tags\Model\Entity\Tagged findOrCreate($search, ?callable $callback = null, array $options = [])
+ * @method \Tags\Model\Entity\Tagged newEmptyEntity()
+ * @method \Tags\Model\Entity\Tagged saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
+ * @method \Cake\Datasource\ResultSetInterface<\Tags\Model\Entity\Tagged>|false saveMany(iterable $entities, array $options = [])
+ * @method \Cake\Datasource\ResultSetInterface<\Tags\Model\Entity\Tagged> saveManyOrFail(iterable $entities, array $options = [])
+ * @method \Cake\Datasource\ResultSetInterface<\Tags\Model\Entity\Tagged>|false deleteMany(iterable $entities, array $options = [])
+ * @method \Cake\Datasource\ResultSetInterface<\Tags\Model\Entity\Tagged> deleteManyOrFail(iterable $entities, array $options = [])
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class TaggedTable extends Table {

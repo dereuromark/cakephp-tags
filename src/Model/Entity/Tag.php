@@ -6,7 +6,7 @@ use Cake\ORM\Entity;
 
 /**
  * @property int $id
- * @property string $namespace
+ * @property string|null $namespace
  * @property string $slug
  * @property string $label
  * @property int $counter

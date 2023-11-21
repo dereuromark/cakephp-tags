@@ -11,7 +11,8 @@ use Cake\ORM\Entity;
  * @property string $fk_model
  * @property \Cake\I18n\DateTime $created
  * @property \Cake\I18n\DateTime $modified
- * @property \Tags\Model\Entity\Tag $tags
+ * @property array<\Tags\Model\Entity\Tag> $tags
+ * @property \Tags\Model\Entity\Tag $tag
  */
 class Tagged extends Entity {
 
