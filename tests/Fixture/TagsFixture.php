@@ -20,8 +20,8 @@ class TagsFixture extends TestFixture {
 		'slug' => ['type' => 'string', 'length' => 255],
 		'label' => ['type' => 'string', 'length' => 255],
 		'counter' => ['type' => 'integer', 'unsigned' => true, 'default' => '0', 'null' => false],
-		'created' => ['type' => 'datetime', 'null' => true],
-		'modified' => ['type' => 'datetime', 'null' => true],
+		'created' => ['type' => 'datetime', 'null' => false],
+		'modified' => ['type' => 'datetime', 'null' => false],
 		'_constraints' => [
 			'primary' => ['type' => 'primary', 'columns' => ['id']],
 			'slug' => ['type' => 'unique', 'columns' => ['slug', 'namespace'], 'length' => []],
@@ -40,12 +40,16 @@ class TagsFixture extends TestFixture {
 			'slug' => 'color',
 			'label' => 'Color',
 			'counter' => 3,
+			'modified' => '2011-07-15 19:47:38',
+			'created' => '2011-07-15 19:47:38',
 		],
 		[
 			'namespace' => null,
 			'slug' => 'dark-color',
 			'label' => 'Dark Color',
 			'counter' => 2,
+			'modified' => '2011-07-15 19:48:30',
+			'created' => '2011-07-15 19:48:30',
 		],
 	];
 
