@@ -431,7 +431,7 @@ class TagBehavior extends Behavior {
 	 */
 	public function normalizeTags($tags): array {
 		if (is_string($tags)) {
-			$tags = explode($this->getConfig('delimiter'), $tags) ?: [];
+			$tags = explode($this->getConfig('delimiter'), $tags);
 		}
 
 		$result = [];
