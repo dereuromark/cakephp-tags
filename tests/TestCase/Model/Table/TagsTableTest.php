@@ -102,7 +102,7 @@ class TagsTableTest extends TestCase {
 
 		$table->saveOrFail($entity);
 
-		$entity = $table->get($entity->id, ['contain' => ['TagsOne', 'TagsTwo']]);
+		$entity = $table->get($entity->id, ...['contain' => ['TagsOne', 'TagsTwo']]);
 
 		$this->assertSame('x, y', $entity->one_list);
 		$this->assertSame('12, 66, 98', $entity->two_list);

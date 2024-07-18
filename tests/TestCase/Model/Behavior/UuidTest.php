@@ -68,7 +68,7 @@ class UuidTest extends TestCase {
 		$table->patchEntity($record, ['tag_list' => 'Foo, Bar'], ['fields' => ['tag_list', 'tags']]);
 		$table->saveOrFail($record);
 
-		$savedRecord = $table->get($record->id, ['contain' => ['Tags']]);
+		$savedRecord = $table->get($record->id, ...['contain' => ['Tags']]);
 
 		$tagged = $table->Tagged->find()->all()->toArray();
 		$this->assertCount(2, $tagged);

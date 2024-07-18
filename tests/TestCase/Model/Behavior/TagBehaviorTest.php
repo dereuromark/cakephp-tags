@@ -511,13 +511,13 @@ class TagBehaviorTest extends TestCase {
 		$entity = $this->Table->newEntity($data);
 
 		$this->Table->saveOrFail($entity);
-		$entity = $this->Table->get($entity->id, ['contain' => 'Tags']);
+		$entity = $this->Table->get($entity->id, ...['contain' => 'Tags']);
 		$this->assertCount(2, $entity->tags);
 
 		$this->Table->patchEntity($entity, ['tag_list' => '']);
 		$this->Table->saveOrFail($entity);
 
-		$entity = $this->Table->get($entity->id, ['contain' => 'Tags']);
+		$entity = $this->Table->get($entity->id, ...['contain' => 'Tags']);
 		$this->assertCount(0, $entity->tags);
 	}
 
@@ -566,7 +566,7 @@ class TagBehaviorTest extends TestCase {
 	 * @return void
 	 */
 	public function testAssociationConditionsAreWorkingAsExpected() {
-		$this->assertEquals(2, count($this->Table->get(1, ['contain' => ['Tags']])->tags));
+		$this->assertEquals(2, count($this->Table->get(1, ...['contain' => ['Tags']])->tags));
 	}
 
 	/**
