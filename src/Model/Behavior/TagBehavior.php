@@ -417,7 +417,10 @@ class TagBehavior extends Behavior {
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
 		$conditions = [$this->getConfig('fkModelField') => $modelAlias];
-		$this->_table->hasOne('NoTags', ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions]);
+		if (!$this->_table->hasAssociation('NoTags')) {
+			$settings = ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions];
+			$this->_table->hasOne('NoTags', $settings);
+		}
 		$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
 
 		return $query;
