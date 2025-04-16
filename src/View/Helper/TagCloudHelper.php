@@ -66,7 +66,7 @@ class TagCloudHelper extends Helper {
 	 *
 	 * @param array $tags Tag array to display.
 	 * @param array<string, mixed> $options Display options.
-	 * @param array $attrs For ul element
+	 * @param array<string, mixed> $attrs For ul element
 	 * @return string
 	 */
 	public function display(array $tags, array $options = [], array $attrs = []) {
