@@ -77,7 +77,7 @@ class TagCloudHelper extends Helper {
 
 		$tags = $this->calculateWeights($tags);
 
-		/** @var array $weights */
+		/** @var non-empty-array $weights */
 		$weights = Hash::extract($tags, $options['extract']);
 		$maxWeight = max($weights);
 		$minWeight = min($weights);
@@ -140,7 +140,7 @@ class TagCloudHelper extends Helper {
 			'minSize' => 10,
 			'maxSize' => 20,
 		];
-		/** @var array $weights */
+		/** @var non-empty-array $weights */
 		$weights = Hash::extract($entities, '{n}.counter');
 		$maxWeight = max($weights);
 		$minWeight = min($weights);

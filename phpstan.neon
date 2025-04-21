@@ -7,4 +7,5 @@ parameters:
 	ignoreErrors:
 		- identifier: missingType.iterableValue
 		- identifier: missingType.generics
+		- '#PHPDoc tag @property for property .+TaggedTable\:\:\$.+ contains unresolvable type.#'
 		- '#Access to an undefined property .+::\$.+.#'
