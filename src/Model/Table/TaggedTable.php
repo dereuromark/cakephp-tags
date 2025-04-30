@@ -115,7 +115,7 @@ class TaggedTable extends Table {
 			return $results;
 		});
 
-		return $query->find('all', $options);
+		return $query->find('all', ...$options);
 	}
 
 	/**

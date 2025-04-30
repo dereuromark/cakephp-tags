@@ -47,7 +47,7 @@ So a controller "edit" action usually still looks like always:
         $this->Flash->error(__('The post could not be saved. Please, try again.'));
     }
 
-    $tags = $this->Articles->Tags->find('list', ['keyField' => 'slug']);
+    $tags = $this->Articles->Tags->find('list', ...['keyField' => 'slug']);
     $this->set(compact('article', 'tags'));
 ```
 
@@ -74,7 +74,7 @@ They can also be combined/stacked with other custom finders, of course.
 
 #### Tagged
 ```php
-$taggedRecords = $this->Records->find('tagged', ['tag' => 'tag-slug']);
+$taggedRecords = $this->Records->find('tagged', ...['tag' => 'tag-slug']);
 ```
 It also accepts an array here to match any of these tags given.
 
@@ -161,7 +161,7 @@ $searchManager
     ->callback('tag', [
         'callback' => function (Query $query, array $args, $manager) {
             // Here you would have to remap $args if key isn't the expected "tag"
-            $query->find('tagged', $args);
+            $query->find('tagged', ...$args);
         }
     ]);
 ```
@@ -171,10 +171,10 @@ $searchManager
 Using `orSeparator`/`andSeparator` config, one can also filter by multiple tags at once:
 ```php
 // Records that have either "one" or "two" tag
-$query->find('tagged', ['slug' => 'one,two']);
+$query->find('tagged', ...['slug' => 'one,two']);
 
 // Records that have both "one" and "two" tag
-$query->find('tagged', ['slug' => 'one+two']);
+$query->find('tagged', ...['slug' => 'one+two']);
 ```
 
 For this to be used inside Search plugin, you would usually generate URLs like this:
@@ -198,9 +198,9 @@ Then you just have to switch the query inside the callback in the case of `-1`:
 ```php
     'callback' => function (Query $query, array $args, $manager) {
         if ($args['tag'] === '-1') {
-            $query->find('untagged');
+
         } else {
-            $query->find('tagged', $args);
+            $query->find('tagged',...$args);
         }
     }
 ```

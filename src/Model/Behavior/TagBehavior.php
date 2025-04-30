@@ -346,9 +346,9 @@ class TagBehavior extends Behavior {
 	 * {finderField} via config can be either 'slug' or 'label' of Tags table. Defaults to slug.
 	 *
 	 * Usage:
-	 *   $query->find('tagged', ['{finderField}' => 'example-tag']);
+	 *   $query->find('tagged', ...['{finderField}' => 'example-tag']);
 	 * or:
-	 *   $query->find('tagged', ['{finderField}' => ['one', 'two']);
+	 *   $query->find('tagged', ...['{finderField}' => ['one', 'two']);
 	 *
 	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param array<string, mixed> $options
@@ -394,7 +394,7 @@ class TagBehavior extends Behavior {
 	 *   $query->find('untagged');
 	 *
 	 * Define a field if you have multiple counter cache fields set up:
-	 *   $query->find('untagged', ['counterField' => 'my_tag_count']);
+	 *   $query->find('untagged', ...['counterField' => 'my_tag_count']);
 	 * Otherwise it will fallback to the first in the list.
 	 *
 	 * Set 'counterField' to false to do a live lookup in the pivot table.

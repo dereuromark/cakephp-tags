@@ -112,12 +112,12 @@ class TagsTableTest extends TestCase {
 
 		$untagged = $table->find('untaggedOne')->count();
 		$this->assertSame(2, $untagged);
-		$tagged = $table->find('taggedOne', ['slug' => 'x'])->first();
+		$tagged = $table->find('taggedOne', ...['slug' => 'x'])->first();
 		$this->assertSame($entity->id, $tagged->id);
 
 		$untagged = $table->find('untaggedTwo')->count();
 		$this->assertSame(2, $untagged);
-		$tagged = $table->find('taggedTwo', ['slug' => '66'])->first();
+		$tagged = $table->find('taggedTwo', ...['slug' => '66'])->first();
 		$this->assertSame($entity->id, $tagged->id);
 	}
 
