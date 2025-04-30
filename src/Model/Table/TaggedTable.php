@@ -161,18 +161,18 @@ class TaggedTable extends Table {
 	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param \ArrayObject $options
 	 * @param bool $primary
-	 * @return \Cake\ORM\Query\SelectQuery
+	 * @return void
 	 */
-	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options, $primary): SelectQuery {
+	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options, $primary): void {
 		$order = $query->clause('order');
 		if ($order !== null) {
-			return $query;
+			return;
 		}
 
 		if (!isset($this->order)) {
 			$contain = $query->getContain();
 			if (!isset($contain[$this->Tags->getAlias()])) {
-				return $query;
+				return;
 			}
 
 			$order = [$this->Tags->getAlias() . '.label' => 'ASC'];
@@ -181,10 +181,10 @@ class TaggedTable extends Table {
 		}
 
 		if ($order) {
-			$query->orderBy($order);
+			$query = $query->orderBy($order);
 		}
 
-		return $query;
+		$event->setResult($query);
 	}
 
 }

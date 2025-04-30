@@ -165,10 +165,10 @@ class TagBehavior extends Behavior {
 	 * @param \Cake\Event\EventInterface $event
 	 * @param \Cake\ORM\Query\SelectQuery $query
 	 * @param \ArrayObject $options
-	 * @return \Cake\ORM\Query\SelectQuery
+	 * @return void
 	 */
 	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options) {
-		$query->formatResults(function ($results) {
+		$query = $query->formatResults(function ($results) {
 			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {
 				$field = $this->getConfig('field');
@@ -187,7 +187,7 @@ class TagBehavior extends Behavior {
 			});
 		});
 
-		return $query;
+		$event->setResult($query);
 	}
 
 	/**
