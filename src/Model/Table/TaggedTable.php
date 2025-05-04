@@ -163,7 +163,7 @@ class TaggedTable extends Table {
 	 * @param bool $primary
 	 * @return void
 	 */
-	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options, $primary): void {
+	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options, bool $primary): void {
 		$order = $query->clause('order');
 		if ($order !== null) {
 			return;
