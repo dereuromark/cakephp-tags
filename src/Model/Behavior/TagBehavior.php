@@ -107,7 +107,7 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException
 	 * @return void
 	 */
-	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options) {
+	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options): void {
 		$field = $this->getConfig('field');
 		$property = $this->getConfig('tagsAssoc.propertyName');
 		$options['accessibleFields'][$property] = true;
@@ -136,7 +136,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * @return void
 	 */
-	public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options) {
+	public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void {
 		if (!isset($entity->tags)) {
 			return;
 		}
@@ -167,7 +167,7 @@ class TagBehavior extends Behavior {
 	 * @param \ArrayObject $options
 	 * @return void
 	 */
-	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options) {
+	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options): void {
 		$query = $query->formatResults(function ($results) {
 			/** @var \Cake\Collection\CollectionInterface $results */
 			return $results->map(function ($row) {
