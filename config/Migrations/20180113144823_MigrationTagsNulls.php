@@ -1,8 +1,8 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
+use Migrations\BaseMigration;
 
-class MigrationTagsNulls extends AbstractMigration {
+class MigrationTagsNulls extends BaseMigration {
 
 	/**
 	 * Change Method.
