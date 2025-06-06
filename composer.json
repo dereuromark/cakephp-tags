@@ -43,6 +43,9 @@
 		"fig-r/psr2r-sniffer": "dev-master",
 		"phpunit/phpunit": "^10.5 || ^11.5 || ^12.1"
 	},
+	"conflict": {
+		"cakephp/migrations": "<4.5"
+	},
 	"minimum-stability": "stable",
 	"prefer-stable": true,
 	"autoload": {
