@@ -38,7 +38,7 @@
 		"cakephp/cakephp": "^5.1.1"
 	},
 	"require-dev": {
-		"cakephp/migrations": "^4.0.1",
+		"cakephp/migrations": "^4.5.1",
 		"dereuromark/cakephp-tools": "^3.0.0",
 		"fig-r/psr2r-sniffer": "dev-master",
 		"phpunit/phpunit": "^10.5 || ^11.5 || ^12.1"
