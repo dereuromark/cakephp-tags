@@ -42,8 +42,7 @@ class TagBehavior extends Behavior {
 		],
 		'taggedCounter' => [
 			'tag_count' => [
-				'conditions' => [
-				],
+				'conditions' => [],
 			],
 		],
 		'implementedEvents' => [

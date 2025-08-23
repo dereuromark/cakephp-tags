@@ -41,8 +41,7 @@ class TagCloudHelper extends Helper {
 		'extract' => '{n}.weight',
 		'maxSize' => 160,
 		'minSize' => 80,
-		'url' => [
-		],
+		'url' => [],
 		'named' => 'by',
 		'templates' => [
 			'wrapper' => '<ul{{attrs}}>{{content}}</ul>',
