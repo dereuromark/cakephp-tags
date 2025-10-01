@@ -119,20 +119,75 @@ After running the plugin migrations, the color field is available. You can use i
 ```php
 // In tag management forms
 echo $this->Form->control('color', ['type' => 'color']);
+
+// Or use the TagHelper with automatic contrast color handling
+echo $this->Tag->colorControl();
 ```
 
-And display colored tags in your templates:
+##### Displaying Colored Tags
+
+The TagHelper provides several convenient methods for displaying colored tags:
+
+**Single Tag**
 ```php
-// When displaying tags
-foreach ($entity->tags as $tag) {
-    $bgColor = $tag->color ?? '#cccccc';
-    echo '<span style="background-color: ' . h($bgColor) . '; padding: 2px 8px; border-radius: 3px;">';
-    echo h($tag->label);
-    echo '</span>';
-}
+// Basic colored tag
+echo $this->Tag->tag($tag);
+
+// With custom options
+echo $this->Tag->tag($tag, [
+    'url' => ['action' => 'view', $tag->slug],
+    'class' => 'custom-tag',
+    'defaultColor' => '#cccccc',
+]);
 ```
 
-The color field accepts standard hex color values (e.g., `#FF5733`) and is validated automatically.
+**Multiple Tags**
+```php
+// Display all tags in a container
+echo $this->Tag->tags($entity->tags);
+
+// As Bootstrap badges
+echo $this->Tag->badges($entity->tags);
+
+// As Bootstrap pills (rounded badges)
+echo $this->Tag->pills($entity->tags);
+
+// As a list with links
+echo $this->Tag->list($entity->tags, [
+    'url' => '/tags/view',
+    'separator' => ', ',
+]);
+```
+
+**Color Utilities**
+```php
+// Get contrast text color (black or white) for readability
+$textColor = $this->Tag->getContrastColor('#FF5733'); // Returns '#ffffff'
+
+// Adjust brightness
+$lighter = $this->Tag->adjustBrightness('#808080', 20);  // Lighten by 20%
+$darker = $this->Tag->adjustBrightness('#808080', -20); // Darken by 20%
+```
+
+You can also use the ColorUtility class directly in your code:
+```php
+use Tags\Utility\ColorUtility;
+
+// Validate hex colors
+$isValid = ColorUtility::isValidHex('#FF5733'); // true
+
+// Generate random colors
+$color = ColorUtility::random(); // e.g., '#A3C5F7'
+
+// Normalize colors
+$normalized = ColorUtility::normalize('ff5733'); // '#FF5733'
+
+// Convert between hex and RGB
+$rgb = ColorUtility::hexToRgb('#FF5733'); // ['r' => 255, 'g' => 87, 'b' => 51]
+$hex = ColorUtility::rgbToHex(255, 87, 51); // '#FF5733'
+```
+
+The color field accepts standard hex color values (e.g., `#FF5733`) and the helper automatically calculates appropriate text colors for optimal readability.
 
 #### Validation
 Don't forget to set up some basic validation on your tagged model.
