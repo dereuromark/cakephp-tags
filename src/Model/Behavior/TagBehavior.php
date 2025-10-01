@@ -582,9 +582,9 @@ class TagBehavior extends Behavior {
 
 			return $this->_table->{$taggedAlias}->find()
 				->contain([$this->getConfig('tagsAlias')])
+				->select([$taggedAlias . '.' . $foreignKey])
 				->groupBy($taggedAlias . '.' . $foreignKey)
 				->having('COUNT(*) = ' . count($andValues))
-				->select($taggedAlias . '.' . $foreignKey)
 				->where($conditions);
 		}
 
