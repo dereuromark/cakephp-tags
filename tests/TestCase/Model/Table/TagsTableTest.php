@@ -82,6 +82,54 @@ class TagsTableTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testValidationColor() {
+		$tag = $this->Tags->newEntity([
+			'label' => 'Test Tag',
+			'slug' => 'test-tag',
+			'color' => '#FF5733',
+		]);
+		$this->assertEmpty($tag->getErrors());
+
+		$tag = $this->Tags->newEntity([
+			'label' => 'Test Tag',
+			'slug' => 'test-tag',
+			'color' => '#ff5733',
+		]);
+		$this->assertEmpty($tag->getErrors());
+
+		$tag = $this->Tags->newEntity([
+			'label' => 'Test Tag',
+			'slug' => 'test-tag',
+			'color' => 'invalid',
+		]);
+		$this->assertNotEmpty($tag->getErrors());
+		$this->assertArrayHasKey('color', $tag->getErrors());
+
+		$tag = $this->Tags->newEntity([
+			'label' => 'Test Tag',
+			'slug' => 'test-tag',
+			'color' => '#GGGGGG',
+		]);
+		$this->assertNotEmpty($tag->getErrors());
+		$this->assertArrayHasKey('color', $tag->getErrors());
+
+		$tag = $this->Tags->newEntity([
+			'label' => 'Test Tag',
+			'slug' => 'test-tag',
+			'color' => '',
+		]);
+		$this->assertEmpty($tag->getErrors());
+
+		$tag = $this->Tags->newEntity([
+			'label' => 'Test Tag',
+			'slug' => 'test-tag',
+		]);
+		$this->assertEmpty($tag->getErrors());
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testMultipleTagsPerModel() {
 		//TableRegistry::clear();
 

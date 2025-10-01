@@ -112,6 +112,28 @@ By default the shuffle is enabled, you can disable using `'shuffle' => false` co
 By default the tags are counted (globally).
 You can add the column `counter` to the taggable table to also cache this counter for the specific types.
 
+#### Tag Colors
+Tags support an optional `color` field (hex format like `#FF5733`) for visual labeling, similar to GitHub labels.
+
+After running the plugin migrations, the color field is available. You can use it in forms:
+```php
+// In tag management forms
+echo $this->Form->control('color', ['type' => 'color']);
+```
+
+And display colored tags in your templates:
+```php
+// When displaying tags
+foreach ($entity->tags as $tag) {
+    $bgColor = $tag->color ?? '#cccccc';
+    echo '<span style="background-color: ' . h($bgColor) . '; padding: 2px 8px; border-radius: 3px;">';
+    echo h($tag->label);
+    echo '</span>';
+}
+```
+
+The color field accepts standard hex color values (e.g., `#FF5733`) and is validated automatically.
+
 #### Validation
 Don't forget to set up some basic validation on your tagged model.
 You can re-use the same validation if you store it in a more central place.

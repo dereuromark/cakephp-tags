@@ -9,6 +9,7 @@ use Cake\ORM\Entity;
  * @property string|null $namespace
  * @property string $slug
  * @property string $label
+ * @property string|null $color
  * @property int $counter
  * @property \Cake\I18n\DateTime $created
  * @property \Cake\I18n\DateTime $modified

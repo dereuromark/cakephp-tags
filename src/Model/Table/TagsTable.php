@@ -64,6 +64,21 @@ class TagsTable extends Table {
 		$validator
 			->notBlank('label');
 
+		$validator
+			->scalar('color')
+			->maxLength('color', 7)
+			->allowEmptyString('color')
+			->add('color', 'hexColor', [
+				'rule' => function ($value, $context) {
+					if (empty($value)) {
+						return true;
+					}
+
+					return (bool)preg_match('/^#[0-9A-Fa-f]{6}$/', $value);
+				},
+				'message' => __('Color must be a valid hex color (e.g., #FF5733)'),
+			]);
+
 		return $validator;
 	}
 
