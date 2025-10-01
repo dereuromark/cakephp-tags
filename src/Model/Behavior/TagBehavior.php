@@ -63,6 +63,8 @@ class TagBehavior extends Behavior {
 		'fkModelField' => 'fk_model',
 		'fkModelAlias' => null,
 		'slug' => null, // Slugging mechanism, defaults to core internal way
+		'inlineColorEditing' => false, // Enable inline color syntax (e.g., "TagName@red" or "TagName@#FF5733")
+		'colorMap' => null, // Custom color name mapping, overwrites default map if set
 	];
 
 	/**
@@ -111,6 +113,7 @@ class TagBehavior extends Behavior {
 		$property = $this->getConfig('tagsAssoc.propertyName');
 		$options['accessibleFields'][$property] = true;
 		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['id'] = true;
+		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['color'] = true;
 
 		if (isset($data[$field])) {
 			$data[$property] = $this->normalizeTags($data[$field]);
@@ -452,7 +455,15 @@ class TagBehavior extends Behavior {
 			if (empty($tag)) {
 				continue;
 			}
-			$tagKey = $this->_getTagKey($tag);
+
+			// Parse the tag to get label, namespace, and color
+			$normalizedData = $this->_normalizeTag($tag);
+			$customNamespace = $normalizedData['namespace'] ?? '';
+			$label = $normalizedData['label'] ?? $tag;
+			$color = $normalizedData['color'] ?? null;
+
+			// Generate slug from label only (without color)
+			$tagKey = $this->_getTagKey($label);
 			if (in_array($tagKey, $keys, true)) {
 				continue;
 			}
@@ -460,17 +471,23 @@ class TagBehavior extends Behavior {
 
 			$existingTag = $this->_tagExists($tagKey);
 			if ($existingTag) {
-				$result[] = $common + ['id' => $existingTag->id];
+				$existingData = $common + ['id' => $existingTag->id];
+				if ($color !== null) {
+					$existingData['color'] = $color;
+				}
+				$result[] = $existingData;
 
 				continue;
 			}
-			[$customNamespace, $label] = $this->_normalizeTag($tag);
 
-			$result[] = $common + [
+			$tagData = $common + [
 				'slug' => $tagKey,
 				'namespace' => $customNamespace ?: $namespace,
 				'label' => $label,
+				'color' => $color,
 			] + compact($displayField);
+
+			$result[] = $tagData;
 		}
 
 		return $result;
@@ -525,28 +542,103 @@ class TagBehavior extends Behavior {
 	 * Normalizes a tag string by trimming unnecessary whitespace and extracting the tag identifier
 	 * from a tag in case it exists.
 	 *
+	 * Supports inline color syntax:
+	 * - "TagName@red" (named color)
+	 * - "TagName@#FF5733" (hex color)
+	 *
 	 * @param string $tag Tag.
-	 * @return array<string> The tag's ID and label.
+	 * @return array<string> The tag's ID and label, plus optional color.
 	 */
 	protected function _normalizeTag(string $tag): array {
 		$namespacePart = null;
 		$labelPart = $tag;
+		$colorPart = null;
+
+		// First check for inline color syntax (TagName@color) if enabled
+		if ($this->getConfig('inlineColorEditing') && str_contains($tag, '@')) {
+			$parts = explode('@', $tag, 2);
+			if (count($parts) === 2) {
+				$labelPart = trim($parts[0]);
+				$colorPart = $this->_parseColor(trim($parts[1]));
+			}
+		}
+
+		// Then check for namespace separator
 		$separator = (string)$this->getConfig('separator') ?: null;
 		if ($separator === null) {
-			return [
-				'',
-				$tag,
+			$result = [
+				'namespace' => '',
+				'label' => $labelPart,
+			];
+			if ($colorPart) {
+				$result['color'] = $colorPart;
+			}
+
+			return $result;
+		}
+
+		if (str_contains($labelPart, $separator)) {
+			[$namespacePart, $labelPart] = explode($separator, $labelPart, 2);
+		}
+
+		$result = [
+			'namespace' => trim((string)$namespacePart),
+			'label' => trim($labelPart),
+		];
+		if ($colorPart) {
+			$result['color'] = $colorPart;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Parse color from string (named color or hex).
+	 *
+	 * @param string $color Color string
+	 * @return string|null Hex color or null
+	 */
+	protected function _parseColor(string $color): ?string {
+		// Get color map from config or use default
+		$namedColors = $this->getConfig('colorMap');
+		if ($namedColors === null) {
+			$namedColors = [
+				'red' => '#FF0000',
+				'green' => '#00FF00',
+				'blue' => '#0000FF',
+				'yellow' => '#FFFF00',
+				'orange' => '#FFA500',
+				'purple' => '#800080',
+				'pink' => '#FFC0CB',
+				'brown' => '#A52A2A',
+				'gray' => '#808080',
+				'grey' => '#808080',
+				'black' => '#000000',
+				'white' => '#FFFFFF',
+				'cyan' => '#00FFFF',
+				'magenta' => '#FF00FF',
+				'lime' => '#00FF00',
+				'navy' => '#000080',
+				'teal' => '#008080',
+				'olive' => '#808000',
+				'maroon' => '#800000',
+				'aqua' => '#00FFFF',
 			];
 		}
 
-		if (strpos($tag, $separator) !== false) {
-			[$namespacePart, $labelPart] = explode($separator, $tag, 2);
+		$lowerColor = strtolower($color);
+
+		// Check if it's a named color
+		if (isset($namedColors[$lowerColor])) {
+			return $namedColors[$lowerColor];
 		}
 
-		return [
-			trim((string)$namespacePart),
-			trim($labelPart),
-		];
+		// Check if it's already a hex color
+		if (preg_match('/^#?[0-9A-Fa-f]{6}$/', $color)) {
+			return '#' . ltrim($color, '#');
+		}
+
+		return null;
 	}
 
 	/**
