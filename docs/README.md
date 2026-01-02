@@ -189,6 +189,76 @@ $hex = ColorUtility::rgbToHex(255, 87, 51); // '#FF5733'
 
 The color field accepts standard hex color values (e.g., `#FF5733`) and the helper automatically calculates appropriate text colors for optimal readability.
 
+#### Tag Icons
+
+You can extend tags with icon support by adding a custom field to the tags table.
+
+**Migration**
+
+Create a migration to add the icon field:
+
+```php
+<?php
+use Migrations\BaseMigration;
+
+class AddIconToTags extends BaseMigration
+{
+    public function change(): void
+    {
+        $table = $this->table('tags_tags');
+        $table->addColumn('icon', 'string', [
+            'default' => null,
+            'limit' => 100,
+            'null' => true,
+            'after' => 'color',
+        ]);
+        $table->update();
+    }
+}
+```
+
+**Admin Form**
+
+Add the icon field to your tag management forms:
+
+```php
+echo $this->Form->control('icon', [
+    'placeholder' => 'e.g., fa-solid fa-star',
+]);
+```
+
+**Displaying Tags with Icons**
+
+Display tags with icons in your templates:
+
+```php
+foreach ($tags as $tag) {
+    $icon = $tag->icon ? $this->Html->tag('i', '', ['class' => $tag->icon]) . ' ' : '';
+    echo $this->Html->link(
+        $icon . h($tag->label),
+        ['controller' => 'Tags', 'action' => 'view', $tag->slug],
+        ['escape' => false, 'class' => 'badge bg-secondary']
+    );
+}
+```
+
+**Combining Color and Icon**
+
+For a complete solution with both color and icon:
+
+```php
+$style = $tag->color ? 'background-color: ' . h($tag->color) : '';
+$icon = $tag->icon ? $this->Html->tag('i', '', ['class' => $tag->icon]) . ' ' : '';
+
+echo $this->Html->link(
+    $icon . h($tag->label),
+    ['controller' => 'Tags', 'action' => 'view', $tag->slug],
+    ['escape' => false, 'class' => 'badge', 'style' => $style]
+);
+```
+
+**Tip**: Store the full icon class string (e.g., `fa-solid fa-music` for FontAwesome, `bi-music-note` for Bootstrap Icons) to support different icon libraries.
+
 #### Validation
 Don't forget to set up some basic validation on your tagged model.
 You can re-use the same validation if you store it in a more central place.
