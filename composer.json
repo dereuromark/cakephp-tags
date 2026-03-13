@@ -6,7 +6,10 @@
 	"keywords": [
 		"cakephp",
 		"tagging",
-		"tags"
+		"tags",
+		"taxonomy",
+		"categorization",
+		"plugin"
 	],
 	"authors": [
 		{
