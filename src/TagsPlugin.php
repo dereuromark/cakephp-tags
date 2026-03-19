@@ -24,6 +24,6 @@ class TagsPlugin extends BasePlugin {
 	/**
 	 * @var bool
 	 */
-	protected bool $routesEnabled = false;
+	protected bool $routesEnabled = true;
 
 }
