@@ -4,9 +4,6 @@ declare(strict_types=1);
 use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
-/**
- * @var \Cake\Routing\RouteBuilder $routes
- */
 $routes->prefix('Admin', function (RouteBuilder $routes): void {
 	$routes->plugin('Tags', ['path' => '/tags'], function (RouteBuilder $routes): void {
 		$routes->setRouteClass(DashedRoute::class);

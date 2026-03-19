@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tags\Controller\Admin;
 
 use Cake\Http\Response;
+use RuntimeException;
 
 /**
  * Tags Controller
@@ -359,7 +360,7 @@ class TagsController extends TagsAppController {
 		// Build CSV content
 		$output = fopen('php://temp', 'r+');
 		if ($output === false) {
-			throw new \RuntimeException('Failed to open temporary file for CSV export');
+			throw new RuntimeException('Failed to open temporary file for CSV export');
 		}
 
 		// Header row
