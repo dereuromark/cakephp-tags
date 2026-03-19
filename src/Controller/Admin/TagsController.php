@@ -29,8 +29,8 @@ class TagsController extends TagsAppController {
 
 		// Filter by namespace
 		$namespace = $this->request->getQuery('namespace');
-		if ($namespace !== null) {
-			if ($namespace === '') {
+		if ($namespace !== null && $namespace !== '') {
+			if ($namespace === '__none__') {
 				$query->where(['namespace IS' => null]);
 			} else {
 				$query->where(['namespace' => $namespace]);
@@ -297,6 +297,23 @@ class TagsController extends TagsAppController {
 	}
 
 	/**
+	 * Orphaned tags action - show tags with zero usage.
+	 *
+	 * @return void
+	 */
+	public function orphaned(): void {
+		$query = $this->Tags->find()
+			->where(['counter' => 0])
+			->orderByAsc('namespace')
+			->orderByAsc('label');
+
+		$orphanedTags = $this->paginate($query);
+		$orphanedCount = $this->Tags->find()->where(['counter' => 0])->count();
+
+		$this->set(compact('orphanedTags', 'orphanedCount'));
+	}
+
+	/**
 	 * Delete orphaned tags action.
 	 *
 	 * @return \Cake\Http\Response|null
@@ -312,7 +329,7 @@ class TagsController extends TagsAppController {
 			$this->Flash->info(__d('tags', 'No orphaned tags found.'));
 		}
 
-		return $this->redirect(['controller' => 'TagsDashboard', 'action' => 'index']);
+		return $this->redirect(['action' => 'orphaned']);
 	}
 
 	/**

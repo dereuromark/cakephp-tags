@@ -24,6 +24,7 @@ $routes->prefix('Admin', function (RouteBuilder $routes): void {
 
 		// Maintenance
 		$routes->connect('/tags/duplicates', ['controller' => 'Tags', 'action' => 'duplicates']);
+		$routes->connect('/tags/orphaned', ['controller' => 'Tags', 'action' => 'orphaned']);
 		$routes->connect('/tags/delete-orphaned', ['controller' => 'Tags', 'action' => 'deleteOrphaned']);
 		$routes->connect('/tags/recalculate-counters', ['controller' => 'Tags', 'action' => 'recalculateCounters']);
 

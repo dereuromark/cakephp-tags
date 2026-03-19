@@ -50,7 +50,7 @@
 			'value' => $orphanedCount,
 			'icon' => 'fa-unlink',
 			'color' => $orphanedCount > 0 ? 'warning' : 'secondary',
-			'link' => $orphanedCount > 0 ? $this->Url->build(['controller' => 'Tags', 'action' => 'index', '?' => ['orphaned' => 1]]) : null,
+			'link' => $orphanedCount > 0 ? $this->Url->build(['controller' => 'Tags', 'action' => 'orphaned']) : null,
 		]) ?>
 	</div>
 	<div class="col-6 col-lg">
@@ -73,17 +73,11 @@
 	<div class="card-body">
 		<div class="row g-3">
 			<div class="col-md-4">
-				<?= $this->Form->postLink(
-					'<i class="fas fa-trash-alt me-2"></i>' . __d('tags', 'Delete Orphaned Tags'),
-					['controller' => 'Tags', 'action' => 'deleteOrphaned'],
-					[
-						'class' => 'btn btn-outline-warning w-100',
-						'escapeTitle' => false,
-						'confirm' => __d('tags', 'Are you sure you want to delete all {0} orphaned tags?', $orphanedCount),
-						'block' => true,
-					]
-				) ?>
-				<small class="text-muted d-block mt-1"><?= __d('tags', 'Remove tags with zero usage') ?></small>
+				<a href="<?= $this->Url->build(['controller' => 'Tags', 'action' => 'orphaned']) ?>" class="btn btn-outline-warning w-100">
+					<i class="fas fa-unlink me-2"></i>
+					<?= __d('tags', 'Manage Orphaned Tags') ?>
+				</a>
+				<small class="text-muted d-block mt-1"><?= __d('tags', 'Review and remove unused tags') ?></small>
 			</div>
 			<div class="col-md-4">
 				<?= $this->Form->postLink(

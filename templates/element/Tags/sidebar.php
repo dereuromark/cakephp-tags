@@ -51,6 +51,10 @@ $isActive = function (string $c, ?array $actions = null) use ($controller, $acti
 				<i class="fas fa-clone"></i>
 				<?= __d('tags', 'Find Duplicates') ?>
 			</a>
+			<a class="nav-link <?= $isActive('Tags', ['orphaned']) ?>" href="<?= $this->Url->build(['plugin' => 'Tags', 'prefix' => 'Admin', 'controller' => 'Tags', 'action' => 'orphaned']) ?>">
+				<i class="fas fa-unlink"></i>
+				<?= __d('tags', 'Orphaned Tags') ?>
+			</a>
 			<a class="nav-link <?= $isActive('Tags', ['changeNamespace']) ?>" href="<?= $this->Url->build(['plugin' => 'Tags', 'prefix' => 'Admin', 'controller' => 'Tags', 'action' => 'changeNamespace']) ?>">
 				<i class="fas fa-exchange-alt"></i>
 				<?= __d('tags', 'Change Namespace') ?>

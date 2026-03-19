@@ -28,7 +28,8 @@
 				<select name="namespace" class="form-select">
 					<option value=""><?= __d('tags', 'All namespaces') ?></option>
 					<?php foreach ($namespaces as $ns) : ?>
-					<option value="<?= h($ns ?? '') ?>" <?= ($namespace === $ns || ($namespace === '' && $ns === null)) ? 'selected' : '' ?>>
+					<?php $optionValue = $ns ?? '__none__'; ?>
+					<option value="<?= h($optionValue) ?>" <?= $namespace === $optionValue ? 'selected' : '' ?>>
 						<?= $ns ? h($ns) : __d('tags', '(no namespace)') ?>
 					</option>
 					<?php endforeach; ?>
