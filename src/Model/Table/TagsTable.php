@@ -11,6 +11,8 @@ use Cake\Validation\Validator;
 use RuntimeException;
 
 /**
+ * @property \Tags\Model\Table\TaggedTable&\Cake\ORM\Association\HasMany $Tagged
+ *
  * @method \Tags\Model\Entity\Tag get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
  * @method \Tags\Model\Entity\Tag newEntity(array $data, array $options = [])
  * @method array<\Tags\Model\Entity\Tag> newEntities(array $data, array $options = [])
@@ -40,6 +42,12 @@ class TagsTable extends Table {
 		$this->setTable('tags_tags');
 		$this->setDisplayField('label'); // Change to name?
 		$this->addBehavior('Timestamp');
+
+		$this->hasMany('Tagged', [
+			'className' => 'Tags.Tagged',
+			'foreignKey' => 'tag_id',
+			'dependent' => true,
+		]);
 	}
 
 	/**
@@ -111,6 +119,69 @@ class TagsTable extends Table {
 		}
 
 		return mb_strtolower(Text::slug($label));
+	}
+
+	/**
+	 * Merge one tag into another.
+	 *
+	 * All associations from the source tag will be moved to the target tag.
+	 * Duplicate associations (where an item already has both tags) will be removed.
+	 * The source tag will be deleted after the merge.
+	 *
+	 * @param int $sourceId The ID of the tag to merge from (will be deleted).
+	 * @param int $targetId The ID of the tag to merge into (will remain).
+	 * @return bool True on success, false on failure.
+	 */
+	public function merge(int $sourceId, int $targetId): bool {
+		$sourceTag = $this->get($sourceId);
+		$targetTag = $this->get($targetId);
+
+		// Verify same namespace
+		if ($sourceTag->namespace !== $targetTag->namespace) {
+			return false;
+		}
+
+		$taggedTable = $this->getAssociation('Tagged')->getTarget();
+		$connection = $this->getConnection();
+
+		return $connection->transactional(function () use ($taggedTable, $sourceId, $targetId, $sourceTag, $targetTag) {
+			// Find IDs of duplicate associations (items that already have the target tag)
+			$duplicateIds = $taggedTable->find()
+				->select(['Tagged.id'])
+				->innerJoin(
+					['t2' => 'tags_tagged'],
+					[
+						't2.tag_id' => $targetId,
+						't2.fk_id = Tagged.fk_id',
+						't2.fk_model = Tagged.fk_model',
+					],
+				)
+				->where(['Tagged.tag_id' => $sourceId])
+				->all()
+				->extract('id')
+				->toArray();
+
+			// Delete duplicates
+			if ($duplicateIds) {
+				$taggedTable->deleteAll(['id IN' => $duplicateIds]);
+			}
+
+			// Move remaining associations from source to target
+			$taggedTable->updateAll(
+				['tag_id' => $targetId],
+				['tag_id' => $sourceId],
+			);
+
+			// Update target tag counter
+			$newCount = $taggedTable->find()
+				->where(['tag_id' => $targetId])
+				->count();
+			$targetTag->counter = $newCount;
+			$this->saveOrFail($targetTag);
+
+			// Delete source tag
+			return $this->delete($sourceTag);
+		});
 	}
 
 }

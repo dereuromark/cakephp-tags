@@ -2,10 +2,13 @@ parameters:
 	level: 8
 	paths:
 		- src/
+	scanDirectories:
+		- tests/test_app/src/
 	bootstrapFiles:
 		- tests/bootstrap.php
 	ignoreErrors:
 		- identifier: missingType.iterableValue
 		- identifier: missingType.generics
 		- '#PHPDoc tag @property for property .+TaggedTable\:\:\$.+ contains unresolvable type.#'
+		- '#PHPDoc tag @property for property .+TagsTable\:\:\$.+ contains unresolvable type.#'
 		- '#Access to an undefined property .+::\$.+.#'
