@@ -5,6 +5,7 @@
  * @var array $namespaces
  * @var array<\Tags\Model\Entity\Tag> $mostUsedTags
  * @var int $orphanedCount
+ * @var int $duplicateCount
  * @var array<\Tags\Model\Entity\Tag> $recentTags
  * @var int $totalTagged
  * @var array $models
@@ -18,7 +19,7 @@
 
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
-	<div class="col-6 col-md-3">
+	<div class="col-6 col-lg">
 		<?= $this->element('Tags.Tags/stats_card', [
 			'label' => __d('tags', 'Total Tags'),
 			'value' => $totalTags,
@@ -27,7 +28,7 @@
 			'link' => $this->Url->build(['controller' => 'Tags', 'action' => 'index']),
 		]) ?>
 	</div>
-	<div class="col-6 col-md-3">
+	<div class="col-6 col-lg">
 		<?= $this->element('Tags.Tags/stats_card', [
 			'label' => __d('tags', 'Tagged Items'),
 			'value' => $totalTagged,
@@ -35,7 +36,7 @@
 			'color' => 'success',
 		]) ?>
 	</div>
-	<div class="col-6 col-md-3">
+	<div class="col-6 col-lg">
 		<?= $this->element('Tags.Tags/stats_card', [
 			'label' => __d('tags', 'Namespaces'),
 			'value' => count($namespaces),
@@ -43,7 +44,7 @@
 			'color' => 'info',
 		]) ?>
 	</div>
-	<div class="col-6 col-md-3">
+	<div class="col-6 col-lg">
 		<?= $this->element('Tags.Tags/stats_card', [
 			'label' => __d('tags', 'Orphaned Tags'),
 			'value' => $orphanedCount,
@@ -51,6 +52,59 @@
 			'color' => $orphanedCount > 0 ? 'warning' : 'secondary',
 			'link' => $orphanedCount > 0 ? $this->Url->build(['controller' => 'Tags', 'action' => 'index', '?' => ['orphaned' => 1]]) : null,
 		]) ?>
+	</div>
+	<div class="col-6 col-lg">
+		<?= $this->element('Tags.Tags/stats_card', [
+			'label' => __d('tags', 'Duplicates'),
+			'value' => $duplicateCount,
+			'icon' => 'fa-clone',
+			'color' => $duplicateCount > 0 ? 'danger' : 'secondary',
+			'link' => $duplicateCount > 0 ? $this->Url->build(['controller' => 'Tags', 'action' => 'duplicates']) : null,
+		]) ?>
+	</div>
+</div>
+
+<!-- Maintenance Actions -->
+<div class="card card-tags mb-4">
+	<div class="card-header">
+		<i class="fas fa-wrench me-2"></i>
+		<?= __d('tags', 'Maintenance') ?>
+	</div>
+	<div class="card-body">
+		<div class="row g-3">
+			<div class="col-md-4">
+				<?= $this->Form->postLink(
+					'<i class="fas fa-trash-alt me-2"></i>' . __d('tags', 'Delete Orphaned Tags'),
+					['controller' => 'Tags', 'action' => 'deleteOrphaned'],
+					[
+						'class' => 'btn btn-outline-warning w-100',
+						'escapeTitle' => false,
+						'confirm' => __d('tags', 'Are you sure you want to delete all {0} orphaned tags?', $orphanedCount),
+						'block' => true,
+					]
+				) ?>
+				<small class="text-muted d-block mt-1"><?= __d('tags', 'Remove tags with zero usage') ?></small>
+			</div>
+			<div class="col-md-4">
+				<?= $this->Form->postLink(
+					'<i class="fas fa-sync-alt me-2"></i>' . __d('tags', 'Recalculate Counters'),
+					['controller' => 'Tags', 'action' => 'recalculateCounters'],
+					[
+						'class' => 'btn btn-outline-info w-100',
+						'escapeTitle' => false,
+						'block' => true,
+					]
+				) ?>
+				<small class="text-muted d-block mt-1"><?= __d('tags', 'Fix tag usage counts') ?></small>
+			</div>
+			<div class="col-md-4">
+				<a href="<?= $this->Url->build(['controller' => 'Tags', 'action' => 'export']) ?>" class="btn btn-outline-secondary w-100">
+					<i class="fas fa-download me-2"></i>
+					<?= __d('tags', 'Export to CSV') ?>
+				</a>
+				<small class="text-muted d-block mt-1"><?= __d('tags', 'Download all tags as CSV') ?></small>
+			</div>
+		</div>
 	</div>
 </div>
 

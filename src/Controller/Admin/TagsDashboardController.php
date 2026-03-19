@@ -22,7 +22,9 @@ class TagsDashboardController extends TagsAppController {
 	 * @return void
 	 */
 	public function index(): void {
+		/** @var \Tags\Model\Table\TagsTable $tagsTable */
 		$tagsTable = $this->fetchTable('Tags.Tags');
+		/** @var \Tags\Model\Table\TaggedTable $taggedTable */
 		$taggedTable = $this->fetchTable('Tags.Tagged');
 
 		// Total tags count
@@ -52,6 +54,10 @@ class TagsDashboardController extends TagsAppController {
 			->where(['counter' => 0])
 			->count();
 
+		// Potential duplicates
+		$duplicateGroups = $tagsTable->findDuplicates();
+		$duplicateCount = count($duplicateGroups);
+
 		// Recently created tags (last 10)
 		$recentTags = $tagsTable->find()
 			->orderByDesc('created')
@@ -78,6 +84,7 @@ class TagsDashboardController extends TagsAppController {
 			'namespaces',
 			'mostUsedTags',
 			'orphanedCount',
+			'duplicateCount',
 			'recentTags',
 			'totalTagged',
 			'models',

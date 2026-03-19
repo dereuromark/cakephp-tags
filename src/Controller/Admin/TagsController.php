@@ -284,4 +284,167 @@ class TagsController extends TagsAppController {
 		return null;
 	}
 
+	/**
+	 * Duplicates action - show potential duplicate tags.
+	 *
+	 * @return void
+	 */
+	public function duplicates(): void {
+		$duplicateGroups = $this->Tags->findDuplicates();
+
+		$this->set(compact('duplicateGroups'));
+	}
+
+	/**
+	 * Delete orphaned tags action.
+	 *
+	 * @return \Cake\Http\Response|null
+	 */
+	public function deleteOrphaned(): ?Response {
+		$this->request->allowMethod(['post', 'delete']);
+
+		$count = $this->Tags->deleteOrphaned();
+
+		if ($count > 0) {
+			$this->Flash->success(__d('tags', '{0} orphaned tags have been deleted.', $count));
+		} else {
+			$this->Flash->info(__d('tags', 'No orphaned tags found.'));
+		}
+
+		return $this->redirect(['controller' => 'TagsDashboard', 'action' => 'index']);
+	}
+
+	/**
+	 * Recalculate counters action.
+	 *
+	 * @return \Cake\Http\Response|null
+	 */
+	public function recalculateCounters(): ?Response {
+		$this->request->allowMethod(['post']);
+
+		$count = $this->Tags->recalculateCounters();
+
+		if ($count > 0) {
+			$this->Flash->success(__d('tags', '{0} tag counters have been updated.', $count));
+		} else {
+			$this->Flash->info(__d('tags', 'All counters are already correct.'));
+		}
+
+		return $this->redirect(['controller' => 'TagsDashboard', 'action' => 'index']);
+	}
+
+	/**
+	 * Export tags to CSV.
+	 *
+	 * @return \Cake\Http\Response
+	 */
+	public function export(): Response {
+		$namespace = $this->request->getQuery('namespace');
+
+		$query = $this->Tags->find()
+			->orderByAsc('namespace')
+			->orderByAsc('label');
+
+		if ($namespace !== null) {
+			if ($namespace === '') {
+				$query->where(['namespace IS' => null]);
+			} else {
+				$query->where(['namespace' => $namespace]);
+			}
+		}
+
+		/** @var array<\Tags\Model\Entity\Tag> $tags */
+		$tags = $query->all()->toArray();
+
+		// Build CSV content
+		$output = fopen('php://temp', 'r+');
+		if ($output === false) {
+			throw new \RuntimeException('Failed to open temporary file for CSV export');
+		}
+
+		// Header row
+		fputcsv($output, ['id', 'namespace', 'slug', 'label', 'color', 'counter', 'created', 'modified']);
+
+		// Data rows
+		foreach ($tags as $tag) {
+			fputcsv($output, [
+				$tag->id,
+				$tag->namespace ?? '',
+				$tag->slug,
+				$tag->label,
+				$tag->color ?? '',
+				$tag->counter,
+				$tag->created->format('Y-m-d H:i:s'),
+				$tag->modified->format('Y-m-d H:i:s'),
+			]);
+		}
+
+		rewind($output);
+		$csv = stream_get_contents($output);
+		fclose($output);
+
+		$filename = 'tags-export-' . date('Y-m-d-His') . '.csv';
+
+		$response = $this->response
+			->withType('csv')
+			->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+			->withStringBody($csv ?: '');
+
+		return $response;
+	}
+
+	/**
+	 * Change namespace for tags.
+	 *
+	 * @return \Cake\Http\Response|null
+	 */
+	public function changeNamespace(): ?Response {
+		// Get unique namespaces
+		$namespaces = $this->Tags->find()
+			->select(['namespace'])
+			->distinct()
+			->orderByAsc('namespace')
+			->all()
+			->extract('namespace')
+			->toArray();
+
+		if ($this->request->is('post')) {
+			$fromNamespace = $this->request->getData('from_namespace');
+			$toNamespace = $this->request->getData('to_namespace');
+
+			// Handle empty string as null
+			if ($fromNamespace === '') {
+				$fromNamespace = null;
+			}
+			if ($toNamespace === '') {
+				$toNamespace = null;
+			}
+
+			if ($fromNamespace === $toNamespace) {
+				$this->Flash->error(__d('tags', 'Source and target namespaces must be different.'));
+
+				$this->set(compact('namespaces'));
+
+				return null;
+			}
+
+			$count = $this->Tags->updateAll(
+				['namespace' => $toNamespace],
+				['namespace IS' => $fromNamespace],
+			);
+
+			if ($count > 0) {
+				$this->Flash->success(__d('tags', '{0} tags have been moved to the new namespace.', $count));
+
+				return $this->redirect(['action' => 'changeNamespace']);
+			}
+
+			$this->Flash->info(__d('tags', 'No tags found in the source namespace.'));
+		}
+
+		$this->set(compact('namespaces'));
+
+		return null;
+	}
+
 }

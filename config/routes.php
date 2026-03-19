@@ -25,6 +25,15 @@ $routes->prefix('Admin', function (RouteBuilder $routes): void {
 		$routes->connect('/tags/merge', ['controller' => 'Tags', 'action' => 'merge']);
 		$routes->connect('/tags/merge-preview', ['controller' => 'Tags', 'action' => 'mergePreview']);
 
+		// Maintenance
+		$routes->connect('/tags/duplicates', ['controller' => 'Tags', 'action' => 'duplicates']);
+		$routes->connect('/tags/delete-orphaned', ['controller' => 'Tags', 'action' => 'deleteOrphaned']);
+		$routes->connect('/tags/recalculate-counters', ['controller' => 'Tags', 'action' => 'recalculateCounters']);
+
+		// Tools
+		$routes->connect('/tags/export', ['controller' => 'Tags', 'action' => 'export']);
+		$routes->connect('/tags/change-namespace', ['controller' => 'Tags', 'action' => 'changeNamespace']);
+
 		$routes->fallbacks(DashedRoute::class);
 	});
 });

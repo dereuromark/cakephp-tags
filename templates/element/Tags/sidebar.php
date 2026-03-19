@@ -47,6 +47,25 @@ $isActive = function (string $c, ?array $actions = null) use ($controller, $acti
 				<i class="fas fa-compress-arrows-alt"></i>
 				<?= __d('tags', 'Merge Tags') ?>
 			</a>
+			<a class="nav-link <?= $isActive('Tags', ['duplicates']) ?>" href="<?= $this->Url->build(['plugin' => 'Tags', 'prefix' => 'Admin', 'controller' => 'Tags', 'action' => 'duplicates']) ?>">
+				<i class="fas fa-clone"></i>
+				<?= __d('tags', 'Find Duplicates') ?>
+			</a>
+			<a class="nav-link <?= $isActive('Tags', ['changeNamespace']) ?>" href="<?= $this->Url->build(['plugin' => 'Tags', 'prefix' => 'Admin', 'controller' => 'Tags', 'action' => 'changeNamespace']) ?>">
+				<i class="fas fa-exchange-alt"></i>
+				<?= __d('tags', 'Change Namespace') ?>
+			</a>
+		</nav>
+	</div>
+
+	<!-- Tools -->
+	<div class="nav-section">
+		<div class="nav-section-title"><?= __d('tags', 'Tools') ?></div>
+		<nav class="nav flex-column">
+			<a class="nav-link" href="<?= $this->Url->build(['plugin' => 'Tags', 'prefix' => 'Admin', 'controller' => 'Tags', 'action' => 'export']) ?>">
+				<i class="fas fa-download"></i>
+				<?= __d('tags', 'Export CSV') ?>
+			</a>
 		</nav>
 	</div>
 </aside>
