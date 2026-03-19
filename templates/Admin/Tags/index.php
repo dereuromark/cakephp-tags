@@ -27,10 +27,11 @@
 				<label class="form-label"><?= __d('tags', 'Namespace') ?></label>
 				<select name="namespace" class="form-select">
 					<option value=""><?= __d('tags', 'All namespaces') ?></option>
+					<option value="__none__" <?= $namespace === '__none__' ? 'selected' : '' ?>><?= __d('tags', '(no namespace)') ?></option>
 					<?php foreach ($namespaces as $ns) : ?>
-					<?php $optionValue = $ns ?? '__none__'; ?>
-					<option value="<?= h($optionValue) ?>" <?= $namespace === $optionValue ? 'selected' : '' ?>>
-						<?= $ns ? h($ns) : __d('tags', '(no namespace)') ?>
+					<?php if ($ns === null) { continue; } ?>
+					<option value="<?= h($ns) ?>" <?= $namespace === $ns ? 'selected' : '' ?>>
+						<?= h($ns) ?>
 					</option>
 					<?php endforeach; ?>
 				</select>
