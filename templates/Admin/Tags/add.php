@@ -86,7 +86,7 @@
 				'escapeTitle' => false,
 			]) ?>
 			<a href="<?= $this->Url->build(['action' => 'index']) ?>" class="btn btn-outline-secondary">
-				<?= __d('tags', 'Cancel') ?>
+				<?= __d('tags', 'Abort') ?>
 			</a>
 		</div>
 		<?= $this->Form->end() ?>
