@@ -277,13 +277,9 @@
 	<!-- Main Content -->
 	<main class="tags-main">
 		<!-- Flash Messages -->
-		<?php
-		$flashTypes = ['success', 'error', 'warning', 'info'];
-		foreach ($flashTypes as $type) {
-			echo $this->Flash->render($type);
-		}
-		echo $this->Flash->render();
-		?>
+		<div class="tags-flash">
+			<?= $this->element('Tags.flash/flash') ?>
+		</div>
 
 		<?= $this->fetch('content') ?>
 	</main>
