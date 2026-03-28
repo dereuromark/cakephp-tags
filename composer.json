@@ -5,11 +5,13 @@
 	"type": "cakephp-plugin",
 	"keywords": [
 		"cakephp",
+		"plugin",
 		"tagging",
 		"tags",
 		"taxonomy",
 		"categorization",
-		"plugin"
+		"admin-panel",
+		"standalone-ui"
 	],
 	"authors": [
 		{
