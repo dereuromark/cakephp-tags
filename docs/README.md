@@ -303,13 +303,17 @@ echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
 
 In your table's searchManager() configuration you will need a small callback config:
 ```php
+use Cake\ORM\Query\SelectQuery;
+
 $searchManager
     ...
     ->callback('tag', [
-        'callback' => function (Query $query, array $args, $manager) {
+        'callback' => function (SelectQuery $query, array $args, $manager): bool {
             // Here you would have to remap $args if key isn't the expected "tag"
             $query->find('tagged', ...$args);
-        }
+
+            return true;
+        },
     ]);
 ```
 
@@ -343,13 +347,15 @@ echo $this->Form->control('tag', ['options' => $tags, 'empty' => true]);
 ```
 Then you just have to switch the query inside the callback in the case of `-1`:
 ```php
-    'callback' => function (Query $query, array $args, $manager) {
+    'callback' => function (SelectQuery $query, array $args, $manager): bool {
         if ($args['tag'] === '-1') {
-
+            $query->find('untagged');
         } else {
-            $query->find('tagged',...$args);
+            $query->find('tagged', ...$args);
         }
-    }
+
+        return true;
+    },
 ```
 
 #### Multiple tags per model
