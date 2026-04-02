@@ -468,7 +468,7 @@ Defining a route name you could even just use the short form `'_name' => 'my-tag
 $routes->get('/tag/:slug', ['controller' => 'Tags', 'action' => 'view'], 'my-tag-alias');
 ```
 
-For details see [Core docs](https://book.cakephp.org/3.0/en/development/routing.html#entity-routing).
+For details see [Core docs](https://book.cakephp.org/5/en/development/routing.html#entity-routing).
 
 ## Tips
 
