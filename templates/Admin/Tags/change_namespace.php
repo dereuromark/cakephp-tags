@@ -28,8 +28,8 @@
 					<i class="fas fa-arrow-right me-1 text-danger"></i>
 					<?= __d('tags', 'Source Namespace') ?>
 				</label>
-				<select name="from_namespace" id="from-namespace" class="form-select" required>
-					<option value=""><?= __d('tags', '(no namespace)') ?></option>
+				<select name="from_namespace" id="from-namespace" class="form-select">
+					<option value="__none__"><?= __d('tags', '(no namespace)') ?></option>
 					<?php foreach ($namespaces as $ns): ?>
 					<?php if ($ns !== null): ?>
 					<option value="<?= h($ns) ?>"><?= h($ns) ?></option>
@@ -47,9 +47,9 @@
 					<i class="fas fa-bullseye me-1 text-success"></i>
 					<?= __d('tags', 'Target Namespace') ?>
 				</label>
-				<div class="input-group">
-					<select name="to_namespace" id="to-namespace-select" class="form-select">
-						<option value=""><?= __d('tags', '(no namespace)') ?></option>
+					<div class="input-group">
+						<select name="to_namespace_select" id="to-namespace-select" class="form-select">
+							<option value="__none__"><?= __d('tags', '(no namespace)') ?></option>
 						<?php foreach ($namespaces as $ns): ?>
 						<?php if ($ns !== null): ?>
 						<option value="<?= h($ns) ?>"><?= h($ns) ?></option>
@@ -59,7 +59,7 @@
 				</div>
 				<div class="mt-2">
 					<label class="form-label small text-muted" for="to-namespace-new"><?= __d('tags', 'Or enter a new namespace:') ?></label>
-					<input type="text" name="to_namespace" id="to-namespace-new" class="form-control" placeholder="<?= __d('tags', 'New namespace name...') ?>">
+						<input type="text" name="to_namespace_new" id="to-namespace-new" class="form-control" placeholder="<?= __d('tags', 'New namespace name...') ?>">
 				</div>
 			</div>
 		</div>
@@ -102,7 +102,7 @@
 						<?php endif; ?>
 					</td>
 					<td class="text-end">
-						<a href="<?= $this->Url->build(['action' => 'index', '?' => ['namespace' => $ns ?? '']]) ?>" class="btn btn-sm btn-outline-secondary">
+						<a href="<?= $this->Url->build(['action' => 'index', '?' => ['namespace' => $ns ?? '__none__']]) ?>" class="btn btn-sm btn-outline-secondary">
 							<i class="fas fa-eye me-1"></i>
 							<?= __d('tags', 'View Tags') ?>
 						</a>

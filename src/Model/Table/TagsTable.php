@@ -206,6 +206,58 @@ class TagsTable extends Table {
 	}
 
 	/**
+	 * Count slug conflicts for a namespace move.
+	 *
+	 * A conflict exists when the target namespace already contains a tag with the
+	 * same slug as one of the source namespace tags.
+	 *
+	 * @param string|null $fromNamespace Source namespace.
+	 * @param string|null $toNamespace Target namespace.
+	 * @return int Number of conflicting target tags.
+	 */
+	public function countNamespaceConflicts(?string $fromNamespace, ?string $toNamespace): int {
+		$sourceSlugs = $this->find()
+			->select(['slug'])
+			->where($this->namespaceConditions($fromNamespace))
+			->disableHydration()
+			->all()
+			->extract('slug')
+			->toList();
+
+		if (!$sourceSlugs) {
+			return 0;
+		}
+
+		return $this->find()
+			->where($this->namespaceConditions($toNamespace))
+			->where(['slug IN' => $sourceSlugs])
+			->count();
+	}
+
+	/**
+	 * Move all tags from one namespace to another.
+	 *
+	 * @param string|null $fromNamespace Source namespace.
+	 * @param string|null $toNamespace Target namespace.
+	 * @throws \RuntimeException When duplicate slugs already exist in the target namespace.
+	 * @return int Number of updated rows.
+	 */
+	public function moveNamespace(?string $fromNamespace, ?string $toNamespace): int {
+		$conflicts = $this->countNamespaceConflicts($fromNamespace, $toNamespace);
+		if ($conflicts) {
+			throw new RuntimeException(sprintf(
+				'Cannot move namespace: %d conflicting slug(s) already exist in the target namespace.',
+				$conflicts,
+			));
+		}
+
+		return $this->updateAll(
+			['namespace' => $toNamespace],
+			$this->namespaceConditions($fromNamespace),
+		);
+	}
+
+	/**
 	 * Delete all orphaned tags (counter = 0).
 	 *
 	 * @param string|null $namespace Optional namespace to filter by.
@@ -320,6 +372,20 @@ class TagsTable extends Table {
 			// Delete source tag
 			return $this->delete($sourceTag);
 		});
+	}
+
+	/**
+	 * Build namespace conditions, including null namespace support.
+	 *
+	 * @param string|null $namespace Namespace value.
+	 * @return array<string, string|null>
+	 */
+	protected function namespaceConditions(?string $namespace): array {
+		if ($namespace === null) {
+			return ['namespace IS' => null];
+		}
+
+		return ['namespace' => $namespace];
 	}
 
 }
