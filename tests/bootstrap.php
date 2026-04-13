@@ -45,6 +45,10 @@ Configure::write('App', [
 	'encoding' => 'utf-8',
 ]);
 
+if (!class_exists('App\\Controller\\AppController') && class_exists('TestApp\\Controller\\AppController')) {
+	class_alias('TestApp\\Controller\\AppController', 'App\\Controller\\AppController');
+}
+
 Plugin::getCollection()->add(new TagsPlugin());
 Plugin::getCollection()->add(new ToolsPlugin());
 

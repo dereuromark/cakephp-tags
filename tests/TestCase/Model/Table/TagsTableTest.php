@@ -130,6 +130,40 @@ class TagsTableTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testMoveNamespace(): void {
+		$count = $this->Tags->moveNamespace(null, 'palette');
+
+		$this->assertSame(2, $count);
+
+		$result = $this->Tags->find()
+			->where(['namespace' => 'palette'])
+			->orderByAsc('slug')
+			->all()
+			->extract('slug')
+			->toList();
+		$this->assertSame(['color', 'dark-color'], $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMoveNamespaceWithConflicts(): void {
+		$entity = $this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'color',
+			'label' => 'Color In Palette',
+		]);
+		$this->Tags->saveOrFail($entity);
+
+		$this->assertSame(1, $this->Tags->countNamespaceConflicts(null, 'palette'));
+
+		$this->expectExceptionMessage('conflicting slug(s)');
+		$this->Tags->moveNamespace(null, 'palette');
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testMultipleTagsPerModel() {
 		//TableRegistry::clear();
 

@@ -427,15 +427,11 @@ class TagsController extends TagsAppController {
 			->toArray();
 
 		if ($this->request->is('post')) {
-			$fromNamespace = $this->request->getData('from_namespace');
-			$toNamespace = $this->request->getData('to_namespace');
-
-			// Handle empty string as null
-			if ($fromNamespace === '') {
-				$fromNamespace = null;
-			}
-			if ($toNamespace === '') {
-				$toNamespace = null;
+			$fromNamespace = $this->normalizeNamespaceInput($this->request->getData('from_namespace'));
+			$toNamespace = $this->normalizeNamespaceInput($this->request->getData('to_namespace_select'));
+			$newNamespace = trim((string)$this->request->getData('to_namespace_new'));
+			if ($newNamespace !== '') {
+				$toNamespace = $newNamespace;
 			}
 
 			if ($fromNamespace === $toNamespace) {
@@ -446,10 +442,15 @@ class TagsController extends TagsAppController {
 				return null;
 			}
 
-			$count = $this->Tags->updateAll(
-				['namespace' => $toNamespace],
-				['namespace IS' => $fromNamespace],
-			);
+			try {
+				$count = $this->Tags->moveNamespace($fromNamespace, $toNamespace);
+			} catch (RuntimeException $exception) {
+				$this->Flash->error(__d('tags', 'The namespace move was aborted because conflicting tag slugs already exist in the target namespace.'));
+
+				$this->set(compact('namespaces'));
+
+				return null;
+			}
 
 			if ($count > 0) {
 				$this->Flash->success(__d('tags', '{0} tags have been moved to the new namespace.', $count));
@@ -463,6 +464,20 @@ class TagsController extends TagsAppController {
 		$this->set(compact('namespaces'));
 
 		return null;
+	}
+
+	/**
+	 * Normalize form namespace values, including the null sentinel.
+	 *
+	 * @param mixed $value Raw request value.
+	 * @return string|null
+	 */
+	protected function normalizeNamespaceInput(mixed $value): ?string {
+		if ($value === '__none__' || $value === '' || $value === null) {
+			return null;
+		}
+
+		return (string)$value;
 	}
 
 }
