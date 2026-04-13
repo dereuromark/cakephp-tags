@@ -98,7 +98,11 @@ class TagsTable extends Table {
 	 * @return void
 	 */
 	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options): void {
-		if (isset($data['label']) && isset($data['slug']) && $data['slug'] === 0) {
+		if (isset($data['namespace']) && $data['namespace'] === '') {
+			$data['namespace'] = null;
+		}
+
+		if (isset($data['label']) && array_key_exists('slug', (array)$data) && ($data['slug'] === '' || $data['slug'] === 0 || $data['slug'] === null)) {
 			$data['slug'] = $this->slug($data['label']);
 		}
 	}
