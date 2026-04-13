@@ -33,6 +33,14 @@ bin/cake migrations migrate -p Tags
 ## Demo
 See Sandbox @ https://sandbox.dereuromark.de/sandbox/tags
 
+## Admin Backend
+
+The plugin ships with an admin backend under the `Admin` prefix at `/admin/tags`.
+
+![Tags Admin Dashboard](docs/screenshots/tags-admin-dashboard.png)
+
+![Tags Admin Index](docs/screenshots/tags-admin-index.png)
+
 Tutorial and Blog Post: https://www.dereuromark.de/2018/07/12/tutorial-cakephp-tagging/
 
 ## Documentation
