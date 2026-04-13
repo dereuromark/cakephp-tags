@@ -96,4 +96,27 @@ class TagsControllerTest extends TestCase {
 		$this->assertSame(['color', 'dark-color'], $result);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testAddAutoGeneratesSlugAndNormalizesBlankNamespace(): void {
+		$tagsTable = TableRegistry::getTableLocator()->get('Tags.Tags');
+
+		$this->post('/admin/tags/tags/add', [
+			'label' => 'Fresh Tag',
+			'slug' => '',
+			'namespace' => '',
+			'color' => '#123456',
+		]);
+
+		$this->assertRedirect('/admin/tags/tags');
+
+		$tag = $tagsTable->find()
+			->where(['slug' => 'fresh-tag'])
+			->firstOrFail();
+
+		$this->assertNull($tag->namespace);
+		$this->assertSame('#123456', $tag->color);
+	}
+
 }

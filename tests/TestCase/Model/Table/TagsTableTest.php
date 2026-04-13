@@ -130,6 +130,21 @@ class TagsTableTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testBeforeMarshalAutoGeneratesSlugAndNormalizesNamespace(): void {
+		$tag = $this->Tags->newEntity([
+			'label' => 'Auto Slug Test',
+			'slug' => '',
+			'namespace' => '',
+		]);
+
+		$this->assertEmpty($tag->getErrors());
+		$this->assertSame('auto-slug-test', $tag->slug);
+		$this->assertNull($tag->namespace);
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testMoveNamespace(): void {
 		$count = $this->Tags->moveNamespace(null, 'palette');
 

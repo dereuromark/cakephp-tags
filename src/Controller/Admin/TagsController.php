@@ -111,7 +111,9 @@ class TagsController extends TagsAppController {
 		$tag = $this->Tags->newEmptyEntity();
 
 		if ($this->request->is('post')) {
-			$tag = $this->Tags->patchEntity($tag, $this->request->getData());
+			$data = $this->request->getData();
+			$data['namespace'] = $this->normalizeNamespaceInput($data['namespace'] ?? null);
+			$tag = $this->Tags->patchEntity($tag, $data);
 			if ($this->Tags->save($tag)) {
 				$this->Flash->success(__d('tags', 'The tag has been saved.'));
 
@@ -145,7 +147,9 @@ class TagsController extends TagsAppController {
 		$tag = $this->Tags->get($id);
 
 		if ($this->request->is(['patch', 'post', 'put'])) {
-			$tag = $this->Tags->patchEntity($tag, $this->request->getData());
+			$data = $this->request->getData();
+			$data['namespace'] = $this->normalizeNamespaceInput($data['namespace'] ?? null);
+			$tag = $this->Tags->patchEntity($tag, $data);
 			if ($this->Tags->save($tag)) {
 				$this->Flash->success(__d('tags', 'The tag has been saved.'));
 
