@@ -24,14 +24,16 @@
 			<i class="fas fa-list me-2"></i>
 			<?= __d('tags', 'Orphaned Tags List') ?>
 		</span>
-		<?= $this->Form->postLink(
+		<?= $this->Form->postButton(
 			'<i class="fas fa-trash-alt me-1"></i>' . __d('tags', 'Delete All Orphaned Tags'),
 			['action' => 'deleteOrphaned'],
 			[
 				'class' => 'btn btn-danger btn-sm',
 				'escapeTitle' => false,
-				'confirm' => __d('tags', 'Are you sure you want to delete all {0} orphaned tags? This cannot be undone.', $orphanedCount),
-				'block' => true,
+				'form' => [
+					'class' => 'd-inline',
+					'data-confirm-message' => __d('tags', 'Are you sure you want to delete all {0} orphaned tags? This cannot be undone.', $orphanedCount),
+				],
 			]
 		) ?>
 	</div>
@@ -71,15 +73,17 @@
 							<a href="<?= $this->Url->build(['action' => 'edit', $tag->id]) ?>" class="btn btn-outline-primary" title="<?= __d('tags', 'Edit') ?>">
 								<i class="fas fa-edit"></i>
 							</a>
-							<?= $this->Form->postLink(
+							<?= $this->Form->postButton(
 								'<i class="fas fa-trash-alt"></i>',
 								['action' => 'delete', $tag->id],
 								[
 									'class' => 'btn btn-outline-danger',
 									'escapeTitle' => false,
-									'confirm' => __d('tags', 'Are you sure you want to delete "{0}"?', $tag->label),
 									'title' => __d('tags', 'Delete'),
-									'block' => true,
+									'form' => [
+										'class' => 'd-inline',
+										'data-confirm-message' => __d('tags', 'Are you sure you want to delete "{0}"?', $tag->label),
+									],
 								]
 							) ?>
 						</div>

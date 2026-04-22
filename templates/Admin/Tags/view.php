@@ -17,14 +17,16 @@
 			<i class="fas fa-edit me-1"></i>
 			<?= __d('tags', 'Edit') ?>
 		</a>
-		<?= $this->Form->postLink(
+		<?= $this->Form->postButton(
 			'<i class="fas fa-trash me-1"></i>' . __d('tags', 'Delete'),
 			['action' => 'delete', $tag->id],
 			[
 				'class' => 'btn btn-outline-danger',
 				'escapeTitle' => false,
-				'confirm' => __d('tags', 'Delete tag "{0}"? This will also remove all associations.', $tag->label),
-				'block' => true,
+				'form' => [
+					'class' => 'd-inline',
+					'data-confirm-message' => __d('tags', 'Delete tag "{0}"? This will also remove all associations.', $tag->label),
+				],
 			],
 		) ?>
 	</div>

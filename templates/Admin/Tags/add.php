@@ -4,6 +4,7 @@
  * @var \Tags\Model\Entity\Tag $tag
  * @var array $namespaces
  */
+$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 ?>
 
 <h1 class="mb-4">
@@ -94,7 +95,7 @@
 </div>
 
 <?php $this->append('script'); ?>
-<script>
+<script<?= $cspNonce !== '' ? ' nonce="' . h($cspNonce) . '"' : '' ?>>
 document.addEventListener('DOMContentLoaded', function() {
 	var colorPicker = document.getElementById('color');
 	var colorText = document.getElementById('color-text');

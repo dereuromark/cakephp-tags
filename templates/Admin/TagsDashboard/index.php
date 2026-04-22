@@ -80,13 +80,15 @@
 				<small class="text-muted d-block mt-1"><?= __d('tags', 'Review and remove unused tags') ?></small>
 			</div>
 			<div class="col-md-4">
-				<?= $this->Form->postLink(
+				<?= $this->Form->postButton(
 					'<i class="fas fa-sync-alt me-2"></i>' . __d('tags', 'Recalculate Counters'),
 					['controller' => 'Tags', 'action' => 'recalculateCounters'],
 					[
 						'class' => 'btn btn-outline-info w-100',
 						'escapeTitle' => false,
-						'block' => true,
+						'form' => [
+							'class' => 'd-inline',
+						],
 					]
 				) ?>
 				<small class="text-muted d-block mt-1"><?= __d('tags', 'Fix tag usage counts') ?></small>
