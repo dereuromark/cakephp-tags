@@ -7,6 +7,7 @@
  *
  * @var \Cake\View\View $this
  */
+$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -265,7 +266,7 @@
 			</a>
 
 			<!-- Mobile toggle -->
-			<button class="navbar-toggler tags-mobile-toggle d-lg-none" type="button" onclick="document.querySelector('.tags-sidebar').classList.toggle('show')">
+			<button class="navbar-toggler tags-mobile-toggle d-lg-none" type="button" data-tags-sidebar-toggle="1">
 				<i class="fas fa-bars"></i>
 			</button>
 		</div>
@@ -286,6 +287,27 @@
 
 	<!-- Bootstrap JS -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+	<script<?= $cspNonce !== '' ? ' nonce="' . h($cspNonce) . '"' : '' ?>>
+	// Mobile sidebar toggle (CSP-safe replacement for inline onclick)
+	document.querySelectorAll('[data-tags-sidebar-toggle]').forEach(function(btn) {
+		btn.addEventListener('click', function() {
+			var sidebar = document.querySelector('.tags-sidebar');
+			if (sidebar) {
+				sidebar.classList.toggle('show');
+			}
+		});
+	});
+
+	// Confirmation dialogs for postButton forms (CSP-safe replacement for postLink + confirm)
+	document.querySelectorAll('form[data-confirm-message]').forEach(function(form) {
+		form.addEventListener('submit', function(e) {
+			if (!confirm(form.dataset.confirmMessage)) {
+				e.preventDefault();
+			}
+		});
+	});
+	</script>
 
 	<?= $this->fetch('script') ?>
 	<?= $this->fetch('postLink') ?>

@@ -114,15 +114,17 @@
 							<a href="<?= $this->Url->build(['action' => 'edit', $tag->id]) ?>" class="btn btn-outline-secondary" title="<?= __d('tags', 'Edit') ?>">
 								<i class="fas fa-edit"></i>
 							</a>
-							<?= $this->Form->postLink(
+							<?= $this->Form->postButton(
 								'<i class="fas fa-trash"></i>',
 								['action' => 'delete', $tag->id],
 								[
 									'class' => 'btn btn-outline-danger',
 									'escapeTitle' => false,
-									'confirm' => __d('tags', 'Delete tag "{0}"? This will also remove all associations.', $tag->label),
 									'title' => __d('tags', 'Delete'),
-									'block' => true,
+									'form' => [
+										'class' => 'd-inline',
+										'data-confirm-message' => __d('tags', 'Delete tag "{0}"? This will also remove all associations.', $tag->label),
+									],
 								],
 							) ?>
 						</div>

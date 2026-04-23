@@ -4,6 +4,7 @@
  * @var array<\Tags\Model\Entity\Tag> $tags
  * @var array $tagsByNamespace
  */
+$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 ?>
 
 <h1 class="mb-4">
@@ -81,7 +82,7 @@
 </div>
 
 <?php $this->append('script'); ?>
-<script>
+<script<?= $cspNonce !== '' ? ' nonce="' . h($cspNonce) . '"' : '' ?>>
 document.addEventListener('DOMContentLoaded', function() {
 	var sourceSelect = document.getElementById('source');
 	var targetSelect = document.getElementById('target');

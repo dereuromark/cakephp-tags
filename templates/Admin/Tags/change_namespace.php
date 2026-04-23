@@ -3,6 +3,7 @@
  * @var \App\View\AppView $this
  * @var array $namespaces
  */
+$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 ?>
 
 <h1 class="mb-4">
@@ -116,7 +117,7 @@
 <?php endif; ?>
 
 <?php $this->append('script'); ?>
-<script>
+<script<?= $cspNonce !== '' ? ' nonce="' . h($cspNonce) . '"' : '' ?>>
 document.addEventListener('DOMContentLoaded', function() {
 	var select = document.getElementById('to-namespace-select');
 	var input = document.getElementById('to-namespace-new');
