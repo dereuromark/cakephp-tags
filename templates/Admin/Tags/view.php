@@ -64,7 +64,7 @@
 						<th><?= __d('tags', 'Color') ?></th>
 						<td>
 							<?php if ($tag->color) : ?>
-							<span class="tag-color-swatch me-2" style="background-color: <?= h($tag->color) ?>"></span>
+							<span class="tag-color-swatch me-2" data-tag-color="<?= h($tag->color) ?>"></span>
 							<code><?= h($tag->color) ?></code>
 							<?php else : ?>
 							<span class="text-muted">-</span>

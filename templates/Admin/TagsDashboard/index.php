@@ -119,7 +119,7 @@
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<span>
 							<?php if ($tag->color): ?>
-							<span class="tag-color-swatch me-2" style="background-color: <?= h($tag->color) ?>"></span>
+							<span class="tag-color-swatch me-2" data-tag-color="<?= h($tag->color) ?>"></span>
 							<?php endif; ?>
 							<?php if ($tag->namespace): ?>
 							<small class="text-muted"><?= h($tag->namespace) ?>:</small>
@@ -212,7 +212,7 @@
 					<li class="list-group-item d-flex justify-content-between align-items-center">
 						<span>
 							<?php if ($tag->color): ?>
-							<span class="tag-color-swatch me-2" style="background-color: <?= h($tag->color) ?>"></span>
+							<span class="tag-color-swatch me-2" data-tag-color="<?= h($tag->color) ?>"></span>
 							<?php endif; ?>
 							<?php if ($tag->namespace): ?>
 							<small class="text-muted"><?= h($tag->namespace) ?>:</small>

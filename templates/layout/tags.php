@@ -307,6 +307,11 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 			}
 		});
 	});
+
+	// Tag color swatches (CSP-safe replacement for inline style="background-color:...")
+	document.querySelectorAll('.tag-color-swatch[data-tag-color]').forEach(function(el) {
+		el.style.backgroundColor = el.dataset.tagColor;
+	});
 	</script>
 
 	<?= $this->fetch('script') ?>

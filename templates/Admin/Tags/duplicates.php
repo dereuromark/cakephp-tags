@@ -43,7 +43,7 @@
 				<tr>
 					<td>
 						<?php if ($tag->color): ?>
-						<span class="tag-color-swatch me-2" style="background-color: <?= h($tag->color) ?>"></span>
+						<span class="tag-color-swatch me-2" data-tag-color="<?= h($tag->color) ?>"></span>
 						<?php endif; ?>
 						<?= h($tag->label) ?>
 					</td>

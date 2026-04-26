@@ -34,7 +34,7 @@ $itemsToMove = $itemsToRetag - $duplicates;
 						<span class="badge bg-secondary"><?= h($sourceTag->namespace) ?></span>
 						<?php endif; ?>
 						<?php if ($sourceTag->color) : ?>
-						<span class="tag-color-swatch ms-2" style="background-color: <?= h($sourceTag->color) ?>"></span>
+						<span class="tag-color-swatch ms-2" data-tag-color="<?= h($sourceTag->color) ?>"></span>
 						<?php endif; ?>
 						<div class="mt-2 text-muted">
 							<code><?= h($sourceTag->slug) ?></code>
@@ -60,7 +60,7 @@ $itemsToMove = $itemsToRetag - $duplicates;
 						<span class="badge bg-secondary"><?= h($targetTag->namespace) ?></span>
 						<?php endif; ?>
 						<?php if ($targetTag->color) : ?>
-						<span class="tag-color-swatch ms-2" style="background-color: <?= h($targetTag->color) ?>"></span>
+						<span class="tag-color-swatch ms-2" data-tag-color="<?= h($targetTag->color) ?>"></span>
 						<?php endif; ?>
 						<div class="mt-2 text-muted">
 							<code><?= h($targetTag->slug) ?></code>
