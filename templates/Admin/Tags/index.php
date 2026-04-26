@@ -94,7 +94,7 @@
 					</td>
 					<td>
 						<?php if ($tag->color) : ?>
-						<span class="tag-color-swatch" style="background-color: <?= h($tag->color) ?>" title="<?= h($tag->color) ?>"></span>
+						<span class="tag-color-swatch" data-tag-color="<?= h($tag->color) ?>" title="<?= h($tag->color) ?>"></span>
 						<code class="ms-1"><?= h($tag->color) ?></code>
 						<?php else : ?>
 						<span class="text-muted">-</span>
