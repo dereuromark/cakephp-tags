@@ -205,6 +205,9 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 			display: inline-block;
 		}
 
+		/* Column-width utility (replaces inline `<th style="width:30%">`). */
+		.tags-col-w-30 { width: 30%; }
+
 		/* Alerts/Flash */
 		.tags-flash {
 			border: none;

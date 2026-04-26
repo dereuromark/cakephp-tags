@@ -43,7 +43,7 @@
 			<div class="card-body">
 				<table class="table table-borderless mb-0">
 					<tr>
-						<th style="width: 30%"><?= __d('tags', 'Label') ?></th>
+						<th class="tags-col-w-30"><?= __d('tags', 'Label') ?></th>
 						<td><strong><?= h($tag->label) ?></strong></td>
 					</tr>
 					<tr>
