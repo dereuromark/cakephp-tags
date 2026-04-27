@@ -65,7 +65,7 @@ class TagsTable extends Table {
 			->notBlank('slug')
 			->add('slug', 'isUnique', [
 				'rule' => ['validateUnique', ['scope' => 'namespace']],
-				'message' => __('Already exists'),
+				'message' => __d('tags', 'Already exists'),
 				'provider' => 'table',
 			]);
 
@@ -84,7 +84,7 @@ class TagsTable extends Table {
 
 					return (bool)preg_match('/^#[0-9A-Fa-f]{6}$/', $value);
 				},
-				'message' => __('Color must be a valid hex color (e.g., #FF5733)'),
+				'message' => __d('tags', 'Color must be a valid hex color (e.g., #FF5733)'),
 			]);
 
 		return $validator;

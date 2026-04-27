@@ -1,0 +1,586 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tags \n"
+"POT-Creation-Date: 2026-04-27 11:19+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ./src/Controller/Admin/TagsController.php:118
+#: ./src/Controller/Admin/TagsController.php:154
+msgid "The tag has been saved."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:122
+#: ./src/Controller/Admin/TagsController.php:158
+msgid "The tag could not be saved. Please try again."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:188
+msgid "The tag has been deleted."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:190
+msgid "The tag could not be deleted. Please try again."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:233
+msgid "Please select both source and target tags."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:239
+msgid "Source and target tags must be different."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:249
+msgid "Tags must be in the same namespace to merge."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:279
+msgid "Tags have been merged successfully. {0} items were re-tagged."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:284
+msgid "The tags could not be merged. Please try again."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:331
+msgid "{0} orphaned tags have been deleted."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:333
+msgid "No orphaned tags found."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:350
+msgid "{0} tag counters have been updated."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:352
+msgid "All counters are already correct."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:442
+msgid "Source and target namespaces must be different."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:452
+msgid "The namespace move was aborted because conflicting tag slugs already exist in the target namespace."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:460
+msgid "{0} tags have been moved to the new namespace."
+msgstr ""
+
+#: ./src/Controller/Admin/TagsController.php:465
+msgid "No tags found in the source namespace."
+msgstr ""
+
+#: ./src/Model/Table/TagsTable.php:68
+msgid "Already exists"
+msgstr ""
+
+#: ./src/Model/Table/TagsTable.php:87
+msgid "Color must be a valid hex color (e.g., #FF5733)"
+msgstr ""
+
+#: ./src/View/Helper/TagHelper.php:75
+#: ./templates/Admin/Tags/index.php:14
+#: ./templates/element/Tags/sidebar.php:33
+msgid "Tags"
+msgstr ""
+
+#: ./src/View/Helper/TagHelper.php:203
+msgid "Tag Color"
+msgstr ""
+
+#: ./src/View/Helper/TagHelper.php:204
+msgid "Choose a color for this tag"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:12
+#: ./templates/Admin/Tags/index.php:18
+#: ./templates/element/Tags/sidebar.php:44
+msgid "Add Tag"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:20
+#: ./templates/Admin/Tags/duplicates.php:35
+#: ./templates/Admin/Tags/edit.php:20
+#: ./templates/Admin/Tags/index.php:62
+#: ./templates/Admin/Tags/orphaned.php:45
+#: ./templates/Admin/Tags/view.php:46
+msgid "Label"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:24
+#: ./templates/Admin/Tags/edit.php:24
+msgid "Enter tag label..."
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:31
+#: ./templates/Admin/Tags/duplicates.php:36
+#: ./templates/Admin/Tags/edit.php:31
+#: ./templates/Admin/Tags/index.php:63
+#: ./templates/Admin/Tags/orphaned.php:46
+#: ./templates/Admin/Tags/view.php:50
+msgid "Slug"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:35
+msgid "Auto-generated from label if empty"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:40
+msgid "Leave empty to auto-generate from label."
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:45
+#: ./templates/Admin/Tags/change_namespace.php:91
+#: ./templates/Admin/Tags/edit.php:43
+#: ./templates/Admin/Tags/index.php:27
+#: ./templates/Admin/Tags/index.php:64
+#: ./templates/Admin/Tags/orphaned.php:44
+#: ./templates/Admin/Tags/view.php:54
+msgid "Namespace"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:49
+#: ./templates/Admin/Tags/edit.php:47
+msgid "Optional namespace..."
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:62
+#: ./templates/Admin/Tags/edit.php:60
+#: ./templates/Admin/Tags/index.php:65
+#: ./templates/Admin/Tags/view.php:64
+msgid "Color"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:69
+#: ./templates/Admin/Tags/edit.php:67
+msgid "Choose a color"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:81
+#: ./templates/Admin/Tags/edit.php:80
+msgid "Optional hex color (e.g., #FF5733)"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:85
+#: ./templates/Admin/Tags/edit.php:84
+msgid "Save"
+msgstr ""
+
+#: ./templates/Admin/Tags/add.php:90
+#: ./templates/Admin/Tags/change_namespace.php:74
+#: ./templates/Admin/Tags/edit.php:89
+#: ./templates/Admin/Tags/merge.php:77
+msgid "Abort"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:11
+#: ./templates/element/Tags/sidebar.php:60
+msgid "Change Namespace"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:17
+msgid "Move Tags Between Namespaces"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:22
+msgid "This will move all tags from the source namespace to the target namespace. You can also move tags to or from \"no namespace\"."
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:30
+msgid "Source Namespace"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:33
+#: ./templates/Admin/Tags/change_namespace.php:53
+#: ./templates/Admin/Tags/change_namespace.php:100
+#: ./templates/Admin/Tags/index.php:30
+#: ./templates/Admin/Tags/merge.php:36
+#: ./templates/Admin/Tags/merge.php:59
+#: ./templates/Admin/TagsDashboard/index.php:156
+msgid "(no namespace)"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:49
+msgid "Target Namespace"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:62
+msgid "Or enter a new namespace:"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:63
+msgid "New namespace name..."
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:71
+msgid "Move Tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:85
+msgid "Current Namespaces"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:92
+#: ./templates/Admin/Tags/duplicates.php:38
+#: ./templates/Admin/Tags/index.php:68
+#: ./templates/Admin/Tags/orphaned.php:48
+#: ./templates/element/Tags/sidebar.php:40
+msgid "Actions"
+msgstr ""
+
+#: ./templates/Admin/Tags/change_namespace.php:108
+msgid "View Tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:10
+msgid "Potential Duplicates"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:16
+msgid "Found {0} groups of potentially duplicate tags. Review and merge as needed."
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:24
+msgid "Group {0}"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:29
+msgid "tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:37
+#: ./templates/Admin/Tags/index.php:66
+msgid "Usage"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:56
+#: ./templates/Admin/Tags/index.php:111
+msgid "View"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:59
+#: ./templates/Admin/Tags/index.php:114
+#: ./templates/Admin/Tags/orphaned.php:73
+#: ./templates/Admin/Tags/view.php:18
+msgid "Edit"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:78
+msgid "Merge Tags in This Group"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:81
+msgid "Suggested target: {0} ({1} uses)"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:90
+msgid "No potential duplicates found. Your tags look good!"
+msgstr ""
+
+#: ./templates/Admin/Tags/duplicates.php:97
+#: ./templates/Admin/Tags/orphaned.php:121
+msgid "Back to Dashboard"
+msgstr ""
+
+#: ./templates/Admin/Tags/edit.php:12
+msgid "Edit Tag"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:29
+msgid "All namespaces"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:40
+msgid "Search"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:41
+msgid "Search by label or slug..."
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:46
+msgid "Filter"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:49
+msgid "Clear"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:67
+#: ./templates/Admin/Tags/view.php:83
+msgid "Modified"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:76
+msgid "No tags found."
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:123
+#: ./templates/Admin/Tags/orphaned.php:82
+#: ./templates/Admin/Tags/view.php:21
+msgid "Delete"
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:126
+#: ./templates/Admin/Tags/view.php:28
+msgid "Delete tag \"{0}\"? This will also remove all associations."
+msgstr ""
+
+#: ./templates/Admin/Tags/index.php:141
+msgid "Page {{page}} of {{pages}}, showing {{current}} of {{count}} tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:12
+#: ./templates/element/Tags/sidebar.php:48
+msgid "Merge Tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:18
+msgid "Select Tags to Merge"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:23
+msgid "Merging will move all associations from the source tag to the target tag, then delete the source tag. Tags must be in the same namespace."
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:31
+msgid "Source Tag (will be deleted)"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:34
+msgid "Select source tag..."
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:54
+msgid "Target Tag (will receive associations)"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:57
+msgid "Select target tag..."
+msgstr ""
+
+#: ./templates/Admin/Tags/merge.php:74
+msgid "Preview Merge"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:15
+#: ./templates/Admin/Tags/merge_preview.php:21
+msgid "Merge Preview"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:30
+msgid "Source (will be deleted)"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:56
+msgid "Target (will remain)"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:78
+msgid "Merge Impact"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:82
+msgid "items will be re-tagged from \"{0}\" to \"{1}\""
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:86
+msgid "duplicate associations will be removed (items that already have both tags)"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:90
+msgid "The tag \"{0}\" will be permanently deleted"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:93
+msgid "Target tag \"{0}\" will have approximately {1} uses after merge"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:107
+msgid "Confirm Merge"
+msgstr ""
+
+#: ./templates/Admin/Tags/merge_preview.php:111
+msgid "Back"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:11
+#: ./templates/Admin/TagsDashboard/index.php:49
+#: ./templates/element/Tags/sidebar.php:56
+msgid "Orphaned Tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:18
+msgid "Found {0} orphaned tags (never used or counter = 0). Review and delete as needed."
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:25
+msgid "Orphaned Tags List"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:28
+msgid "Delete All Orphaned Tags"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:35
+msgid "Are you sure you want to delete all {0} orphaned tags? This cannot be undone."
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:47
+#: ./templates/Admin/Tags/view.php:79
+#: ./templates/Admin/Tags/view.php:132
+msgid "Created"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:58
+msgid "(none)"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:85
+msgid "Are you sure you want to delete \"{0}\"?"
+msgstr ""
+
+#: ./templates/Admin/Tags/orphaned.php:114
+msgid "No orphaned tags found. All tags are in use!"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:41
+msgid "Tag Details"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:75
+msgid "Usage Count"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:96
+msgid "Usage by Model"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:112
+msgid "This tag is not used anywhere."
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:124
+msgid "Recent Usages"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:130
+msgid "Model"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:131
+msgid "Foreign Key"
+msgstr ""
+
+#: ./templates/Admin/Tags/view.php:152
+msgid "Back to Tags"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:17
+#: ./templates/element/Tags/sidebar.php:29
+msgid "Dashboard"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:24
+msgid "Total Tags"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:33
+msgid "Tagged Items"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:41
+msgid "Namespaces"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:58
+msgid "Duplicates"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:71
+msgid "Maintenance"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:78
+msgid "Manage Orphaned Tags"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:80
+msgid "Review and remove unused tags"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:84
+msgid "Recalculate Counters"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:94
+msgid "Fix tag usage counts"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:99
+msgid "Export to CSV"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:101
+msgid "Download all tags as CSV"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:113
+msgid "Most Used Tags"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:137
+msgid "No tags used yet."
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:148
+msgid "Tags by Namespace"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:166
+#: ./templates/Admin/TagsDashboard/index.php:230
+msgid "No tags created yet."
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:179
+msgid "Models Using Tags"
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:195
+msgid "No models tagged yet."
+msgstr ""
+
+#: ./templates/Admin/TagsDashboard/index.php:206
+msgid "Recently Created Tags"
+msgstr ""
+
+#: ./templates/element/Tags/sidebar.php:25
+msgid "Navigation"
+msgstr ""
+
+#: ./templates/element/Tags/sidebar.php:52
+msgid "Find Duplicates"
+msgstr ""
+
+#: ./templates/element/Tags/sidebar.php:67
+msgid "Tools"
+msgstr ""
+
+#: ./templates/element/Tags/sidebar.php:71
+msgid "Export CSV"
+msgstr ""
+
