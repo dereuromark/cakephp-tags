@@ -380,31 +380,31 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Customer finder method.
+	 * Custom finder for untagged records.
 	 *
 	 * Usage:
 	 *   $query->find('untagged');
 	 *
-	 * Define a field if you have multiple counter cache fields set up:
-	 *   $query->find('untagged', ...['counterField' => 'my_tag_count']);
-	 * Otherwise it will fallback to the first in the list.
+	 * Pass an explicit counter field if multiple are configured:
+	 *   $query->find('untagged', counterField: 'my_tag_count');
 	 *
-	 * Set 'counterField' to false to do a live lookup in the pivot table.
-	 * It will automatically do the live lookup if you do not have any counter cache fields.
+	 * When no counter cache field is configured (or none is passed and
+	 * none is found on the table), a live lookup against the pivot table
+	 * is performed automatically.
 	 *
 	 * @param \Cake\ORM\Query\SelectQuery $query
-	 * @param array<string, mixed> $options
+	 * @param string|null $counterField
 	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findUntagged(SelectQuery $query, array $options): SelectQuery {
-		$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->_getTaggedCounterConfig($this->getConfig('taggedCounter'))) : [];
-		$options += [
-			'counterField' => $taggedCounters ? reset($taggedCounters) : null,
-		];
+	public function findUntagged(SelectQuery $query, ?string $counterField = null): SelectQuery {
+		if ($counterField === null) {
+			$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->_getTaggedCounterConfig($this->getConfig('taggedCounter'))) : [];
+			$counterField = $taggedCounters ? reset($taggedCounters) : null;
+		}
 
 		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
-		if ($options['counterField']) {
-			return $query->where([$this->_table->getAlias() . '.' . $options['counterField'] => 0]);
+		if ($counterField !== null) {
+			return $query->where([$this->_table->getAlias() . '.' . $counterField => 0]);
 		}
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
