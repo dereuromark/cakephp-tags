@@ -40,11 +40,7 @@ class TagBehavior extends Behavior {
 		'taggedAssoc' => [
 			'className' => 'Tags.Tagged',
 		],
-		'taggedCounter' => [
-			'tag_count' => [
-				'conditions' => [],
-			],
-		],
+		'taggedCounter' => ['tag_count'],
 		'implementedEvents' => [
 			'Model.beforeMarshal' => 'beforeMarshal',
 			'Model.beforeFind' => 'beforeFind',
@@ -329,15 +325,23 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param array|string $config
-	 * @return array
+	 * Normalizes the user-facing taggedCounter config (false, string, or
+	 * list of field names) to the map shape expected by CounterCacheBehavior.
+	 *
+	 * @param array<string>|string $config
+	 * @return array<string, array<string, mixed>>
 	 */
-	protected function _getTaggedCounterConfig($config): array {
-		if (!is_array($config)) {
+	protected function _getTaggedCounterConfig(array|string $config): array {
+		if (is_string($config)) {
 			return [$config => ['conditions' => []]];
 		}
 
-		return $config;
+		$normalized = [];
+		foreach ($config as $field) {
+			$normalized[$field] = ['conditions' => []];
+		}
+
+		return $normalized;
 	}
 
 	/**

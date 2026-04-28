@@ -565,9 +565,7 @@ class TagBehaviorTest extends TestCase {
 		$this->expectExceptionMessage('Field "non_existent" does not exist in table "buns"');
 
 		$table->addBehavior('Tags.Tag', [
-			'taggedCounter' => [
-				'non_existent' => [],
-			],
+			'taggedCounter' => ['non_existent'],
 		]);
 	}
 
