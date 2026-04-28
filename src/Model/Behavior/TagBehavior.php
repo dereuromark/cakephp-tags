@@ -54,7 +54,7 @@ class TagBehavior extends Behavior {
 			'normalizeTags' => 'normalizeTags',
 		],
 		'implementedFinders' => [
-			'tagged' => 'findByTag',
+			'tagged' => 'findTagged',
 			'untagged' => 'findUntagged',
 		],
 		'finderField' => null, // Set to a specific field, e.g. `tag` for using tag name, defaults to `slug`
@@ -357,7 +357,7 @@ class TagBehavior extends Behavior {
 	 * @throws \RuntimeException
 	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findByTag(SelectQuery $query, array $options): SelectQuery {
+	public function findTagged(SelectQuery $query, array $options): SelectQuery {
 		$finderField = $optionsKey = $this->getConfig('finderField');
 		if (!$finderField) {
 			$finderField = $optionsKey = 'slug';

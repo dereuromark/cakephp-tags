@@ -30,7 +30,7 @@ class MultiTagsRecordsTable extends Table {
 				'propertyName' => 'one',
 			],
 			'implementedFinders' => [
-				'taggedOne' => 'findByTag',
+				'taggedOne' => 'findTagged',
 				'untaggedOne' => 'findUntagged',
 			],
 			'implementedMethods' => [
@@ -47,7 +47,7 @@ class MultiTagsRecordsTable extends Table {
 				'propertyName' => 'two',
 			],
 			'implementedFinders' => [
-				'taggedTwo' => 'findByTag',
+				'taggedTwo' => 'findTagged',
 				'untaggedTwo' => 'findUntagged',
 			],
 			'implementedMethods' => [
