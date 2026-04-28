@@ -341,37 +341,27 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Customer finder method using slug/tag lookup.
+	 * Custom finder for tagged records.
 	 *
-	 * It accepts both string or array (multiple strings) for the slug/tag value(s).
-	 *
-	 * {finderField} via config can be either 'slug' or 'label' of Tags table. Defaults to slug.
+	 * Accepts a single value or a list of values. The configured `finderField`
+	 * (defaulting to `slug`) determines which Tags column is matched against.
 	 *
 	 * Usage:
-	 *   $query->find('tagged', ...['{finderField}' => 'example-tag']);
-	 * or:
-	 *   $query->find('tagged', ...['{finderField}' => ['one', 'two']);
+	 *   $query->find('tagged', value: 'example-tag');
+	 *   $query->find('tagged', value: ['one', 'two']);
 	 *
 	 * @param \Cake\ORM\Query\SelectQuery $query
-	 * @param array<string, mixed> $options
-	 * @throws \RuntimeException
+	 * @param array<string>|string $value
 	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findTagged(SelectQuery $query, array $options): SelectQuery {
-		$finderField = $optionsKey = $this->getConfig('finderField');
-		if (!$finderField) {
-			$finderField = $optionsKey = 'slug';
-		}
-
-		if (!isset($options[$optionsKey])) {
-			throw new RuntimeException(sprintf('Expected key `%s` not present in find(\'tagged\') options argument.', $optionsKey));
-		}
-		$filterValue = $options[$optionsKey];
-		if (!$filterValue) {
+	public function findTagged(SelectQuery $query, array|string $value): SelectQuery {
+		if (!$value) {
 			return $query;
 		}
 
-		$subQuery = $this->buildQuerySnippet($filterValue, $finderField);
+		$finderField = $this->getConfig('finderField') ?: 'slug';
+
+		$subQuery = $this->buildQuerySnippet($value, $finderField);
 		if (is_string($subQuery)) {
 			$query->matching($this->getConfig('tagsAlias'), function (QueryInterface $q) use ($finderField, $subQuery) {
 				$key = $this->getConfig('tagsAlias') . '.' . $finderField;
