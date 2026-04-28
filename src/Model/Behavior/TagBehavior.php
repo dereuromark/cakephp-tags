@@ -189,13 +189,29 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Generates comma-delimited string of tag names from tag array(), needed for
-	 * initialization of data for text input
+	 * Generates tag output for the configured strategy ('array' or 'string').
 	 *
-	 * @param array $data Tag data array to convert to string.
-	 * @return array|string
+	 * Dispatches to {@see prepareTagsForOutputArray()} or
+	 * {@see prepareTagsForOutputString()} based on the `strategy` config.
+	 *
+	 * @param array $data Tag data array to convert.
+	 * @return array<string>|string
 	 */
-	public function prepareTagsForOutput(array $data) {
+	public function prepareTagsForOutput(array $data): array|string {
+		if ($this->_config['strategy'] === 'array') {
+			return $this->prepareTagsForOutputArray($data);
+		}
+
+		return $this->prepareTagsForOutputString($data);
+	}
+
+	/**
+	 * Returns tag labels (with namespace prefix when configured) as a list.
+	 *
+	 * @param array $data Tag data array.
+	 * @return array<string>
+	 */
+	public function prepareTagsForOutputArray(array $data): array {
 		$tags = [];
 
 		foreach ($data as $tag) {
@@ -206,11 +222,17 @@ class TagBehavior extends Behavior {
 			}
 		}
 
-		if ($this->_config['strategy'] === 'array') {
-			return $tags;
-		}
+		return $tags;
+	}
 
-		return implode($this->_config['delimiter'] . ' ', $tags);
+	/**
+	 * Returns tag labels joined by the configured delimiter as a single string.
+	 *
+	 * @param array $data Tag data array.
+	 * @return string
+	 */
+	public function prepareTagsForOutputString(array $data): string {
+		return implode($this->_config['delimiter'] . ' ', $this->prepareTagsForOutputArray($data));
 	}
 
 	/**
@@ -428,7 +450,7 @@ class TagBehavior extends Behavior {
 	 * @param array<string>|string $tags List of tags as an array or a delimited string (comma by default).
 	 * @return array Normalized tags valid to be marshaled.
 	 */
-	public function normalizeTags($tags): array {
+	public function normalizeTags(array|string $tags): array {
 		if (is_string($tags)) {
 			$tags = explode($this->getConfig('delimiter'), $tags);
 		}
