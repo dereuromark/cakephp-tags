@@ -179,6 +179,185 @@ class TagsTableTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testFindDuplicatesByPluralSuffix(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'colors',
+			'label' => 'Colors',
+		]));
+
+		$groups = $this->Tags->findDuplicates();
+
+		$this->assertCount(1, $groups);
+		$this->assertCount(2, $groups[0]);
+		$slugs = array_map(fn ($t) => $t->slug, $groups[0]);
+		sort($slugs);
+		$this->assertSame(['color', 'colors'], $slugs);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindDuplicatesByLevenshtein(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'colur',
+			'label' => 'Colur',
+		]));
+
+		$groups = $this->Tags->findDuplicates();
+		$this->assertNotEmpty($groups);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindDuplicatesIgnoresAcrossNamespaces(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'color',
+			'label' => 'Color In Palette',
+		]));
+
+		$groups = $this->Tags->findDuplicates();
+		$this->assertSame([], $groups);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindDuplicatesNamespaceFilter(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'color',
+			'label' => 'Color In Palette',
+		]));
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'colors',
+			'label' => 'Colors In Palette',
+		]));
+
+		$groups = $this->Tags->findDuplicates('palette');
+		$this->assertCount(1, $groups);
+		$this->assertCount(2, $groups[0]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindDuplicatesNoneWhenAllUnique(): void {
+		$this->Tags->deleteAll([]);
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'apple',
+			'label' => 'Apple',
+		]));
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'zebra',
+			'label' => 'Zebra',
+		]));
+
+		$this->assertSame([], $this->Tags->findDuplicates());
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testDeleteOrphaned(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'orphan-1',
+			'label' => 'Orphan 1',
+		]));
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'orphan-2',
+			'label' => 'Orphan 2',
+		]));
+
+		$count = $this->Tags->deleteOrphaned();
+		$this->assertSame(2, $count);
+		$this->assertFalse($this->Tags->exists(['slug' => 'orphan-1']));
+		$this->assertTrue($this->Tags->exists(['slug' => 'color']));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testDeleteOrphanedWithNamespace(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'orphan-palette',
+			'label' => 'Orphan Palette',
+		]));
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'orphan-global',
+			'label' => 'Orphan Global',
+		]));
+
+		$count = $this->Tags->deleteOrphaned('palette');
+		$this->assertSame(1, $count);
+		$this->assertFalse($this->Tags->exists(['slug' => 'orphan-palette']));
+		$this->assertTrue($this->Tags->exists(['slug' => 'orphan-global']));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testRecalculateCounters(): void {
+		$this->Tags->updateAll(['counter' => 99], ['id' => 1]);
+		$this->Tags->updateAll(['counter' => 0], ['id' => 2]);
+
+		$updated = $this->Tags->recalculateCounters();
+		$this->assertSame(2, $updated);
+
+		$this->assertSame(3, $this->Tags->get(1)->counter);
+		$this->assertSame(2, $this->Tags->get(2)->counter);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testRecalculateCountersWhenAlreadyCorrect(): void {
+		$updated = $this->Tags->recalculateCounters();
+		$this->assertSame(0, $updated);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMerge(): void {
+		$taggedTable = TableRegistry::getTableLocator()->get('Tags.Tagged');
+
+		$result = $this->Tags->merge(2, 1);
+		$this->assertTrue($result);
+
+		$this->assertFalse($this->Tags->exists(['id' => 2]));
+		// Source had 2 associations (Muffins:1, Buns:2). One was a duplicate (Muffins:1 has both tags 1 and 2),
+		// so the duplicate is deleted, the unique Buns:2 is moved to tag 1.
+		// Original tag 1 had 3 associations + 1 moved = 4
+		$tag1 = $this->Tags->get(1);
+		$this->assertSame(4, $tag1->counter);
+		$this->assertSame(0, $taggedTable->find()->where(['tag_id' => 2])->count());
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMergeReturnsFalseOnNamespaceMismatch(): void {
+		$other = $this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'palette-color',
+			'label' => 'Palette Color',
+		]);
+		$this->Tags->saveOrFail($other);
+
+		$result = $this->Tags->merge($other->id, 1);
+		$this->assertFalse($result);
+
+		$this->assertTrue($this->Tags->exists(['id' => $other->id]));
+		$this->assertTrue($this->Tags->exists(['id' => 1]));
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testMultipleTagsPerModel() {
 		//TableRegistry::clear();
 
@@ -209,12 +388,12 @@ class TagsTableTest extends TestCase {
 
 		$untagged = $table->find('untaggedOne')->count();
 		$this->assertSame(2, $untagged);
-		$tagged = $table->find('taggedOne', ...['slug' => 'x'])->first();
+		$tagged = $table->find('taggedOne', value: 'x')->first();
 		$this->assertSame($entity->id, $tagged->id);
 
 		$untagged = $table->find('untaggedTwo')->count();
 		$this->assertSame(2, $untagged);
-		$tagged = $table->find('taggedTwo', ...['slug' => '66'])->first();
+		$tagged = $table->find('taggedTwo', value: '66')->first();
 		$this->assertSame($entity->id, $tagged->id);
 	}
 

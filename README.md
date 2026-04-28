@@ -13,6 +13,8 @@ Make tagging of entities a piece of cake.
 
 This branch is for **CakePHP 5.1+**. For details see [version map](https://github.com/dereuromark/cakephp-tags/wiki#cakephp-version-map).
 
+Upgrading from 2.x? See [UPGRADE.md](UPGRADE.md) for the v3 migration notes.
+
 ## Install
 
 Using Composer:

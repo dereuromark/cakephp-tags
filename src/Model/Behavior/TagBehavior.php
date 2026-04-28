@@ -40,11 +40,7 @@ class TagBehavior extends Behavior {
 		'taggedAssoc' => [
 			'className' => 'Tags.Tagged',
 		],
-		'taggedCounter' => [
-			'tag_count' => [
-				'conditions' => [],
-			],
-		],
+		'taggedCounter' => ['tag_count'],
 		'implementedEvents' => [
 			'Model.beforeMarshal' => 'beforeMarshal',
 			'Model.beforeFind' => 'beforeFind',
@@ -54,7 +50,7 @@ class TagBehavior extends Behavior {
 			'normalizeTags' => 'normalizeTags',
 		],
 		'implementedFinders' => [
-			'tagged' => 'findByTag',
+			'tagged' => 'findTagged',
 			'untagged' => 'findUntagged',
 		],
 		'finderField' => null, // Set to a specific field, e.g. `tag` for using tag name, defaults to `slug`
@@ -193,13 +189,29 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Generates comma-delimited string of tag names from tag array(), needed for
-	 * initialization of data for text input
+	 * Generates tag output for the configured strategy ('array' or 'string').
 	 *
-	 * @param array $data Tag data array to convert to string.
-	 * @return array|string
+	 * Dispatches to {@see prepareTagsForOutputArray()} or
+	 * {@see prepareTagsForOutputString()} based on the `strategy` config.
+	 *
+	 * @param array $data Tag data array to convert.
+	 * @return array<string>|string
 	 */
-	public function prepareTagsForOutput(array $data) {
+	public function prepareTagsForOutput(array $data): array|string {
+		if ($this->_config['strategy'] === 'array') {
+			return $this->prepareTagsForOutputArray($data);
+		}
+
+		return $this->prepareTagsForOutputString($data);
+	}
+
+	/**
+	 * Returns tag labels (with namespace prefix when configured) as a list.
+	 *
+	 * @param array $data Tag data array.
+	 * @return array<string>
+	 */
+	public function prepareTagsForOutputArray(array $data): array {
 		$tags = [];
 
 		foreach ($data as $tag) {
@@ -210,11 +222,17 @@ class TagBehavior extends Behavior {
 			}
 		}
 
-		if ($this->_config['strategy'] === 'array') {
-			return $tags;
-		}
+		return $tags;
+	}
 
-		return implode($this->_config['delimiter'] . ' ', $tags);
+	/**
+	 * Returns tag labels joined by the configured delimiter as a single string.
+	 *
+	 * @param array $data Tag data array.
+	 * @return string
+	 */
+	public function prepareTagsForOutputString(array $data): string {
+		return implode($this->_config['delimiter'] . ' ', $this->prepareTagsForOutputArray($data));
 	}
 
 	/**
@@ -329,49 +347,47 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * @param array|string $config
-	 * @return array
+	 * Normalizes the user-facing taggedCounter config (false, string, or
+	 * list of field names) to the map shape expected by CounterCacheBehavior.
+	 *
+	 * @param array<string>|string $config
+	 * @return array<string, array<string, mixed>>
 	 */
-	protected function _getTaggedCounterConfig($config): array {
-		if (!is_array($config)) {
+	protected function _getTaggedCounterConfig(array|string $config): array {
+		if (is_string($config)) {
 			return [$config => ['conditions' => []]];
 		}
 
-		return $config;
+		$normalized = [];
+		foreach ($config as $field) {
+			$normalized[$field] = ['conditions' => []];
+		}
+
+		return $normalized;
 	}
 
 	/**
-	 * Customer finder method using slug/tag lookup.
+	 * Custom finder for tagged records.
 	 *
-	 * It accepts both string or array (multiple strings) for the slug/tag value(s).
-	 *
-	 * {finderField} via config can be either 'slug' or 'label' of Tags table. Defaults to slug.
+	 * Accepts a single value or a list of values. The configured `finderField`
+	 * (defaulting to `slug`) determines which Tags column is matched against.
 	 *
 	 * Usage:
-	 *   $query->find('tagged', ...['{finderField}' => 'example-tag']);
-	 * or:
-	 *   $query->find('tagged', ...['{finderField}' => ['one', 'two']);
+	 *   $query->find('tagged', value: 'example-tag');
+	 *   $query->find('tagged', value: ['one', 'two']);
 	 *
 	 * @param \Cake\ORM\Query\SelectQuery $query
-	 * @param array<string, mixed> $options
-	 * @throws \RuntimeException
+	 * @param array<string>|string $value
 	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findByTag(SelectQuery $query, array $options): SelectQuery {
-		$finderField = $optionsKey = $this->getConfig('finderField');
-		if (!$finderField) {
-			$finderField = $optionsKey = 'slug';
-		}
-
-		if (!isset($options[$optionsKey])) {
-			throw new RuntimeException(sprintf('Expected key `%s` not present in find(\'tagged\') options argument.', $optionsKey));
-		}
-		$filterValue = $options[$optionsKey];
-		if (!$filterValue) {
+	public function findTagged(SelectQuery $query, array|string $value): SelectQuery {
+		if (!$value) {
 			return $query;
 		}
 
-		$subQuery = $this->buildQuerySnippet($filterValue, $finderField);
+		$finderField = $this->getConfig('finderField') ?: 'slug';
+
+		$subQuery = $this->buildQuerySnippet($value, $finderField);
 		if (is_string($subQuery)) {
 			$query->matching($this->getConfig('tagsAlias'), function (QueryInterface $q) use ($finderField, $subQuery) {
 				$key = $this->getConfig('tagsAlias') . '.' . $finderField;
@@ -390,31 +406,31 @@ class TagBehavior extends Behavior {
 	}
 
 	/**
-	 * Customer finder method.
+	 * Custom finder for untagged records.
 	 *
 	 * Usage:
 	 *   $query->find('untagged');
 	 *
-	 * Define a field if you have multiple counter cache fields set up:
-	 *   $query->find('untagged', ...['counterField' => 'my_tag_count']);
-	 * Otherwise it will fallback to the first in the list.
+	 * Pass an explicit counter field if multiple are configured:
+	 *   $query->find('untagged', counterField: 'my_tag_count');
 	 *
-	 * Set 'counterField' to false to do a live lookup in the pivot table.
-	 * It will automatically do the live lookup if you do not have any counter cache fields.
+	 * When no counter cache field is configured (or none is passed and
+	 * none is found on the table), a live lookup against the pivot table
+	 * is performed automatically.
 	 *
 	 * @param \Cake\ORM\Query\SelectQuery $query
-	 * @param array<string, mixed> $options
+	 * @param string|null $counterField
 	 * @return \Cake\ORM\Query\SelectQuery
 	 */
-	public function findUntagged(SelectQuery $query, array $options): SelectQuery {
-		$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->_getTaggedCounterConfig($this->getConfig('taggedCounter'))) : [];
-		$options += [
-			'counterField' => $taggedCounters ? reset($taggedCounters) : null,
-		];
+	public function findUntagged(SelectQuery $query, ?string $counterField = null): SelectQuery {
+		if ($counterField === null) {
+			$taggedCounters = $this->getConfig('taggedCounter') ? array_keys($this->_getTaggedCounterConfig($this->getConfig('taggedCounter'))) : [];
+			$counterField = $taggedCounters ? reset($taggedCounters) : null;
+		}
 
 		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
-		if ($options['counterField']) {
-			return $query->where([$this->_table->getAlias() . '.' . $options['counterField'] => 0]);
+		if ($counterField !== null) {
+			return $query->where([$this->_table->getAlias() . '.' . $counterField => 0]);
 		}
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
@@ -434,7 +450,7 @@ class TagBehavior extends Behavior {
 	 * @param array<string>|string $tags List of tags as an array or a delimited string (comma by default).
 	 * @return array Normalized tags valid to be marshaled.
 	 */
-	public function normalizeTags($tags): array {
+	public function normalizeTags(array|string $tags): array {
 		if (is_string($tags)) {
 			$tags = explode($this->getConfig('delimiter'), $tags);
 		}

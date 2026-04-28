@@ -255,12 +255,12 @@ class TagsController extends TagsAppController {
 
 		// Count items that will be re-tagged
 		$itemsToRetag = $taggedTable->find()
-			->where(['tag_id' => $sourceId])
+			->where(['Tagged.tag_id' => $sourceId])
 			->count();
 
 		// Count duplicates (items that have both tags)
 		$duplicates = $taggedTable->find()
-			->where(['tag_id' => $sourceId])
+			->where(['Tagged.tag_id' => $sourceId])
 			->innerJoin(
 				['t2' => 'tags_tagged'],
 				[
@@ -385,7 +385,7 @@ class TagsController extends TagsAppController {
 		}
 
 		// Header row
-		fputcsv($output, ['id', 'namespace', 'slug', 'label', 'color', 'counter', 'created', 'modified']);
+		fputcsv($output, ['id', 'namespace', 'slug', 'label', 'color', 'counter', 'created', 'modified'], ',', '"', '\\');
 
 		// Data rows
 		foreach ($tags as $tag) {
@@ -398,7 +398,7 @@ class TagsController extends TagsAppController {
 				$tag->counter,
 				$tag->created->format('Y-m-d H:i:s'),
 				$tag->modified->format('Y-m-d H:i:s'),
-			]);
+			], ',', '"', '\\');
 		}
 
 		rewind($output);
