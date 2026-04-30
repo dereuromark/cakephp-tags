@@ -475,6 +475,36 @@ $routes->get('/tag/:slug', ['controller' => 'Tags', 'action' => 'view'], 'my-tag
 
 For details see [Core docs](https://book.cakephp.org/5/en/development/routing.html#entity-routing).
 
+## Admin UI
+
+The plugin ships a Bootstrap 5 admin UI under `/admin/tags`.
+
+### Access control (`Tags.accessCheck`)
+
+By default the admin UI inherits the host application's `AppController` auth.
+If your host gates `/admin/*` for admins, the Tags admin is gated by the
+same mechanism. Nothing extra is required.
+
+For defense-in-depth — or if you flipped `Tags.standalone = true` and
+detached from the host AppController — set `Tags.accessCheck` to a `Closure`
+that receives the current request and returns literal `true`. Anything else
+(returns false, returns a truthy non-bool, throws) yields a 403.
+
+```php
+use Cake\Core\Configure;
+use Cake\Http\ServerRequest;
+
+// Example — gate by role on the authenticated identity:
+Configure::write('Tags.accessCheck', function (ServerRequest $request): bool {
+    $identity = $request->getAttribute('identity');
+    return $identity !== null && in_array('admin', (array)$identity->roles, true);
+});
+```
+
+Unset = no-op (host auth alone applies). The gate calls
+`Authorization::skipAuthorization()` when the cakephp/authorization
+component is loaded so the policy layer doesn't double-reject.
+
 ## Tips
 
 ### IDE support/help
