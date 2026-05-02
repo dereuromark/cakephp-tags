@@ -5,6 +5,7 @@ namespace Tags\Test\TestCase\Model\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use RuntimeException;
 use Tools\Utility\Text;
 
 class TagsTableTest extends TestCase {
@@ -174,6 +175,38 @@ class TagsTableTest extends TestCase {
 
 		$this->expectExceptionMessage('conflicting slug(s)');
 		$this->Tags->moveNamespace(null, 'palette');
+	}
+
+	/**
+	 * Verifies the conflict-detection branch rolls back: source-namespace tags
+	 * stay in their original namespace when the move is rejected.
+	 *
+	 * @return void
+	 */
+	public function testMoveNamespaceConflictRollsBack(): void {
+		$entity = $this->Tags->newEntity([
+			'namespace' => 'palette',
+			'slug' => 'color',
+			'label' => 'Color In Palette',
+		]);
+		$this->Tags->saveOrFail($entity);
+
+		$beforeNullCount = $this->Tags->find()
+			->where(['namespace IS' => null])
+			->count();
+
+		try {
+			$this->Tags->moveNamespace(null, 'palette');
+			$this->fail('Expected RuntimeException was not thrown.');
+		} catch (RuntimeException $e) {
+			$this->assertStringContainsString('conflicting slug(s)', $e->getMessage());
+		}
+
+		$afterNullCount = $this->Tags->find()
+			->where(['namespace IS' => null])
+			->count();
+
+		$this->assertSame($beforeNullCount, $afterNullCount, 'No source rows should have been moved.');
 	}
 
 	/**
