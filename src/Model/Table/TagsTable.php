@@ -241,24 +241,31 @@ class TagsTable extends Table {
 	/**
 	 * Move all tags from one namespace to another.
 	 *
+	 * The conflict check and the update run inside a single transaction so a
+	 * concurrent insert in the target namespace cannot slip a colliding slug in
+	 * between the count and the bulk update (which would corrupt the unique
+	 * `(namespace, slug)` invariant).
+	 *
 	 * @param string|null $fromNamespace Source namespace.
 	 * @param string|null $toNamespace Target namespace.
 	 * @throws \RuntimeException When duplicate slugs already exist in the target namespace.
 	 * @return int Number of updated rows.
 	 */
 	public function moveNamespace(?string $fromNamespace, ?string $toNamespace): int {
-		$conflicts = $this->countNamespaceConflicts($fromNamespace, $toNamespace);
-		if ($conflicts) {
-			throw new RuntimeException(sprintf(
-				'Cannot move namespace: %d conflicting slug(s) already exist in the target namespace.',
-				$conflicts,
-			));
-		}
+		return $this->getConnection()->transactional(function () use ($fromNamespace, $toNamespace): int {
+			$conflicts = $this->countNamespaceConflicts($fromNamespace, $toNamespace);
+			if ($conflicts) {
+				throw new RuntimeException(sprintf(
+					'Cannot move namespace: %d conflicting slug(s) already exist in the target namespace.',
+					$conflicts,
+				));
+			}
 
-		return $this->updateAll(
-			['namespace' => $toNamespace],
-			$this->namespaceConditions($fromNamespace),
-		);
+			return $this->updateAll(
+				['namespace' => $toNamespace],
+				$this->namespaceConditions($fromNamespace),
+			);
+		});
 	}
 
 	/**
