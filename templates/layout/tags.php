@@ -268,8 +268,20 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 				Tags
 			</a>
 
+			<?php
+			$adminBackUrl = \Cake\Core\Configure::read('Tags.adminBackUrl');
+			$hasAdminBack = $adminBackUrl !== null && $adminBackUrl !== '';
+			$adminBackLabel = (string)\Cake\Core\Configure::read('Tags.adminBackLabel', __d('tags', 'Back to App'));
+			?>
+			<?php if ($hasAdminBack) { ?>
+			<a class="btn btn-outline-light btn-sm ms-auto" href="<?= $this->Url->build($adminBackUrl) ?>">
+				<i class="fas fa-arrow-left me-1"></i>
+				<?= h($adminBackLabel) ?>
+			</a>
+			<?php } ?>
+
 			<!-- Mobile toggle -->
-			<button class="navbar-toggler tags-mobile-toggle d-lg-none" type="button" data-tags-sidebar-toggle="1">
+			<button class="navbar-toggler tags-mobile-toggle d-lg-none <?= $hasAdminBack ? 'ms-2' : 'ms-auto' ?>" type="button" data-tags-sidebar-toggle="1">
 				<i class="fas fa-bars"></i>
 			</button>
 		</div>
