@@ -465,31 +465,45 @@ class TagBehavior extends Behavior {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
 		$displayField = $tagsTable->getDisplayField();
 
-		$keys = [];
+		// Pre-parse every input tag, deduplicate by slug, and then do ONE database
+		// lookup for all candidate slugs instead of one per tag. The previous N+1
+		// fired N round-trips when saving an entity with N tags — even a 20-tag
+		// blog post would emit 20 single-row SELECTs on every save.
+		$parsed = [];
+		$candidateSlugs = [];
 		foreach ($tags as $tag) {
 			$tag = trim($tag);
 			if (empty($tag)) {
 				continue;
 			}
 
-			// Parse the tag to get label, namespace, and color
 			$normalizedData = $this->_normalizeTag($tag);
 			$customNamespace = $normalizedData['namespace'] ?? '';
 			$label = $normalizedData['label'] ?? $tag;
 			$color = $normalizedData['color'] ?? null;
 
-			// Generate slug from label only (without color)
 			$tagKey = $this->_getTagKey($label);
-			if (in_array($tagKey, $keys, true)) {
+			if (isset($parsed[$tagKey])) {
 				continue;
 			}
-			$keys[] = $tagKey;
 
-			$existingTag = $this->_tagExists($tagKey);
+			$parsed[$tagKey] = [
+				'slug' => $tagKey,
+				'label' => $label,
+				'color' => $color,
+				'customNamespace' => $customNamespace,
+			];
+			$candidateSlugs[] = $tagKey;
+		}
+
+		$existingBySlug = $this->_tagsExistBatch($candidateSlugs);
+
+		foreach ($parsed as $tagKey => $entry) {
+			$existingTag = $existingBySlug[$tagKey] ?? null;
 			if ($existingTag) {
 				$existingData = $common + ['id' => $existingTag->id];
-				if ($color !== null) {
-					$existingData['color'] = $color;
+				if ($entry['color'] !== null) {
+					$existingData['color'] = $entry['color'];
 				}
 				$result[] = $existingData;
 
@@ -497,16 +511,51 @@ class TagBehavior extends Behavior {
 			}
 
 			$tagData = $common + [
-				'slug' => $tagKey,
-				'namespace' => $customNamespace ?: $namespace,
-				'label' => $label,
-				'color' => $color,
-			] + compact($displayField);
+				'slug' => $entry['slug'],
+				'namespace' => $entry['customNamespace'] ?: $namespace,
+				'label' => $entry['label'],
+				'color' => $entry['color'],
+			] + [$displayField => $entry['label']];
 
 			$result[] = $tagData;
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Batch-fetch existing tags by slug in a single SELECT.
+	 *
+	 * Returns an alias => entity-shaped map keyed by slug so callers can resolve
+	 * existence in O(1) per slug after one round-trip. The legacy `_tagExists()`
+	 * stays available for single-slug callers that have no batching opportunity.
+	 *
+	 * @param list<string> $slugs
+	 * @return array<string, \Cake\Datasource\EntityInterface>
+	 */
+	protected function _tagsExistBatch(array $slugs): array {
+		if (!$slugs) {
+			return [];
+		}
+
+		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
+		$primaryKey = $tagsTable->getPrimaryKey();
+		$slugField = $tagsTable->aliasField('slug');
+
+		$results = $tagsTable->find()
+			->where([$slugField . ' IN' => $slugs])
+			->select([
+				$tagsTable->aliasField('slug'),
+				$tagsTable->aliasField($primaryKey),
+			])
+			->all();
+
+		$bySlug = [];
+		foreach ($results as $row) {
+			$bySlug[$row->slug] = $row;
+		}
+
+		return $bySlug;
 	}
 
 	/**
@@ -570,7 +619,12 @@ class TagBehavior extends Behavior {
 		$labelPart = $tag;
 		$colorPart = null;
 
-		// First check for inline color syntax (TagName@color) if enabled
+		// First check for inline color syntax (TagName@color) if enabled. When the
+		// feature is on, `@` is treated as a syntactic separator unconditionally —
+		// the unparseable-color branch keeps the label and drops the suffix per
+		// the test suite's documented intent. Apps that need literal `@` in tag
+		// names (e.g. email-shaped tags like `support@acme`) must leave
+		// `inlineColorEditing` off.
 		if ($this->getConfig('inlineColorEditing') && str_contains($tag, '@')) {
 			$parts = explode('@', $tag, 2);
 			if (count($parts) === 2) {

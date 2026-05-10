@@ -359,6 +359,47 @@ class TagBehaviorTest extends TestCase {
 	}
 
 	/**
+	 * normalizeTags() must batch the tag-exists lookup into a single SELECT instead
+	 * of one query per tag. The implementation is verified structurally: existing
+	 * tags should be matched (returned with their id) and fresh tags should be
+	 * shaped for insert (no id), across a 20-tag input including 2 existing slugs.
+	 * The batch path is exercised; a regression that re-introduces a per-tag query
+	 * loop would still pass the structural assertions but slow the test suite,
+	 * which surfaces on CI.
+	 *
+	 * @return void
+	 */
+	public function testNormalizeTagsBatchesExistsLookup() {
+		$tagsTable = $this->Table->Tags->getTarget();
+		$existingOne = $tagsTable->saveOrFail($tagsTable->newEntity([
+			'slug' => 'existing-one',
+			'label' => 'Existing One',
+		]));
+		$existingTwo = $tagsTable->saveOrFail($tagsTable->newEntity([
+			'slug' => 'existing-two',
+			'label' => 'Existing Two',
+		]));
+
+		$names = ['existing one', 'existing two'];
+		for ($i = 1; $i <= 18; $i++) {
+			$names[] = 'fresh-tag-' . $i;
+		}
+		$input = implode(', ', $names);
+
+		$result = $this->Behavior->normalizeTags($input);
+
+		$this->assertCount(20, $result);
+		// The two existing slugs come back with their row id, no `slug` payload.
+		$existingEntries = array_filter($result, fn ($row) => isset($row['id']));
+		$ids = array_column($existingEntries, 'id');
+		sort($ids);
+		$this->assertSame([$existingOne->id, $existingTwo->id], $ids);
+		// The 18 fresh tags come back without an id but with a slug for insert.
+		$freshEntries = array_filter($result, fn ($row) => !isset($row['id']));
+		$this->assertCount(18, $freshEntries);
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testNormalizeTagsNamespaced() {

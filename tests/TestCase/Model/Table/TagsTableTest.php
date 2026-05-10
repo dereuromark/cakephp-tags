@@ -275,6 +275,65 @@ class TagsTableTest extends TestCase {
 	}
 
 	/**
+	 * The legacy normalizeSlug() heuristic produced 'studi' for 'studies' (strip
+	 * 'ies'), so a sibling 'study' didn't pair with it. With Inflector::singularize
+	 * the proper English form is recovered and the duplicate pair surfaces.
+	 *
+	 * @return void
+	 */
+	public function testFindDuplicatesBySingularizeRule(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'study',
+			'label' => 'Study',
+		]));
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'studies',
+			'label' => 'Studies',
+		]));
+
+		$groups = $this->Tags->findDuplicates();
+
+		$pair = null;
+		foreach ($groups as $group) {
+			$slugs = array_map(fn ($t) => $t->slug, $group);
+			sort($slugs);
+			if ($slugs === ['studies', 'study']) {
+				$pair = $slugs;
+
+				break;
+			}
+		}
+		$this->assertSame(['studies', 'study'], $pair);
+	}
+
+	/**
+	 * Tags whose normalized slugs differ by more than 2 characters of length must
+	 * not be paired — the length-bucket guard skips them without invoking
+	 * levenshtein() at all. Catches a regression where the bucketing accidentally
+	 * widens.
+	 *
+	 * @return void
+	 */
+	public function testFindDuplicatesSkipsDistantLengths(): void {
+		$this->Tags->saveOrFail($this->Tags->newEntity([
+			'slug' => 'unrelatedlongtag',
+			'label' => 'Unrelated Long Tag',
+		]));
+
+		$groups = $this->Tags->findDuplicates();
+
+		// The newly added long tag must not appear in any group — its
+		// length is far outside the levenshtein-2 window for `color`.
+		$allSlugsInGroups = [];
+		foreach ($groups as $group) {
+			foreach ($group as $tag) {
+				$allSlugsInGroups[] = $tag->slug;
+			}
+		}
+		$this->assertNotContains('unrelatedlongtag', $allSlugsInGroups);
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testFindDuplicatesNoneWhenAllUnique(): void {
