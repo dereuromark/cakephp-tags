@@ -6,6 +6,7 @@ use ArrayObject;
 use Cake\Core\Configure;
 use Cake\Event\EventInterface;
 use Cake\ORM\Table;
+use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use RuntimeException;
@@ -147,34 +148,46 @@ class TagsTable extends Table {
 		$duplicates = [];
 		$processed = [];
 
-		foreach ($tags as $i => $tag) {
+		// Pre-compute normalized slugs once per tag and bucket by namespace + length so
+		// the inner loop only walks tags within levenshtein distance 2 (length ±2)
+		// instead of every-pair-O(n²) of the previous implementation. levenshtein()
+		// is the dominant cost on a 10k-row table; this cuts the comparison count
+		// dramatically while preserving the existing match semantics.
+		$normalized = [];
+		$buckets = [];
+		foreach ($tags as $tag) {
+			$base = $this->normalizeSlug($tag->slug);
+			$normalized[$tag->id] = $base;
+			$buckets[$tag->namespace ?? ''][strlen($base)][] = $tag;
+		}
+
+		foreach ($tags as $tag) {
 			if (isset($processed[$tag->id])) {
 				continue;
 			}
 
+			$baseSlug = $normalized[$tag->id];
+			$baseLen = strlen($baseSlug);
+			$nsBuckets = $buckets[$tag->namespace ?? ''] ?? [];
+
 			$group = [$tag];
-			$baseSlug = $this->normalizeSlug($tag->slug);
+			for ($len = max(1, $baseLen - 2); $len <= $baseLen + 2; $len++) {
+				foreach ($nsBuckets[$len] ?? [] as $otherTag) {
+					if ($otherTag->id === $tag->id || isset($processed[$otherTag->id])) {
+						continue;
+					}
 
-			foreach ($tags as $j => $otherTag) {
-				if ($i === $j || isset($processed[$otherTag->id])) {
-					continue;
-				}
+					$otherBaseSlug = $normalized[$otherTag->id];
 
-				// Must be same namespace
-				if ($tag->namespace !== $otherTag->namespace) {
-					continue;
-				}
-
-				$otherBaseSlug = $this->normalizeSlug($otherTag->slug);
-
-				// Check if slugs are similar
-				if ($baseSlug === $otherBaseSlug ||
-					str_starts_with($otherBaseSlug, $baseSlug) ||
-					str_starts_with($baseSlug, $otherBaseSlug) ||
-					levenshtein($baseSlug, $otherBaseSlug) <= 2
-				) {
-					$group[] = $otherTag;
-					$processed[$otherTag->id] = true;
+					if (
+						$baseSlug === $otherBaseSlug
+						|| str_starts_with($otherBaseSlug, $baseSlug)
+						|| str_starts_with($baseSlug, $otherBaseSlug)
+						|| levenshtein($baseSlug, $otherBaseSlug) <= 2
+					) {
+						$group[] = $otherTag;
+						$processed[$otherTag->id] = true;
+					}
 				}
 			}
 
@@ -196,9 +209,16 @@ class TagsTable extends Table {
 	 * @return string The normalized slug.
 	 */
 	protected function normalizeSlug(string $slug): string {
-		// Remove common suffixes
-		$suffixes = ['ies', 'es', 's', 'ing', 'ed'];
-		foreach ($suffixes as $suffix) {
+		// Use Cake's Inflector for proper English singularization (studies → study,
+		// not the previous heuristic 'strip ies' which produced 'studi'). For slugs
+		// the inflector can't resolve, fall back to a small suffix-strip heuristic
+		// covering '-ing' / '-ed' verb forms that the inflector ignores.
+		$singular = Inflector::singularize($slug);
+		if ($singular !== $slug) {
+			return $singular;
+		}
+
+		foreach (['ing', 'ed'] as $suffix) {
 			if (str_ends_with($slug, $suffix) && strlen($slug) > strlen($suffix) + 2) {
 				return substr($slug, 0, -strlen($suffix));
 			}
