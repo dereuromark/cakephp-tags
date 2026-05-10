@@ -289,6 +289,42 @@ class TagsControllerTest extends TestCase {
 	}
 
 	/**
+	 * Non-numeric ids must be rejected with a clear flash, not bubble through to
+	 * Tags->get() and surface as a 404. Guards against an admin accidentally
+	 * triggering destructive paths with garbage query strings.
+	 *
+	 * @return void
+	 */
+	public function testMergePreviewRejectsNonNumericIds(): void {
+		$this->get('/admin/tags/tags/merge-preview?source=abc&target=1');
+
+		$this->assertRedirect('/admin/tags/tags/merge');
+		$this->assertFlashMessage(__d('tags', 'Invalid tag identifier.'));
+	}
+
+	/**
+	 * GET requests with confirm=1 in the query string MUST NOT execute the merge.
+	 * Only an explicit POST with confirm in the body should trigger the
+	 * destructive path — defensive against accidental link/preview crawlers.
+	 *
+	 * @return void
+	 */
+	public function testMergePreviewDoesNotMergeOnGetWithConfirmParam(): void {
+		$tagsTable = TableRegistry::getTableLocator()->get('Tags.Tags');
+		$other = $tagsTable->newEntity(['slug' => 'mergeable', 'label' => 'Mergeable']);
+		$tagsTable->saveOrFail($other);
+		$sourceId = $other->id;
+		$targetId = 1;
+
+		$this->get('/admin/tags/tags/merge-preview?source=' . $sourceId . '&target=' . $targetId . '&confirm=1');
+
+		$this->assertResponseOk();
+		// Both tags must still exist after the GET — the merge did not run.
+		$this->assertNotNull($tagsTable->find()->where(['id' => $sourceId])->first());
+		$this->assertNotNull($tagsTable->find()->where(['id' => $targetId])->first());
+	}
+
+	/**
 	 * @return void
 	 */
 	public function testMergePreviewDifferentNamespacesRedirects(): void {
