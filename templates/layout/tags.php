@@ -255,6 +255,13 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 			margin-right: 0.25rem;
 			margin-bottom: 0.25rem;
 		}
+
+		/* Lighter placeholder so it doesn't get mistaken for real content */
+		.form-control::placeholder,
+		.form-select::placeholder {
+			color: #adb5bd;
+			opacity: 1;
+		}
 	</style>
 
 	<?= $this->fetch('css') ?>
