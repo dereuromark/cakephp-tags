@@ -235,6 +235,18 @@ class TagsController extends TagsAppController {
 			return $this->redirect(['action' => 'merge']);
 		}
 
+		// Coerce early so numeric validation rejects garbage input before we hit the
+		// database. The previous flow would have fallen through to ->get() and surfaced
+		// as a 404 via the error handler, which is a confusing UX for an "invalid input"
+		// case the admin can correct.
+		if (!ctype_digit((string)$sourceId) || !ctype_digit((string)$targetId)) {
+			$this->Flash->error(__d('tags', 'Invalid tag identifier.'));
+
+			return $this->redirect(['action' => 'merge']);
+		}
+		$sourceId = (int)$sourceId;
+		$targetId = (int)$targetId;
+
 		if ($sourceId === $targetId) {
 			$this->Flash->error(__d('tags', 'Source and target tags must be different.'));
 
@@ -271,9 +283,13 @@ class TagsController extends TagsAppController {
 			)
 			->count();
 
-		// Execute merge on POST
+		// Execute merge on POST with explicit confirmation. The previous code only
+		// gated on `$this->request->is('post') && confirm`, which let a stray
+		// `confirm=1` query string slip through on GET via Cake's lenient body-data
+		// merge — explicitly requiring POST method + confirm parameter belt-and-braces
+		// the destructive path.
 		if ($this->request->is('post') && $this->request->getData('confirm')) {
-			$merged = $this->Tags->merge((int)$sourceId, (int)$targetId);
+			$merged = $this->Tags->merge($sourceId, $targetId);
 
 			if ($merged) {
 				$this->Flash->success(__d('tags', 'Tags have been merged successfully. {0} items were re-tagged.', $itemsToRetag - $duplicates));
