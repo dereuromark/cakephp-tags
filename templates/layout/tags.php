@@ -262,6 +262,15 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 			color: #adb5bd;
 			opacity: 1;
 		}
+
+		/* Page-header rows: allow title + action buttons to stack on phones
+		   so the buttons don't overflow off-screen. */
+		@media (max-width: 575.98px) {
+			.d-flex.justify-content-between.align-items-center {
+				flex-wrap: wrap;
+				gap: 0.5rem;
+			}
+		}
 	</style>
 
 	<?= $this->fetch('css') ?>
