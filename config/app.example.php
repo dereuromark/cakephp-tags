@@ -45,6 +45,13 @@ return [
 		//     return $identity !== null && in_array('admin', (array)$identity->roles, true);
 		// },
 
+		// Custom slug generator (optional). When set, must be a callable taking
+		// the tag label (string) and returning the slug (string):
+		//   callable(string $label): string
+		// A non-callable value throws a RuntimeException at marshal time.
+		// Default (unset): mb_strtolower(Text::slug($label)).
+		// 'slug' => fn (string $label): string => mb_strtolower(\Cake\Utility\Text::slug($label)),
+
 		// Behavior defaults (override per addBehavior() call as needed):
 		// 'taggedCounter' => true,
 		// 'strategy' => 'string', // 'string' or 'array'
