@@ -448,17 +448,23 @@ therefore polymorphic — it must match the type of whichever model is being tag
 You can control its column type globally via the `Polymorphic.type` config key:
 
 ```php
-// config/app.php or config/app_local.php
-Configure::write('Polymorphic.type', 'uuid'); // integer (default) | biginteger | uuid | binaryuuid
+// config/app.php (merged into Configure at bootstrap, including the migrations CLI)
+'Polymorphic' => [
+    'type' => 'uuid', // integer (default) | biginteger | uuid | binaryuuid
+],
 ```
+
+This setting only affects fresh installs. Existing installs need an app-side migration to change the column type.
 
 - `integer` (default) — standard signed/unsigned integer; signedness follows `Migrations.unsigned_primary_keys`.
 - `biginteger` — 64-bit integer; signedness follows `Migrations.unsigned_primary_keys`.
 - `uuid` — UUID string (36 chars). No `signed` option is set.
 - `binaryuuid` — binary UUID. No `signed` option is set.
 
-Note: `tags_tagged.tag_id` always stays `integer` — it references the plugin's own
-`tags_tags.id` primary key which is never polymorphic.
+Note: `tags_tagged.tag_id` is not governed by `Polymorphic.type` — it is a plain
+`integer` that references `tags_tags.id`, which is the plugin's own primary key and
+is not polymorphic. If you switch `tags_tags.id` to UUID (see the UUIDs section
+below), `tag_id` must be updated to match via an app-side migration.
 
 ### UUIDs
 By default, the plugin works with AIIDs (auto-incremental IDs). This usually suffices, as the tags are usually not exposes via ID, but via slug.
