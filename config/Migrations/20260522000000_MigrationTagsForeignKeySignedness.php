@@ -16,7 +16,10 @@ class MigrationTagsForeignKeySignedness extends BaseMigration {
 	 * @return void
 	 */
 	public function up(): void {
-		$signed = !(bool)Configure::read('Migrations.unsigned_primary_keys');
+		// The flag is false (signed primary keys) when unset, so an unset flag
+		// yields signed columns, matching the default-signed ids they reference.
+		// Pass the default explicitly to make that intent unmistakable.
+		$signed = !(bool)Configure::read('Migrations.unsigned_primary_keys', false);
 
 		$this->table('tags_tagged')
 			->changeColumn('tag_id', 'integer', [
