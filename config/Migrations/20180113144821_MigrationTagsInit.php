@@ -29,11 +29,20 @@ class MigrationTagsInit extends BaseMigration {
 	 * @return void
 	 */
 	public function change() {
-		// tags_tagged.tag_id (the plugin's own tags.id) and fk_id (the host record)
+		// tags_tagged.tag_id (the plugin's own tags_tags.id) and fk_id (the host record)
 		// reference primary keys, so they follow the application's primary-key
 		// signedness. The flag is false (signed) when unset, so an unset flag yields
 		// signed columns matching the default-signed ids they reference. Unsigned only on MySQL.
+		$type = (string)Configure::read('Polymorphic.type', 'integer');
 		$signed = !(bool)Configure::read('Migrations.unsigned_primary_keys', false);
+
+		$polymorphicOptions = [
+			'default' => null,
+			'null' => true,
+		];
+		if (in_array($type, ['integer', 'biginteger'], true)) {
+			$polymorphicOptions['signed'] = $signed;
+		}
 
 		$table = $this->table('tags_tags');
 		$table->addColumn('namespace', 'string', [
@@ -74,12 +83,7 @@ class MigrationTagsInit extends BaseMigration {
 			'null' => true,
 			'signed' => $signed,
 		]);
-		$table->addColumn('fk_id', 'integer', [
-			'default' => null,
-			'length' => 11,
-			'null' => true,
-			'signed' => $signed,
-		]);
+		$table->addColumn('fk_id', $type, $polymorphicOptions);
 		$table->addColumn('fk_table', 'string', [
 			'default' => null,
 			'limit' => 255,

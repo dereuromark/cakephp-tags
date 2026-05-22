@@ -441,16 +441,41 @@ If you want to use custom slugging, use the `'slug'` callable you can provide to
 }
 ```
 
+### Polymorphic foreign key type (`Polymorphic.type`)
+
+The `tags_tagged.fk_id` column holds the primary key of the host record and is
+therefore polymorphic — it must match the type of whichever model is being tagged.
+You can control its column type globally via the `Polymorphic.type` config key:
+
+```php
+// config/app.php (merged into Configure at bootstrap, including the migrations CLI)
+'Polymorphic' => [
+    'type' => 'uuid', // integer (default) | biginteger | uuid | binaryuuid
+],
+```
+
+This setting only affects fresh installs. Existing installs need an app-side migration to change the column type.
+
+- `integer` (default) — standard signed/unsigned integer; signedness follows `Migrations.unsigned_primary_keys`.
+- `biginteger` — 64-bit integer; signedness follows `Migrations.unsigned_primary_keys`.
+- `uuid` — UUID string (36 chars). No `signed` option is set.
+- `binaryuuid` — binary UUID. No `signed` option is set.
+
+Note: `tags_tagged.tag_id` is not governed by `Polymorphic.type` — it is a plain
+`integer` that references `tags_tags.id`, which is the plugin's own primary key and
+is not polymorphic. If you switch `tags_tags.id` to UUID (see the UUIDs section
+below), `tag_id` must be updated to match via an app-side migration.
+
 ### UUIDs
 By default, the plugin works with AIIDs (auto-incremental IDs). This usually suffices, as the tags are usually not exposes via ID, but via slug.
 As such the internal ID is usually not leaking to the outside.
-If you, for some reason, still need to use UUIDs, please copy over the schema to your project's `/config/Migrations/` folder and adjust the primary key in the migration files to `'type' => 'uuid', 'length' => 36, 'null' => false`.
+If you, for some reason, still need to use UUIDs for the plugin's own `tags_tags` table primary key, please copy over the schema to your project's `/config/Migrations/` folder and adjust the primary key in the migration files to `'type' => 'uuid', 'length' => 36, 'null' => false`.
 
 Make sure you didn't add any validation like "numeric" here, only "scalar" ideally.
 See the test cases (and fixtures for UUIDs) for details.
 
-If you would like to tag (at least) one model that uses an UUID as a primary key, you will need to adjust the migration and change the foreign key field `fk_id` from `integer` to `uuid` as well.
-This will work with UUIDs as well as with AIIDs.
+If you would like to tag models that use a UUID as a primary key, set `Polymorphic.type` to `uuid`
+(see section above) instead of manually patching the migration.
 
 ### Entity Routing
 If you create your own APP Tags controller, you can easily have EntityRouting set up for it:
