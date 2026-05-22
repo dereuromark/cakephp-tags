@@ -22,13 +22,13 @@ class MigrationTagsForeignKeySignedness extends BaseMigration {
 			->changeColumn('tag_id', 'integer', [
 				'default' => null,
 				'length' => 11,
-				'null' => true,
+				'null' => false,
 				'signed' => $signed,
 			])
 			->changeColumn('fk_id', 'integer', [
 				'default' => null,
 				'length' => 11,
-				'null' => true,
+				'null' => false,
 				'signed' => $signed,
 			])
 			->update();
@@ -42,13 +42,13 @@ class MigrationTagsForeignKeySignedness extends BaseMigration {
 			->changeColumn('tag_id', 'integer', [
 				'default' => null,
 				'length' => 11,
-				'null' => true,
+				'null' => false,
 				'signed' => true,
 			])
 			->changeColumn('fk_id', 'integer', [
 				'default' => null,
 				'length' => 11,
-				'null' => true,
+				'null' => false,
 				'signed' => true,
 			])
 			->update();
