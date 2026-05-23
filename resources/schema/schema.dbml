@@ -1,0 +1,43 @@
+// cakephp-tags — database schema snapshot (DBML)
+//
+// A merged snapshot of all plugin migrations under config/Migrations/.
+// Hand-maintained: update it when you add a migration that changes these tables.
+// Paste into https://dbdiagram.io (or any DBML tool) to view/diagram.
+// DBML reference: https://dbml.dbdiagram.io/docs
+//
+// Note: fk_id is a *polymorphic* reference to the tagged application record — each
+// row may point at a different table — so it is intentionally not a real foreign key.
+// It defaults to a (big)integer; widen it to varchar(36) for UUID / char primary keys.
+
+Project cakephp_tags {
+  database_type: 'Generic'
+  Note: 'Tags plugin tables only. Tagged application records are referenced loosely via fk_id.'
+}
+
+Table tags_tags {
+  id integer [pk, increment]
+  namespace varchar(255) [null]
+  slug varchar(255) [not null]
+  label varchar(255) [not null]
+  counter integer [not null, default: 0]
+  color varchar(7) [null]
+  created datetime [null]
+  modified datetime [null]
+
+  indexes {
+    (slug, namespace) [unique]
+  }
+}
+
+Table tags_tagged {
+  id integer [pk, increment]
+  tag_id int [not null]
+  fk_id int [not null, note: 'Polymorphic tagged record id; set Polymorphic.type to biginteger/uuid/binaryuuid to change']
+  fk_model varchar(255) [not null]
+  created datetime [not null]
+  modified datetime [not null]
+
+  indexes {
+    (tag_id, fk_id, fk_model) [unique]
+  }
+}
