@@ -4,6 +4,7 @@
 // Hand-maintained: update it when you add a migration that changes these tables.
 // Paste into https://dbdiagram.io (or any DBML tool) to view/diagram.
 // DBML reference: https://dbml.dbdiagram.io/docs
+// Need it as a migration or raw SQL? Convert this DBML at https://toolbox.dereuromark.de/dbml
 //
 // Note: fk_id is a *polymorphic* reference to the tagged application record — each
 // row may point at a different table — so it is intentionally not a real foreign key.
