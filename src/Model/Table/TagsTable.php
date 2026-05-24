@@ -101,7 +101,7 @@ class TagsTable extends Table {
 			$data['namespace'] = null;
 		}
 
-		if (isset($data['label']) && array_key_exists('slug', (array)$data) && ($data['slug'] === '' || $data['slug'] === 0 || $data['slug'] === null)) {
+		if (isset($data['label']) && array_key_exists('slug', (array)$data) && (in_array($data['slug'], ['', 0, null], true))) {
 			$data['slug'] = $this->slug($data['label']);
 		}
 	}

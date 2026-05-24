@@ -66,7 +66,7 @@ class TagsController extends TagsAppController {
 			->extract('namespace')
 			->toArray();
 
-		$this->set(compact('tags', 'namespaces', 'namespace', 'search'));
+		$this->set(['tags' => $tags, 'namespaces' => $namespaces, 'namespace' => $namespace, 'search' => $search]);
 	}
 
 	/**
@@ -99,7 +99,7 @@ class TagsController extends TagsAppController {
 			->all()
 			->toArray();
 
-		$this->set(compact('tag', 'usages', 'usagesByModel'));
+		$this->set(['tag' => $tag, 'usages' => $usages, 'usagesByModel' => $usagesByModel]);
 	}
 
 	/**
@@ -132,7 +132,7 @@ class TagsController extends TagsAppController {
 			->extract('namespace')
 			->toArray();
 
-		$this->set(compact('tag', 'namespaces'));
+		$this->set(['tag' => $tag, 'namespaces' => $namespaces]);
 
 		return null;
 	}
@@ -168,7 +168,7 @@ class TagsController extends TagsAppController {
 			->extract('namespace')
 			->toArray();
 
-		$this->set(compact('tag', 'namespaces'));
+		$this->set(['tag' => $tag, 'namespaces' => $namespaces]);
 
 		return null;
 	}
@@ -217,7 +217,7 @@ class TagsController extends TagsAppController {
 			$tagsByNamespace[$ns][] = $tag;
 		}
 
-		$this->set(compact('tags', 'tagsByNamespace'));
+		$this->set(['tags' => $tags, 'tagsByNamespace' => $tagsByNamespace]);
 	}
 
 	/**
@@ -300,7 +300,7 @@ class TagsController extends TagsAppController {
 			$this->Flash->error(__d('tags', 'The tags could not be merged. Please try again.'));
 		}
 
-		$this->set(compact('sourceTag', 'targetTag', 'itemsToRetag', 'duplicates'));
+		$this->set(['sourceTag' => $sourceTag, 'targetTag' => $targetTag, 'itemsToRetag' => $itemsToRetag, 'duplicates' => $duplicates]);
 
 		return null;
 	}
@@ -313,7 +313,7 @@ class TagsController extends TagsAppController {
 	public function duplicates(): void {
 		$duplicateGroups = $this->Tags->findDuplicates();
 
-		$this->set(compact('duplicateGroups'));
+		$this->set(['duplicateGroups' => $duplicateGroups]);
 	}
 
 	/**
@@ -330,7 +330,7 @@ class TagsController extends TagsAppController {
 		$orphanedTags = $this->paginate($query);
 		$orphanedCount = $this->Tags->find()->where(['counter' => 0])->count();
 
-		$this->set(compact('orphanedTags', 'orphanedCount'));
+		$this->set(['orphanedTags' => $orphanedTags, 'orphanedCount' => $orphanedCount]);
 	}
 
 	/**
@@ -423,12 +423,10 @@ class TagsController extends TagsAppController {
 
 		$filename = 'tags-export-' . date('Y-m-d-His') . '.csv';
 
-		$response = $this->response
+		return $this->response
 			->withType('csv')
 			->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
 			->withStringBody($csv ?: '');
-
-		return $response;
 	}
 
 	/**
@@ -457,17 +455,17 @@ class TagsController extends TagsAppController {
 			if ($fromNamespace === $toNamespace) {
 				$this->Flash->error(__d('tags', 'Source and target namespaces must be different.'));
 
-				$this->set(compact('namespaces'));
+				$this->set(['namespaces' => $namespaces]);
 
 				return null;
 			}
 
 			try {
 				$count = $this->Tags->moveNamespace($fromNamespace, $toNamespace);
-			} catch (RuntimeException $exception) {
+			} catch (RuntimeException) {
 				$this->Flash->error(__d('tags', 'The namespace move was aborted because conflicting tag slugs already exist in the target namespace.'));
 
-				$this->set(compact('namespaces'));
+				$this->set(['namespaces' => $namespaces]);
 
 				return null;
 			}
@@ -481,7 +479,7 @@ class TagsController extends TagsAppController {
 			$this->Flash->info(__d('tags', 'No tags found in the source namespace.'));
 		}
 
-		$this->set(compact('namespaces'));
+		$this->set(['namespaces' => $namespaces]);
 
 		return null;
 	}
@@ -493,7 +491,7 @@ class TagsController extends TagsAppController {
 	 * @return string|null
 	 */
 	protected function normalizeNamespaceInput(mixed $value): ?string {
-		if ($value === '__none__' || $value === '' || $value === null) {
+		if (in_array($value, ['__none__', '', null], true)) {
 			return null;
 		}
 

@@ -102,11 +102,7 @@ class TagCloudHelper extends Helper {
 			);
 			$size = $tag['size'] = ceil($size);
 
-			if ($options['tagModel']) {
-				$label = $tag[$options['tagModel']][$options['labelKey']];
-			} else {
-				$label = $tag[$options['labelKey']];
-			}
+			$label = $options['tagModel'] ? $tag[$options['tagModel']][$options['labelKey']] : $tag[$options['labelKey']];
 
 			if ($this->getConfig('url') !== false) {
 				$content = $this->Html->link(
@@ -117,13 +113,13 @@ class TagCloudHelper extends Helper {
 			} else {
 				$content = h($label);
 			}
-			$data = compact('size', 'content');
+			$data = ['size' => $size, 'content' => $content];
 			$cloud[] = $this->templater()->format('item', $data);
 		}
 
 		$content = implode(PHP_EOL, $cloud);
 		$attrs = $this->templater()->formatAttributes($attrs);
-		$data = compact('attrs', 'content');
+		$data = ['attrs' => $attrs, 'content' => $content];
 
 		return $this->templater()->format('wrapper', $data);
 	}
