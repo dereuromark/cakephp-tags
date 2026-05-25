@@ -313,7 +313,7 @@ class TagsController extends TagsAppController {
 	public function duplicates(): void {
 		$duplicateGroups = $this->Tags->findDuplicates();
 
-		$this->set(['duplicateGroups' => $duplicateGroups]);
+		$this->set(compact('duplicateGroups'));
 	}
 
 	/**
@@ -455,7 +455,7 @@ class TagsController extends TagsAppController {
 			if ($fromNamespace === $toNamespace) {
 				$this->Flash->error(__d('tags', 'Source and target namespaces must be different.'));
 
-				$this->set(['namespaces' => $namespaces]);
+				$this->set(compact('namespaces'));
 
 				return null;
 			}
@@ -465,7 +465,7 @@ class TagsController extends TagsAppController {
 			} catch (RuntimeException) {
 				$this->Flash->error(__d('tags', 'The namespace move was aborted because conflicting tag slugs already exist in the target namespace.'));
 
-				$this->set(['namespaces' => $namespaces]);
+				$this->set(compact('namespaces'));
 
 				return null;
 			}
@@ -479,7 +479,7 @@ class TagsController extends TagsAppController {
 			$this->Flash->info(__d('tags', 'No tags found in the source namespace.'));
 		}
 
-		$this->set(['namespaces' => $namespaces]);
+		$this->set(compact('namespaces'));
 
 		return null;
 	}
