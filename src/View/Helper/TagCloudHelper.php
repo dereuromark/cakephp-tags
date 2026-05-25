@@ -102,11 +102,7 @@ class TagCloudHelper extends Helper {
 			);
 			$size = $tag['size'] = ceil($size);
 
-			if ($options['tagModel']) {
-				$label = $tag[$options['tagModel']][$options['labelKey']];
-			} else {
-				$label = $tag[$options['labelKey']];
-			}
+			$label = $options['tagModel'] ? $tag[$options['tagModel']][$options['labelKey']] : $tag[$options['labelKey']];
 
 			if ($this->getConfig('url') !== false) {
 				$content = $this->Html->link(

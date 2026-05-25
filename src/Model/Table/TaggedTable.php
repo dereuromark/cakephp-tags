@@ -110,9 +110,7 @@ class TaggedTable extends Table {
 		}
 
 		$query->formatResults(function (CollectionInterface $results) {
-			$results = static::calculateWeights($results->toArray());
-
-			return $results;
+			return static::calculateWeights($results->toArray());
 		});
 
 		return $query->find('all', ...$options);
@@ -169,7 +167,7 @@ class TaggedTable extends Table {
 			return;
 		}
 
-		if (!isset($this->order)) {
+		if (!property_exists($this, 'order') || $this->order === null) {
 			$contain = $query->getContain();
 			if (!isset($contain[$this->Tags->getAlias()])) {
 				return;

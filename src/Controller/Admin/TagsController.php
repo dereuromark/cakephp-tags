@@ -423,12 +423,10 @@ class TagsController extends TagsAppController {
 
 		$filename = 'tags-export-' . date('Y-m-d-His') . '.csv';
 
-		$response = $this->response
+		return $this->response
 			->withType('csv')
 			->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
 			->withStringBody($csv ?: '');
-
-		return $response;
 	}
 
 	/**
@@ -464,7 +462,7 @@ class TagsController extends TagsAppController {
 
 			try {
 				$count = $this->Tags->moveNamespace($fromNamespace, $toNamespace);
-			} catch (RuntimeException $exception) {
+			} catch (RuntimeException) {
 				$this->Flash->error(__d('tags', 'The namespace move was aborted because conflicting tag slugs already exist in the target namespace.'));
 
 				$this->set(compact('namespaces'));
@@ -493,7 +491,7 @@ class TagsController extends TagsAppController {
 	 * @return string|null
 	 */
 	protected function normalizeNamespaceInput(mixed $value): ?string {
-		if ($value === '__none__' || $value === '' || $value === null) {
+		if (in_array($value, ['__none__', '', null], true)) {
 			return null;
 		}
 

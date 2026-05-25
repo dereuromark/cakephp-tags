@@ -79,16 +79,7 @@ class TagsDashboardController extends TagsAppController {
 			->all()
 			->toArray();
 
-		$this->set(compact(
-			'totalTags',
-			'namespaces',
-			'mostUsedTags',
-			'orphanedCount',
-			'duplicateCount',
-			'recentTags',
-			'totalTagged',
-			'models',
-		));
+		$this->set(compact('totalTags', 'namespaces', 'mostUsedTags', 'orphanedCount', 'duplicateCount', 'recentTags', 'totalTagged', 'models'));
 	}
 
 }

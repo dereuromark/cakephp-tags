@@ -327,7 +327,7 @@ class TagBehavior extends Behavior {
 
 		$taggedCounterConfig = $this->_getTaggedCounterConfig($config['taggedCounter']);
 
-		foreach ($taggedCounterConfig as $field => $o) {
+		foreach (array_keys($taggedCounterConfig) as $field) {
 			if (!$this->_table->hasField($field)) {
 				throw new RuntimeException(sprintf(
 					'Field "%s" does not exist in table "%s"',
@@ -439,9 +439,8 @@ class TagBehavior extends Behavior {
 			$settings = ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions];
 			$this->_table->hasOne('NoTags', $settings);
 		}
-		$query = $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
 
-		return $query;
+		return $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
 	}
 
 	/**
@@ -733,7 +732,7 @@ class TagBehavior extends Behavior {
 				->where($conditions);
 		}
 
-		if ($this->getConfig('andSeparator') && strpos($filterValue, $this->getConfig('andSeparator')) !== false) {
+		if ($this->getConfig('andSeparator') && str_contains($filterValue, $this->getConfig('andSeparator'))) {
 			$andValues = $this->parseFilter($filterValue, $this->getConfig('andSeparator'));
 
 			$taggedAlias = $this->getConfig('taggedAlias');
@@ -750,7 +749,7 @@ class TagBehavior extends Behavior {
 				->where($conditions);
 		}
 
-		if ($this->getConfig('orSeparator') && strpos($filterValue, $this->getConfig('orSeparator')) !== false) {
+		if ($this->getConfig('orSeparator') && str_contains($filterValue, $this->getConfig('orSeparator'))) {
 			$orValues = $this->parseFilter($filterValue, $this->getConfig('orSeparator'));
 			$taggedAlias = $this->getConfig('taggedAlias');
 			$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
