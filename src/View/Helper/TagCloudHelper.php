@@ -113,13 +113,13 @@ class TagCloudHelper extends Helper {
 			} else {
 				$content = h($label);
 			}
-			$data = ['size' => $size, 'content' => $content];
+			$data = compact('size', 'content');
 			$cloud[] = $this->templater()->format('item', $data);
 		}
 
 		$content = implode(PHP_EOL, $cloud);
 		$attrs = $this->templater()->formatAttributes($attrs);
-		$data = ['attrs' => $attrs, 'content' => $content];
+		$data = compact('attrs', 'content');
 
 		return $this->templater()->format('wrapper', $data);
 	}
