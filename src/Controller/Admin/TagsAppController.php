@@ -63,6 +63,8 @@ class TagsAppController extends AppController {
 	 * @return void
 	 */
 	public function beforeFilter(EventInterface $event): void {
+		parent::beforeFilter($event);
+
 		$check = Configure::read('Tags.accessCheck');
 		if ($check === null) {
 			return;
