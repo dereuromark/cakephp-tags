@@ -79,6 +79,8 @@ class TagsAppController extends AppController {
 
 		try {
 			$allowed = $check($this->request) === true;
+		} catch (ForbiddenException $e) {
+			throw $e;
 		} catch (Throwable $e) {
 			Log::warning(sprintf('Tags.accessCheck threw %s: %s', $e::class, $e->getMessage()));
 
