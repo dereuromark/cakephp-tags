@@ -95,15 +95,9 @@
 	</div>
 	<?php if ($this->Paginator->total() > 1): ?>
 	<div class="card-footer">
-		<nav aria-label="Page navigation">
-			<ul class="pagination pagination-sm mb-0 justify-content-center">
-				<?= $this->Paginator->first('«', ['class' => 'page-link']) ?>
-				<?= $this->Paginator->prev('‹', ['class' => 'page-link']) ?>
-				<?= $this->Paginator->numbers(['class' => 'page-link']) ?>
-				<?= $this->Paginator->next('›', ['class' => 'page-link']) ?>
-				<?= $this->Paginator->last('»', ['class' => 'page-link']) ?>
-			</ul>
-		</nav>
+		<?= $this->element('Tags.pagination', [
+			'counterText' => __d('tags', 'Page {{page}} of {{pages}}, showing {{current}} orphaned tag(s) out of {{count}} total'),
+		]) ?>
 	</div>
 	<?php endif; ?>
 </div>
