@@ -170,6 +170,29 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 			color: var(--tags-secondary);
 		}
 
+		.table-tags thead th a {
+			color: inherit;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			text-decoration: none;
+		}
+
+		.table-tags thead th a.asc,
+		.table-tags thead th a.desc {
+			color: var(--tags-dark);
+		}
+
+		.table-tags thead th a.asc::after {
+			content: "\2191";
+			font-size: 0.875em;
+		}
+
+		.table-tags thead th a.desc::after {
+			content: "\2193";
+			font-size: 0.875em;
+		}
+
 		.table-tags tbody tr:hover {
 			background-color: rgba(13, 110, 253, 0.05);
 		}
