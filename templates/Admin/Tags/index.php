@@ -136,10 +136,19 @@
 		</table>
 	</div>
 	<?php if ($tags->count() > 0) : ?>
-	<div class="card-footer">
-		<?= $this->element('Tags.pagination', [
-			'counterText' => __d('tags', 'Page {{page}} of {{pages}}, showing {{current}} of {{count}} tags'),
-		]) ?>
+	<div class="card-footer d-flex justify-content-between align-items-center">
+		<small class="text-muted">
+			<?= $this->Paginator->counter(__d('tags', 'Page {{page}} of {{pages}}, showing {{current}} of {{count}} tags')) ?>
+		</small>
+		<nav>
+			<ul class="pagination pagination-sm mb-0">
+				<?= $this->Paginator->first('«') ?>
+				<?= $this->Paginator->prev('‹') ?>
+				<?= $this->Paginator->numbers() ?>
+				<?= $this->Paginator->next('›') ?>
+				<?= $this->Paginator->last('»') ?>
+			</ul>
+		</nav>
 	</div>
 	<?php endif; ?>
 </div>
