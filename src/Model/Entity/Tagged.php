@@ -7,7 +7,7 @@ use Cake\ORM\Entity;
 /**
  * @property int $id
  * @property int $tag_id
- * @property int $fk_id
+ * @property int|string $fk_id
  * @property string $fk_model
  * @property \Cake\I18n\DateTime $created
  * @property \Cake\I18n\DateTime $modified
