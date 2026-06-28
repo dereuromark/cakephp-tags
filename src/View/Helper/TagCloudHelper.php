@@ -25,7 +25,7 @@ class TagCloudHelper extends Helper {
 	use StringTemplateTrait;
 
 	/**
-	 * @var array
+	 * @var array<int|string, array<string, mixed>|string>
 	 */
 	protected array $helpers = [
 		'Html',
