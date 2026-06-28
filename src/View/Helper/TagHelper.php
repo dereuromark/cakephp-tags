@@ -24,7 +24,7 @@ class TagHelper extends Helper {
 	/**
 	 * Other helpers to load
 	 *
-	 * @var array
+	 * @var array<int|string, array<string, mixed>|string>
 	 */
 	protected array $helpers = [
 		'Form',
