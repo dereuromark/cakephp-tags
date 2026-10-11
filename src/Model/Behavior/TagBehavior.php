@@ -400,9 +400,12 @@ class TagBehavior extends Behavior {
 			return $query;
 		}
 
-		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
+		$primaryKey = $this->_table->getPrimaryKey();
+		if (!is_string($primaryKey)) {
+			throw new RuntimeException('The tagged finder requires a single-column primary key.');
+		}
 
-		return $query->where([$modelAlias . '.id IN' => $subQuery]);
+		return $query->where([$this->_table->aliasField($primaryKey) . ' IN' => $subQuery]);
 	}
 
 	/**

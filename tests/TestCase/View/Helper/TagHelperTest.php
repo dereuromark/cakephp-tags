@@ -7,6 +7,7 @@ use Cake\Http\ServerRequest as Request;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
+use DOMDocument;
 use Tags\View\Helper\TagHelper;
 
 class TagHelperTest extends TestCase {
@@ -328,6 +329,19 @@ HTML;
 		$this->assertStringContainsString('PHP', $result);
 		$this->assertStringContainsString(', ', $result);
 		$this->assertStringContainsString('JavaScript', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testTagEscapesStyleAttribute(): void {
+		$result = $this->TagHelper->tag(['label' => 'Example', 'color' => '#ffffff" onmouseover="alert(1)']);
+		$document = new DOMDocument();
+		$document->loadHTML($result);
+		$span = $document->getElementsByTagName('span')->item(0);
+
+		$this->assertFalse($span->hasAttribute('onmouseover'));
+		$this->assertStringContainsString('&quot;', $result);
 	}
 
 }

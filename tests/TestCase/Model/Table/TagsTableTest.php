@@ -489,4 +489,17 @@ class TagsTableTest extends TestCase {
 		$this->assertSame($entity->id, $tagged->id);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testMultipleTagsFinderList(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+		$entity = $table->newEntity(['name' => 'Example', 'one_list' => 'first,second']);
+		$table->saveOrFail($entity);
+
+		$result = $table->find('taggedOne', value: ['first'])->all()->extract('id')->toList();
+
+		$this->assertSame([$entity->id], $result);
+	}
+
 }

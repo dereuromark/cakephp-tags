@@ -151,7 +151,7 @@ class TagHelper extends Helper {
 			]);
 		} else {
 			$classAttr = $options['class'] ? ' class="' . h($options['class']) . '"' : '';
-			$content = '<span' . $classAttr . ' style="' . $styleString . '">' . $content . '</span>';
+			$content = '<span' . $classAttr . ' style="' . h($styleString) . '">' . $content . '</span>';
 		}
 
 		return $content;

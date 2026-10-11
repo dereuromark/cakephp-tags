@@ -10,6 +10,7 @@ use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Log\Log;
 use Closure;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
@@ -63,20 +64,29 @@ class TagsAppController extends AppController {
 	 * @return void
 	 */
 	public function beforeFilter(EventInterface $event): void {
-		parent::beforeFilter($event);
+		$result = null;
+		if (Configure::read('Tags.standalone')) {
+			Controller::beforeFilter($event);
+		} else {
+			$result = parent::beforeFilter($event);
+		}
 
 		$check = Configure::read('Tags.accessCheck');
+		if ($check instanceof Closure && $this->components()->has('Authorization') && method_exists($this->components()->get('Authorization'), 'skipAuthorization')) {
+			$this->components()->get('Authorization')->skipAuthorization();
+		}
+		if ($result instanceof ResponseInterface) {
+			$event->setResult($result);
+			$event->stopPropagation();
+		}
+		if ($event->getResult() instanceof ResponseInterface || $event->isStopped()) {
+			return;
+		}
 		if ($check === null) {
 			return;
 		}
 		if (!($check instanceof Closure)) {
 			throw new ForbiddenException('Tags.accessCheck must be a Closure');
-		}
-
-		// Coexist with cakephp/authorization: this gate IS the authorization
-		// decision for the Tags admin, so silence the policy check.
-		if ($this->components()->has('Authorization') && method_exists($this->components()->get('Authorization'), 'skipAuthorization')) {
-			$this->components()->get('Authorization')->skipAuthorization();
 		}
 
 		try {
