@@ -489,4 +489,58 @@ class TagsTableTest extends TestCase {
 		$this->assertSame($entity->id, $tagged->id);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testMultipleTagsFinderList(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+		$entity = $table->newEntity(['name' => 'Example', 'one_list' => 'first,second']);
+		$table->saveOrFail($entity);
+
+		$result = $table->find('taggedOne', value: ['first'])->all()->extract('id')->toList();
+
+		$this->assertSame([$entity->id], $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMultipleCollectionsKeepTaggedSubqueriesSeparate(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+		$entity = $table->newEntity(['name' => 'Example', 'one_list' => 'first,shared', 'two_list' => 'second,shared']);
+		$table->saveOrFail($entity);
+
+		foreach ([['second'], 'second+shared', 'second,missing'] as $value) {
+			$this->assertSame(0, $table->find('taggedOne', value: $value)->count());
+		}
+		foreach ([['first'], 'first+shared', 'first,missing'] as $value) {
+			$this->assertSame(0, $table->find('taggedTwo', value: $value)->count());
+		}
+		foreach ([['first'], 'first+shared', 'first,missing'] as $value) {
+			$this->assertSame([$entity->id], $table->find('taggedOne', value: $value)->all()->extract('id')->toList());
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMultipleTagsFinderListBeforeSaving(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+
+		$this->assertSame(0, $table->find('taggedOne', value: ['missing'])->count());
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMultipleCollectionsWithoutCountersKeepUntaggedQueriesSeparate(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+		$table->getBehavior('TagsOne')->setConfig('taggedCounter', false);
+		$table->getBehavior('TagsTwo')->setConfig('taggedCounter', false);
+		$table->saveOrFail($table->newEntity(['name' => 'Example', 'one_list' => 'first']));
+
+		$this->assertSame(2, $table->find('untaggedOne')->count());
+		$this->assertSame(3, $table->find('untaggedTwo')->count());
+	}
+
 }

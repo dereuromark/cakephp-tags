@@ -1,5 +1,6 @@
 <?php
 
+use Cake\Core\Configure;
 use Migrations\BaseMigration;
 
 class MigrationTagsNulls extends BaseMigration {
@@ -28,17 +29,21 @@ class MigrationTagsNulls extends BaseMigration {
 	 * @return void
 	 */
 	public function change() {
+		$type = (string)Configure::read('Polymorphic.type', 'integer');
+		$signed = !(bool)Configure::read('Migrations.unsigned_primary_keys', false);
+		$foreignKeyOptions = ['default' => null, 'null' => false];
+		if (in_array($type, ['integer', 'biginteger'], true)) {
+			$foreignKeyOptions['signed'] = $signed;
+		}
+
 		$table = $this->table('tags_tagged');
 		$table->changeColumn('tag_id', 'integer', [
 			'default' => null,
 			'length' => 11,
 			'null' => false,
+			'signed' => $signed,
 		]);
-		$table->changeColumn('fk_id', 'integer', [
-			'default' => null,
-			'length' => 11,
-			'null' => false,
-		]);
+		$table->changeColumn('fk_id', $type, $foreignKeyOptions);
 		$table->changeColumn('created', 'datetime', [
 			'default' => null,
 			'null' => false,

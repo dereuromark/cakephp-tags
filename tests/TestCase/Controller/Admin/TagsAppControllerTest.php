@@ -5,6 +5,7 @@ namespace Tags\Test\TestCase\Controller\Admin;
 
 use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Response;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use RuntimeException;
@@ -39,6 +40,7 @@ class TagsAppControllerTest extends TestCase {
 		Configure::delete('Tags.standalone');
 		Configure::delete('Tags.adminLayout');
 		Configure::delete('Tags.accessCheck');
+		Configure::delete('TestApp.beforeFilter');
 	}
 
 	/**
@@ -182,6 +184,34 @@ class TagsAppControllerTest extends TestCase {
 		$this->assertResponseOk();
 		$this->assertNotNull($received);
 		$this->assertStringContainsString('tags', $received->getPath());
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testStandaloneSkipsHostBeforeFilter(): void {
+		Configure::write('Tags.standalone', true);
+		Configure::write('TestApp.beforeFilter', function (): void {
+			throw new RuntimeException('Host callback should be skipped');
+		});
+
+		$this->get('/admin/tags/tags');
+
+		$this->assertResponseOk();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testHostRedirectIsPreserved(): void {
+		Configure::write('TestApp.beforeFilter', fn () => (new Response())->withStatus(302)->withHeader('Location', '/login'));
+		Configure::write('Tags.accessCheck', function (): bool {
+			throw new RuntimeException('Gate should not replace the redirect');
+		});
+
+		$this->get('/admin/tags/tags');
+
+		$this->assertRedirect('/login');
 	}
 
 }

@@ -5,33 +5,18 @@
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
 [![Latest Stable Version](https://poser.pugx.org/dereuromark/cakephp-tags/v/stable.svg)](https://packagist.org/packages/dereuromark/cakephp-tags)
 [![Total Downloads](https://img.shields.io/packagist/dt/dereuromark/cakephp-tags.svg?style=flat-square)](https://packagist.org/packages/dereuromark/cakephp-tags)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-8892BF.svg)](https://php.net/)
 [![License](https://poser.pugx.org/dereuromark/cakephp-tags/license.svg)](LICENSE)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-purple.svg?style=flat-square)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
 Make tagging of entities a piece of cake.
 
-This branch is for **CakePHP 5.1+**. For details see [version map](https://github.com/dereuromark/cakephp-tags/wiki#cakephp-version-map).
+This branch targets **CakePHP 5**. Composer declares the supported PHP and CakePHP ranges. For details see [version map](https://github.com/dereuromark/cakephp-tags/wiki#cakephp-version-map).
 
 Upgrading from 2.x? See [UPGRADE.md](UPGRADE.md) for the v3 migration notes.
 
-## Install
+## Documentation
 
-Using Composer:
-
-```
-composer require dereuromark/cakephp-tags
-```
-
-Load the plugin:
-```
-bin/cake plugin load Tags
-```
-
-Also don't forget to run migration (e.g. using Migrations plugin):
-```
-bin/cake migrations migrate -p Tags
-```
+Read the [documentation website](https://dereuromark.github.io/cakephp-tags/). Start with [installation](https://dereuromark.github.io/cakephp-tags/guide/installation), then follow the [beginner tagging example](https://dereuromark.github.io/cakephp-tags/guide/getting-started).
 
 ## Demo
 See Sandbox @ https://sandbox.dereuromark.de/sandbox/tags
@@ -46,6 +31,3 @@ The plugin ships with an admin backend under the `Admin` prefix at `/admin/tags`
 
 Tutorial and Blog Post: https://www.dereuromark.de/2018/07/12/tutorial-cakephp-tagging/
 
-## Documentation
-
-For documentation, as well as tutorials, see the [docs](docs/) directory of this repository.

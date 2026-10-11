@@ -102,13 +102,14 @@ class TagCloudHelper extends Helper {
 			);
 			$size = $tag['size'] = ceil($size);
 
-			$label = $options['tagModel'] ? $tag[$options['tagModel']][$options['labelKey']] : $tag[$options['labelKey']];
+			$tagRecord = $options['tagModel'] ? $tag[$options['tagModel']] : $tag;
+			$label = $tagRecord[$options['labelKey']];
 
-			if ($this->getConfig('url') !== false) {
+			if ($options['url'] !== false) {
 				$content = $this->Html->link(
 					$label,
 					$this->_tagUrl($tag, $options),
-					['id' => 'tag-' . $tag[$options['tagModel']]['id']],
+					['id' => 'tag-' . $tagRecord['id']],
 				);
 			} else {
 				$content = h($label);
@@ -165,7 +166,8 @@ class TagCloudHelper extends Helper {
 	 * @return array|string Tag URL.
 	 */
 	protected function _tagUrl($tag, $options) {
-		$options['url']['?'][$options['named']] = $tag[$options['tagModel']]['slug'];
+		$tagRecord = $options['tagModel'] ? $tag[$options['tagModel']] : $tag;
+		$options['url']['?'][$options['named']] = $tagRecord['slug'];
 
 		return $options['url'];
 	}

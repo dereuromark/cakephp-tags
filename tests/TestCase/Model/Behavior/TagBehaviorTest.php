@@ -3,7 +3,6 @@
 namespace Tags\Test\TestCase\Model\Behavior;
 
 use Cake\Database\Driver\Mysql;
-use Cake\Database\Driver\Postgres;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
@@ -700,9 +699,6 @@ class TagBehaviorTest extends TestCase {
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(4, $result);
 
-		$connectionConfig = $this->Table->getConnection()->config();
-		$this->skipIf($connectionConfig['driver'] === Postgres::class, 'Only for MySQL/Sqlite for now');
-
 		$result = $this->Table->find('tagged', value: 'color+weight')->orderByAsc($this->Table->aliasField('name'))->toArray();
 
 		$expected = ['Heavy'];
@@ -966,6 +962,78 @@ class TagBehaviorTest extends TestCase {
 		$result = $table->find('untagged')->toArray();
 		$expected = ['blue', 'TestMe'];
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testNamespacesKeepIdenticalLabelsSeparate(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$result = $this->Behavior->normalizeTags('first:Example,second:Example');
+
+		$this->assertCount(2, $result);
+		$this->assertSame('first', $result[0]['namespace']);
+		$this->assertSame('second', $result[1]['namespace']);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testNamespaceSaveDoesNotReuseAnotherNamespaceTag(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$first = $this->Table->get(1, contain: ['Tags']);
+		$first = $this->Table->patchEntity($first, ['tag_list' => 'first:Example']);
+		$this->Table->saveOrFail($first);
+		$second = $this->Table->get(2, contain: ['Tags']);
+		$second = $this->Table->patchEntity($second, ['tag_list' => 'second:Example']);
+		$this->Table->saveOrFail($second);
+
+		$first = $this->Table->get(1, contain: ['Tags']);
+		$second = $this->Table->get(2, contain: ['Tags']);
+		$this->assertSame('first', $first->tags[0]->namespace);
+		$this->assertSame('second', $second->tags[0]->namespace);
+		$this->assertNotSame($first->tags[0]->id, $second->tags[0]->id);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testNamespacedTagFormRoundTrip(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$entity = $this->Table->patchEntity($entity, ['tag_list' => 'first:Example']);
+		$this->Table->saveOrFail($entity);
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$originalId = $entity->tags[0]->id;
+		$list = $entity->tag_list;
+		$this->assertSame('first:Example', $list);
+		$this->Table->patchEntity($entity, ['tag_list' => $list]);
+		$this->Table->saveOrFail($entity);
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$this->assertSame($originalId, $entity->tags[0]->id);
+		$this->assertSame('first', $entity->tags[0]->namespace);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testExplicitEmptyNamespaceOverridesDefault(): void {
+		$this->Behavior->setConfig(['separator' => ':', 'namespace' => 'default']);
+		$tags = $this->Behavior->normalizeTags(':Example');
+		$this->assertNull($tags[0]['namespace']);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testAndFinderCountsDistinctSlugsAcrossNamespaces(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$this->Table->patchEntity($entity, ['tag_list' => 'first:Example,second:Example']);
+		$this->Table->saveOrFail($entity);
+		$this->assertSame(0, $this->Table->find('tagged', value: 'example+missing')->count());
+		$ids = $this->Table->find('tagged', value: 'example')->all()->extract('id')->toList();
+		$this->assertSame([1], array_values(array_unique($ids)));
 	}
 
 }

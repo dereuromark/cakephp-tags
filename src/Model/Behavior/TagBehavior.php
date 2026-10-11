@@ -4,9 +4,13 @@ namespace Tags\Model\Behavior;
 
 use ArrayObject;
 use Cake\Core\Configure;
+use Cake\Database\Expression\IdentifierExpression;
+use Cake\Database\Expression\QueryExpression;
+use Cake\Database\Expression\UnaryExpression;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\QueryInterface;
 use Cake\Event\EventInterface;
+use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Query\SelectQuery;
@@ -135,19 +139,22 @@ class TagBehavior extends Behavior {
 	 * @return void
 	 */
 	public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void {
-		if (!isset($entity->tags)) {
+		$property = $this->getConfig('tagsAssoc.propertyName');
+		if (!isset($entity->{$property})) {
 			return;
 		}
 
 		/**
 		 * @var \Tags\Model\Entity\Tag $tag
 		 */
-		foreach ($entity->tags as $k => $tag) {
+		foreach ($entity->{$property} as $k => $tag) {
 			if (!$tag->isNew()) {
 				continue;
 			}
 
-			$existing = $this->_tagExists($tag->slug);
+			$existing = !$this->getConfig('namespace') && !$this->getConfig('separator') && !$tag->namespace
+				? $this->_tagExists($tag->slug)
+				: ($this->_tagsExistByNamespace([$tag->slug])[$this->tagIdentity($tag->slug, $tag->namespace)] ?? null);
 			if (!$existing) {
 				continue;
 			}
@@ -155,7 +162,7 @@ class TagBehavior extends Behavior {
 			$joinData = $tag->_joinData;
 			$tag = $existing;
 			$tag->_joinData = $joinData;
-			$entity->tags[$k] = $tag;
+			$entity->{$property}[$k] = $tag;
 		}
 	}
 
@@ -215,7 +222,7 @@ class TagBehavior extends Behavior {
 		$tags = [];
 
 		foreach ($data as $tag) {
-			if ($this->_config['namespace'] && $this->_config['separator'] !== null) {
+			if ($this->_config['separator'] !== null && ($tag['namespace'] || $this->_config['namespace'])) {
 				$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
 			} else {
 				$tags[] = $tag['label'];
@@ -272,6 +279,7 @@ class TagBehavior extends Behavior {
 			$table->{$tagsAlias}
 				->belongsToMany($tableAlias, [
 					'className' => get_class($table),
+					'targetTable' => $table,
 				] + $tagsAssoc);
 		}
 
@@ -279,6 +287,7 @@ class TagBehavior extends Behavior {
 			$table->{$taggedAlias}
 				->belongsTo($tableAlias, [
 					'className' => get_class($table),
+					'targetTable' => $table,
 					'foreignKey' => $tagsAssoc['foreignKey'],
 					'conditions' => $assocConditions,
 					'joinType' => 'INNER',
@@ -293,6 +302,10 @@ class TagBehavior extends Behavior {
 					'conditions' => $assocConditions,
 					'joinType' => 'INNER',
 				]);
+		}
+		$association = $table->getAssociation($tagsAlias);
+		if ($association instanceof BelongsToMany) {
+			$association->junction();
 		}
 	}
 
@@ -400,9 +413,12 @@ class TagBehavior extends Behavior {
 			return $query;
 		}
 
-		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
+		$primaryKey = $this->_table->getPrimaryKey();
+		if (!is_string($primaryKey)) {
+			throw new RuntimeException('The tagged finder requires a single-column primary key.');
+		}
 
-		return $query->where([$modelAlias . '.id IN' => $subQuery]);
+		return $query->where([$this->_table->aliasField($primaryKey) . ' IN' => $subQuery]);
 	}
 
 	/**
@@ -434,13 +450,14 @@ class TagBehavior extends Behavior {
 		}
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
-		$conditions = [$this->getConfig('fkModelField') => $modelAlias];
-		if (!$this->_table->hasAssociation('NoTags')) {
+		$associationAlias = $this->getConfig('taggedAlias') === 'Tagged' ? 'NoTags' : $this->getConfig('taggedAlias') . 'NoTags';
+		$conditions = [$associationAlias . '.' . $this->getConfig('fkModelField') => $modelAlias];
+		if (!$this->_table->hasAssociation($associationAlias)) {
 			$settings = ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions];
-			$this->_table->hasOne('NoTags', $settings);
+			$this->_table->hasOne($associationAlias, $settings);
 		}
 
-		return $query->contain(['NoTags'])->where(['NoTags.id IS' => null]);
+		return $query->contain([$associationAlias])->where([$associationAlias . '.id IS' => null]);
 	}
 
 	/**
@@ -464,10 +481,8 @@ class TagBehavior extends Behavior {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
 		$displayField = $tagsTable->getDisplayField();
 
-		// Pre-parse every input tag, deduplicate by slug, and then do ONE database
-		// lookup for all candidate slugs instead of one per tag. The previous N+1
-		// fired N round-trips when saving an entity with N tags — even a 20-tag
-		// blog post would emit 20 single-row SELECTs on every save.
+		// Pre-parse every input tag, deduplicate by namespace and slug, then do one database
+		// lookup for all candidates instead of one query per tag.
 		$parsed = [];
 		$candidateSlugs = [];
 		foreach ($tags as $tag) {
@@ -482,23 +497,26 @@ class TagBehavior extends Behavior {
 			$color = $normalizedData['color'] ?? null;
 
 			$tagKey = $this->_getTagKey($label);
-			if (isset($parsed[$tagKey])) {
+			$separator = (string)$this->getConfig('separator');
+			$resolvedNamespace = $separator !== '' && str_contains($tag, $separator) ? ($customNamespace ?: null) : $namespace;
+			$identity = $this->tagIdentity($tagKey, $resolvedNamespace);
+			if (isset($parsed[$identity])) {
 				continue;
 			}
 
-			$parsed[$tagKey] = [
+			$parsed[$identity] = [
 				'slug' => $tagKey,
 				'label' => $label,
 				'color' => $color,
-				'customNamespace' => $customNamespace,
+				'namespace' => $resolvedNamespace,
 			];
 			$candidateSlugs[] = $tagKey;
 		}
 
-		$existingBySlug = $this->_tagsExistBatch($candidateSlugs);
+		$existingByIdentity = $this->_tagsExistByNamespace($candidateSlugs);
 
 		foreach ($parsed as $tagKey => $entry) {
-			$existingTag = $existingBySlug[$tagKey] ?? null;
+			$existingTag = $existingByIdentity[$tagKey] ?? null;
 			if ($existingTag) {
 				$existingData = $common + ['id' => $existingTag->id];
 				if ($entry['color'] !== null) {
@@ -511,7 +529,7 @@ class TagBehavior extends Behavior {
 
 			$tagData = $common + [
 				'slug' => $entry['slug'],
-				'namespace' => $entry['customNamespace'] ?: $namespace,
+				'namespace' => $entry['namespace'],
 				'label' => $entry['label'],
 				'color' => $entry['color'],
 			] + [$displayField => $entry['label']];
@@ -520,6 +538,53 @@ class TagBehavior extends Behavior {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param list<string> $slugs
+	 * @return array<string, \Cake\Datasource\EntityInterface>
+	 */
+	protected function _tagsExistByNamespace(array $slugs): array {
+		if (!$slugs) {
+			return [];
+		}
+
+		if (!$this->getConfig('namespace') && !$this->getConfig('separator')) {
+			$existing = [];
+			foreach ($this->_tagsExistBatch($slugs) as $slug => $row) {
+				$existing[$this->tagIdentity((string)$slug, null)] = $row;
+			}
+
+			return $existing;
+		}
+
+		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
+		$results = $tagsTable->find()
+			->where([$tagsTable->aliasField('slug') . ' IN' => array_unique($slugs)])
+			->select([
+				$tagsTable->aliasField('slug'),
+				$tagsTable->aliasField('namespace'),
+				$tagsTable->aliasField($tagsTable->getPrimaryKey()),
+			])
+			->all();
+
+		$existing = [];
+		foreach ($results as $row) {
+			$existing[$this->tagIdentity($row->slug, $row->namespace)] = $row;
+		}
+
+		return $existing;
+	}
+
+	/**
+	 * @param string $slug
+	 * @param string|null $namespace
+	 * @return string
+	 */
+	protected function tagIdentity(string $slug, ?string $namespace): string {
+		$namespace ??= '';
+
+		return strlen($namespace) . ':' . $namespace . ':' . $slug;
 	}
 
 	/**
@@ -543,6 +608,7 @@ class TagBehavior extends Behavior {
 
 		$results = $tagsTable->find()
 			->where([$slugField . ' IN' => $slugs])
+			->where([$tagsTable->aliasField('namespace') . ' IS' => null])
 			->select([
 				$tagsTable->aliasField('slug'),
 				$tagsTable->aliasField($primaryKey),
@@ -590,6 +656,7 @@ class TagBehavior extends Behavior {
 			->where([
 				$tagsTable->aliasField('slug') => $slug,
 			])
+			->where([$tagsTable->aliasField('namespace') . ' IS' => null])
 			->select([
 				$tagsTable->aliasField($tagsTable->getPrimaryKey()),
 			])
@@ -741,11 +808,14 @@ class TagBehavior extends Behavior {
 				$key . ' IN' => $andValues,
 			];
 
-			return $this->_table->{$taggedAlias}->find()
+			$subquery = $this->_table->{$taggedAlias}->find();
+			$matched = $subquery->func()->count(new UnaryExpression('DISTINCT', new IdentifierExpression($key)));
+
+			return $subquery
 				->contain([$this->getConfig('tagsAlias')])
 				->select([$taggedAlias . '.' . $foreignKey])
 				->groupBy($taggedAlias . '.' . $foreignKey)
-				->having('COUNT(*) = ' . count($andValues))
+				->having((new QueryExpression())->eq($matched, count($andValues), 'integer'))
 				->where($conditions);
 		}
 

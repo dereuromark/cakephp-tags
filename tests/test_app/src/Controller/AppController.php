@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Core\Configure;
+use Cake\Event\EventInterface;
 
 /**
  * Application Controller
@@ -19,6 +21,19 @@ class AppController extends Controller {
 		parent::initialize();
 
 		$this->loadComponent('Flash');
+	}
+
+	/**
+	 * @param \Cake\Event\EventInterface $event
+	 * @return mixed
+	 */
+	public function beforeFilter(EventInterface $event) {
+		$callback = Configure::read('TestApp.beforeFilter');
+		if ($callback) {
+			return $callback($event);
+		}
+
+		return parent::beforeFilter($event);
 	}
 
 }

@@ -2,11 +2,13 @@
 
 namespace Tags\Test\TestCase\View\Helper;
 
+use Cake\Core\Configure;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest as Request;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
+use DOMDocument;
 use Tags\View\Helper\TagHelper;
 
 class TagHelperTest extends TestCase {
@@ -328,6 +330,36 @@ HTML;
 		$this->assertStringContainsString('PHP', $result);
 		$this->assertStringContainsString(', ', $result);
 		$this->assertStringContainsString('JavaScript', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testTagEscapesStyleAttribute(): void {
+		$result = $this->TagHelper->tag(['label' => 'Example', 'color' => '#ffffff" onmouseover="alert(1)']);
+		$document = new DOMDocument();
+		$document->loadHTML($result);
+		$span = $document->getElementsByTagName('span')->item(0);
+
+		$this->assertFalse($span->hasAttribute('onmouseover'));
+		$this->assertStringContainsString('&quot;', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testControlDoesNotRenderGlobalBehaviorOrAdminOptions(): void {
+		Configure::write('Tags', ['field' => 'labels', 'accessCheck' => fn () => true, 'taggedCounter' => ['tag_count']]);
+		try {
+			$helper = new TagHelper($this->View);
+			$result = $helper->control();
+
+			$this->assertStringContainsString('name="labels"', $result);
+			$this->assertStringNotContainsString('accessCheck', $result);
+			$this->assertStringNotContainsString('taggedCounter', $result);
+		} finally {
+			Configure::delete('Tags');
+		}
 	}
 
 }

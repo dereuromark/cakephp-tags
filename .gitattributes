@@ -11,3 +11,6 @@
 .gitignore export-ignore
 phpunit.xml.dist export-ignore
 tests/test_app export-ignore
+
+/docs export-ignore
+/.github export-ignore

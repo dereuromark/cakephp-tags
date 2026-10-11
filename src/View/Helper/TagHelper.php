@@ -44,7 +44,7 @@ class TagHelper extends Helper {
 	 * @param array $config Configuration settings for the helper.
 	 */
 	public function __construct(View $View, array $config = []) {
-		$this->_defaultConfig = (array)Configure::read('Tags') + $this->_defaultConfig;
+		$this->_defaultConfig = array_intersect_key((array)Configure::read('Tags'), $this->_defaultConfig) + $this->_defaultConfig;
 
 		parent::__construct($View, $config);
 	}
@@ -151,7 +151,7 @@ class TagHelper extends Helper {
 			]);
 		} else {
 			$classAttr = $options['class'] ? ' class="' . h($options['class']) . '"' : '';
-			$content = '<span' . $classAttr . ' style="' . $styleString . '">' . $content . '</span>';
+			$content = '<span' . $classAttr . ' style="' . h($styleString) . '">' . $content . '</span>';
 		}
 
 		return $content;
