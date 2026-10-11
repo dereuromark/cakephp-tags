@@ -999,4 +999,45 @@ class TagBehaviorTest extends TestCase {
 		$this->assertNotSame($first->tags[0]->id, $second->tags[0]->id);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testNamespacedTagFormRoundTrip(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$entity = $this->Table->patchEntity($entity, ['tag_list' => 'first:Example']);
+		$this->Table->saveOrFail($entity);
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$originalId = $entity->tags[0]->id;
+		$list = $entity->tag_list;
+		$this->assertSame('first:Example', $list);
+		$this->Table->patchEntity($entity, ['tag_list' => $list]);
+		$this->Table->saveOrFail($entity);
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$this->assertSame($originalId, $entity->tags[0]->id);
+		$this->assertSame('first', $entity->tags[0]->namespace);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testExplicitEmptyNamespaceOverridesDefault(): void {
+		$this->Behavior->setConfig(['separator' => ':', 'namespace' => 'default']);
+		$tags = $this->Behavior->normalizeTags(':Example');
+		$this->assertNull($tags[0]['namespace']);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testAndFinderCountsDistinctSlugsAcrossNamespaces(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$entity = $this->Table->get(1, contain: ['Tags']);
+		$this->Table->patchEntity($entity, ['tag_list' => 'first:Example,second:Example']);
+		$this->Table->saveOrFail($entity);
+		$this->assertSame(0, $this->Table->find('tagged', value: 'example+missing')->count());
+		$ids = $this->Table->find('tagged', value: 'example')->all()->extract('id')->toList();
+		$this->assertSame([1], array_values(array_unique($ids)));
+	}
+
 }

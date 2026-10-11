@@ -33,8 +33,6 @@ bin/cake migrations migrate -p Tags
 
 This creates `tags_tags` and `tags_tagged`, including the color field. Your existing tagged table needs no extra column when you use `taggedCounter => false`, as in [getting started](./getting-started.md).
 
-To cache each record's tag count, add an integer `tag_count` column with default `0` to the host table and enable the default counter configuration. Backfill existing records after introducing the cache; adding a zero-filled column does not calculate their existing counts.
-
 ## Optional host counter
 
 For an existing Articles table, create an application migration such as `config/Migrations/20260101000000_AddArticleTagCount.php`:

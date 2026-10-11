@@ -14,7 +14,7 @@ Merge global settings under `Tags` in the application's configuration. The behav
 | `orSeparator` | `,` | OR tag filter separator |
 | `tagsCounter` | `['counter']` | Tag counter-cache configuration |
 | `taggedCounter` | `['tag_count']` | Host counter fields; `false` disables |
-| `fkModelAlias` | `null` | Host alias used as the discriminator |
+| `fkModelAlias` | `null` | Per-collection discriminator; use a unique value for each collection |
 | `fkModelField` | `fk_model` | Discriminator column |
 | `tagsAlias` | `Tags` | Tag association name |
 | `taggedAlias` | `Tagged` | Pivot association name |

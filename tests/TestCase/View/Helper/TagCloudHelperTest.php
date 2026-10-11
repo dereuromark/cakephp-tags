@@ -132,4 +132,15 @@ HTML;
 		$this->assertStringNotContainsString('<a ', $result);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testDisplayFlatTagsWithLinks(): void {
+		$result = $this->Helper->display([
+			['id' => 7, 'counter' => 2, 'label' => 'Example', 'slug' => 'example'],
+		], ['tagModel' => false]);
+		$this->assertStringContainsString('id="tag-7"', $result);
+		$this->assertStringContainsString('?by=example', $result);
+	}
+
 }

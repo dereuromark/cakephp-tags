@@ -80,7 +80,7 @@ class TaggedTable extends Table {
 	 * @return \Cake\ORM\Query\SelectQuery
 	 */
 	public function findCloud(SelectQuery $query) {
-		$groupBy = ['Tagged.tag_id', 'Tags.id', 'Tags.slug', 'Tags.label'];
+		$groupBy = [$this->aliasField('tag_id'), 'Tags.id', 'Tags.slug', 'Tags.label'];
 		$fields = $groupBy;
 		$fields['counter'] = $query->func()->count('*');
 

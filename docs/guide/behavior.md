@@ -38,7 +38,7 @@ $this->addBehavior('Tags.Tag', [
 ]);
 ```
 
-An input such as `topics:CakePHP` stores a namespace and label. With a configured default namespace and separator, the form output includes namespace prefixes.
+An input such as `topics:CakePHP` stores a namespace and label. With a separator, form output retains each stored namespace prefix. An explicit empty prefix, such as `:CakePHP`, selects the unnamespaced tag even when a default namespace is configured.
 
 ## Inline colors
 
@@ -88,3 +88,5 @@ $this->addBehavior('TopicTags', [
 ```
 
 Use another set of names for the second collection. Contain both associations when editing. Configure each Tag helper call with its corresponding field. Custom collection names must stay consistent across callbacks, queries and templates.
+
+Tag identity combines the namespace and slug. The built-in tagged finders match the configured field across namespaces. For a namespace-specific lookup or public route, constrain both namespace and slug in your application query; a slug alone can identify several tags. Keep namespace spelling and case consistent with your database collation.

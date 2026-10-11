@@ -63,11 +63,15 @@ return [
 		// 'tagsCounter' => ['counter'],
 		// 'tagsAlias' => 'Tags',
 		// 'taggedAlias' => 'Tagged',
-		// 'fkModelAlias' => null,
+		// Set fkModelAlias per behavior instance when collections share a table.
+		// Each collection needs a distinct discriminator.
 		// 'fkModelField' => 'fk_model',
 		// 'namespace' => null,
 		// 'separator' => null,
 		// 'andSeparator' => '+',
 		// 'orSeparator' => ',',
 	],
+	// Optional fresh-migration settings, separate from Tags behavior options:
+	// 'Polymorphic' => ['type' => 'uuid'],
+	// 'Migrations' => ['unsigned' => true],
 ];

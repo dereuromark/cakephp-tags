@@ -8,7 +8,7 @@ For the earlier major-version migration, retain the repository's [UPGRADE.md](ht
 
 - Colored tag spans escape their style attribute, matching the linked-tag path.
 - List-based tag finders use the host table primary key and SQL alias, including when separate collections have custom model discriminators.
-- Standalone admin mode bypasses host initialization and beforeFilter callbacks consistently.
+- Standalone admin mode bypasses host initialization and `beforeFilter()` callbacks.
 - Host redirects and stopped events are preserved before the optional plugin gate runs.
 
 Application callbacks and middleware still control access. Review the [admin configuration](../guide/admin.md) if you use standalone mode or the optional gate.
@@ -46,4 +46,10 @@ Direct calls to `findByTag()` must become `findTagged()`. Calls through the `tag
 
 ## Polymorphic schema
 
-Fresh migrations retain the configured `Polymorphic.type` through the nullability migration. Existing databases are not changed by editing an already-run migration; inspect `tags_tagged.fk_id` and apply an application migration if an earlier installation used the wrong type.
+Fresh migrations retain the configured `Polymorphic.type` through the nullability migration. Existing databases are not changed by editing an already-run migration; inspect `tags_tagged.fk_id` and apply an application migration if an earlier installation used the wrong type or signedness.
+
+## Namespace identity
+
+Tags with the same slug in different namespaces remain separate. Editing a namespaced tag preserves its prefix, and AND finders count distinct matched field values. Existing databases may contain links created through the earlier slug-only lookup; inspect those links before relying on namespace isolation.
+
+Subclasses overriding `_tagExists()` or `_tagsExistBatch()` retain those hooks for the default unnamespaced mode. Namespace-aware custom lookups should override `_tagsExistByNamespace()` and use the protected `tagIdentity()` key.

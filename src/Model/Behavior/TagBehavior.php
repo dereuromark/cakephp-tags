@@ -149,7 +149,9 @@ class TagBehavior extends Behavior {
 				continue;
 			}
 
-			$existing = $this->_tagsExistByNamespace([$tag->slug])[$this->tagIdentity($tag->slug, $tag->namespace)] ?? null;
+			$existing = !$this->getConfig('namespace') && !$this->getConfig('separator') && !$tag->namespace
+				? $this->_tagExists($tag->slug)
+				: ($this->_tagsExistByNamespace([$tag->slug])[$this->tagIdentity($tag->slug, $tag->namespace)] ?? null);
 			if (!$existing) {
 				continue;
 			}
@@ -217,7 +219,7 @@ class TagBehavior extends Behavior {
 		$tags = [];
 
 		foreach ($data as $tag) {
-			if ($this->_config['namespace'] && $this->_config['separator'] !== null) {
+			if ($this->_config['separator'] !== null && ($tag['namespace'] || $this->_config['namespace'])) {
 				$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
 			} else {
 				$tags[] = $tag['label'];
@@ -270,15 +272,11 @@ class TagBehavior extends Behavior {
 			]);
 		}
 
-		$association = $table->getAssociation($tagsAlias);
-		if ($association instanceof BelongsToMany) {
-			$association->junction();
-		}
-
 		if (!$table->{$tagsAlias}->hasAssociation($tableAlias)) {
 			$table->{$tagsAlias}
 				->belongsToMany($tableAlias, [
 					'className' => get_class($table),
+					'targetTable' => $table,
 				] + $tagsAssoc);
 		}
 
@@ -286,6 +284,7 @@ class TagBehavior extends Behavior {
 			$table->{$taggedAlias}
 				->belongsTo($tableAlias, [
 					'className' => get_class($table),
+					'targetTable' => $table,
 					'foreignKey' => $tagsAssoc['foreignKey'],
 					'conditions' => $assocConditions,
 					'joinType' => 'INNER',
@@ -300,6 +299,10 @@ class TagBehavior extends Behavior {
 					'conditions' => $assocConditions,
 					'joinType' => 'INNER',
 				]);
+		}
+		$association = $table->getAssociation($tagsAlias);
+		if ($association instanceof BelongsToMany) {
+			$association->junction();
 		}
 	}
 
@@ -444,8 +447,8 @@ class TagBehavior extends Behavior {
 		}
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
-		$conditions = [$this->getConfig('fkModelField') => $modelAlias];
 		$associationAlias = $this->getConfig('taggedAlias') === 'Tagged' ? 'NoTags' : $this->getConfig('taggedAlias') . 'NoTags';
+		$conditions = [$associationAlias . '.' . $this->getConfig('fkModelField') => $modelAlias];
 		if (!$this->_table->hasAssociation($associationAlias)) {
 			$settings = ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions];
 			$this->_table->hasOne($associationAlias, $settings);
@@ -475,10 +478,8 @@ class TagBehavior extends Behavior {
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
 		$displayField = $tagsTable->getDisplayField();
 
-		// Pre-parse every input tag, deduplicate by slug, and then do ONE database
-		// lookup for all candidate slugs instead of one per tag. The previous N+1
-		// fired N round-trips when saving an entity with N tags — even a 20-tag
-		// blog post would emit 20 single-row SELECTs on every save.
+		// Pre-parse every input tag, deduplicate by namespace and slug, then do one database
+		// lookup for all candidates instead of one query per tag.
 		$parsed = [];
 		$candidateSlugs = [];
 		foreach ($tags as $tag) {
@@ -493,7 +494,8 @@ class TagBehavior extends Behavior {
 			$color = $normalizedData['color'] ?? null;
 
 			$tagKey = $this->_getTagKey($label);
-			$resolvedNamespace = $customNamespace ?: $namespace;
+			$separator = (string)$this->getConfig('separator');
+			$resolvedNamespace = $separator !== '' && str_contains($tag, $separator) ? ($customNamespace ?: null) : $namespace;
 			$identity = $this->tagIdentity($tagKey, $resolvedNamespace);
 			if (isset($parsed[$identity])) {
 				continue;
@@ -508,10 +510,10 @@ class TagBehavior extends Behavior {
 			$candidateSlugs[] = $tagKey;
 		}
 
-		$existingBySlug = $this->_tagsExistByNamespace($candidateSlugs);
+		$existingByIdentity = $this->_tagsExistByNamespace($candidateSlugs);
 
 		foreach ($parsed as $tagKey => $entry) {
-			$existingTag = $existingBySlug[$tagKey] ?? null;
+			$existingTag = $existingByIdentity[$tagKey] ?? null;
 			if ($existingTag) {
 				$existingData = $common + ['id' => $existingTag->id];
 				if ($entry['color'] !== null) {
@@ -544,6 +546,15 @@ class TagBehavior extends Behavior {
 			return [];
 		}
 
+		if (!$this->getConfig('namespace') && !$this->getConfig('separator')) {
+			$existing = [];
+			foreach ($this->_tagsExistBatch($slugs) as $slug => $row) {
+				$existing[$this->tagIdentity((string)$slug, null)] = $row;
+			}
+
+			return $existing;
+		}
+
 		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
 		$results = $tagsTable->find()
 			->where([$tagsTable->aliasField('slug') . ' IN' => array_unique($slugs)])
@@ -567,7 +578,7 @@ class TagBehavior extends Behavior {
 	 * @param string|null $namespace
 	 * @return string
 	 */
-	private function tagIdentity(string $slug, ?string $namespace): string {
+	protected function tagIdentity(string $slug, ?string $namespace): string {
 		$namespace ??= '';
 
 		return strlen($namespace) . ':' . $namespace . ':' . $slug;
@@ -594,6 +605,7 @@ class TagBehavior extends Behavior {
 
 		$results = $tagsTable->find()
 			->where([$slugField . ' IN' => $slugs])
+			->where([$tagsTable->aliasField('namespace') . ' IS' => null])
 			->select([
 				$tagsTable->aliasField('slug'),
 				$tagsTable->aliasField($primaryKey),
@@ -641,6 +653,7 @@ class TagBehavior extends Behavior {
 			->where([
 				$tagsTable->aliasField('slug') => $slug,
 			])
+			->where([$tagsTable->aliasField('namespace') . ' IS' => null])
 			->select([
 				$tagsTable->aliasField($tagsTable->getPrimaryKey()),
 			])
@@ -796,7 +809,7 @@ class TagBehavior extends Behavior {
 				->contain([$this->getConfig('tagsAlias')])
 				->select([$taggedAlias . '.' . $foreignKey])
 				->groupBy($taggedAlias . '.' . $foreignKey)
-				->having('COUNT(*) = ' . count($andValues))
+				->having('COUNT(DISTINCT ' . $this->_table->getConnection()->getDriver()->quoteIdentifier($key) . ') = ' . count($andValues))
 				->where($conditions);
 		}
 
