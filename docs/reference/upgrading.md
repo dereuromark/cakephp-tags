@@ -1,6 +1,6 @@
 # Upgrading
 
-The active branch targets CakePHP 5. Composer declares the exact supported PHP and CakePHP ranges. CakePHP 6 support has not been declared.
+The `cake6` branch requires CakePHP 6 and PHP 8.5. Follow the [installation guide](../guide/installation.md) to select this development branch and compatible migration tooling. Custom behavior, entity and helper overrides must follow the CakePHP 6 configuration, property and method names. The test suite uses PHPUnit 13.
 
 For the earlier major-version migration, retain the repository's [UPGRADE.md](https://github.com/dereuromark/cakephp-tags/blob/master/UPGRADE.md).
 

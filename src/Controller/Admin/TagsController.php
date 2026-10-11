@@ -95,7 +95,7 @@ class TagsController extends TagsAppController {
 			])
 			->where(['tag_id' => $id])
 			->groupBy('fk_model')
-			->disableHydration()
+			->enableHydration(false)
 			->all()
 			->toArray();
 

@@ -1,15 +1,17 @@
 # Installation
 
-Composer checks the supported PHP and CakePHP versions for your application:
+This development branch requires PHP 8.5 and CakePHP 6. Allow development dependencies in the application and keep stable packages preferred:
 
 ```sh
-composer require dereuromark/cakephp-tags
+composer config minimum-stability dev
+composer config prefer-stable true
+composer require dereuromark/cakephp-tags:dev-cake6
 ```
 
 The plugin database tables are created by [CakePHP Migrations](https://book.cakephp.org/migrations/5/en/). If your application does not have it:
 
 ```sh
-composer require cakephp/migrations
+composer require cakephp/migrations:dev-fix/6.x-cakephp-compatibility
 ```
 
 Load the plugins in `src/Application.php`, preserving your existing setup. If Migrations is already registered in `config/plugins.php`, keep that registration and add only Tags:

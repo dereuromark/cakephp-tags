@@ -22,7 +22,7 @@
 			['action' => 'delete', $tag->id],
 			[
 				'class' => 'btn btn-outline-danger',
-				'escapeTitle' => false,
+				'escape' => false,
 				'form' => [
 					'class' => 'd-inline',
 					'data-confirm-message' => __d('tags', 'Delete tag "{0}"? This will also remove all associations.', $tag->label),

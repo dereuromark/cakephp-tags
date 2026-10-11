@@ -56,6 +56,7 @@ class TagsTable extends Table {
 	 * @return \Cake\Validation\Validator
 	 */
 	public function validationDefault(Validator $validator): Validator {
+		$validator->setProvider('table', $this);
 		$validator
 			->scalar('id')
 			->allowEmptyString('id', 'create');
@@ -241,7 +242,7 @@ class TagsTable extends Table {
 		$sourceSlugs = $this->find()
 			->select(['slug'])
 			->where($this->namespaceConditions($fromNamespace))
-			->disableHydration()
+			->enableHydration(false)
 			->all()
 			->extract('slug')
 			->toList();
@@ -320,7 +321,7 @@ class TagsTable extends Table {
 				'count' => $taggedTable->find()->func()->count('*'),
 			])
 			->groupBy('tag_id')
-			->disableHydration()
+			->enableHydration(false)
 			->all()
 			->combine('tag_id', 'count')
 			->toArray();

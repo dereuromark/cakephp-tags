@@ -121,7 +121,7 @@ class TagBehaviorTest extends TestCase {
 		];
 
 		$entity = $this->Table->newEmptyEntity();
-		$entity->setAccess('tags', false);
+		$entity->setPatchable('tags', false);
 
 		$entity = $this->Table->patchEntity($entity, $data);
 		$this->assertNotEmpty($entity->tags);

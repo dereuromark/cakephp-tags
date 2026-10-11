@@ -34,7 +34,7 @@ class TagHelper extends Helper {
 	/**
 	 * @var array<string, mixed>
 	 */
-	protected array $_defaultConfig = [
+	protected array $defaultConfig = [
 		'field' => 'tag_list',
 		'strategy' => 'string',
 	];
@@ -44,7 +44,7 @@ class TagHelper extends Helper {
 	 * @param array $config Configuration settings for the helper.
 	 */
 	public function __construct(View $View, array $config = []) {
-		$this->_defaultConfig = array_intersect_key((array)Configure::read('Tags'), $this->_defaultConfig) + $this->_defaultConfig;
+		$this->defaultConfig = array_intersect_key((array)Configure::read('Tags'), $this->defaultConfig) + $this->defaultConfig;
 
 		parent::__construct($View, $config);
 	}

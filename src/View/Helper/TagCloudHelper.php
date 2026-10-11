@@ -34,7 +34,7 @@ class TagCloudHelper extends Helper {
 	/**
 	 * @var array<string, mixed>
 	 */
-	protected array $_defaultConfig = [
+	protected array $defaultConfig = [
 		'tagModel' => 'tag',
 		'labelKey' => 'label',
 		'shuffle' => true,
@@ -72,7 +72,7 @@ class TagCloudHelper extends Helper {
 		if (!$tags) {
 			return '';
 		}
-		$options += $this->_config;
+		$options += $this->config;
 
 		$tags = $this->calculateWeights($tags);
 

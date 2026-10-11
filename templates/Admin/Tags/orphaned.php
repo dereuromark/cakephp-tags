@@ -29,7 +29,7 @@
 			['action' => 'deleteOrphaned'],
 			[
 				'class' => 'btn btn-danger btn-sm',
-				'escapeTitle' => false,
+				'escape' => false,
 				'form' => [
 					'class' => 'd-inline',
 					'data-confirm-message' => __d('tags', 'Are you sure you want to delete all {0} orphaned tags? This cannot be undone.', $orphanedCount),
@@ -78,7 +78,7 @@
 								['action' => 'delete', $tag->id],
 								[
 									'class' => 'btn btn-outline-danger',
-									'escapeTitle' => false,
+									'escape' => false,
 									'title' => __d('tags', 'Delete'),
 									'form' => [
 										'class' => 'd-inline',
