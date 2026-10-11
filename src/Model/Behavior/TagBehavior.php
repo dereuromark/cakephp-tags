@@ -4,6 +4,9 @@ namespace Tags\Model\Behavior;
 
 use ArrayObject;
 use Cake\Core\Configure;
+use Cake\Database\Expression\IdentifierExpression;
+use Cake\Database\Expression\QueryExpression;
+use Cake\Database\Expression\UnaryExpression;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\QueryInterface;
 use Cake\Event\EventInterface;
@@ -805,11 +808,15 @@ class TagBehavior extends Behavior {
 				$key . ' IN' => $andValues,
 			];
 
-			return $this->_table->{$taggedAlias}->find()
+			$subquery = $this->_table->{$taggedAlias}->find();
+			$matched = $subquery->func()->count(new UnaryExpression('DISTINCT', new IdentifierExpression($key)));
+
+			return $subquery
 				->contain([$this->getConfig('tagsAlias')])
 				->select([$taggedAlias . '.' . $foreignKey])
 				->groupBy($taggedAlias . '.' . $foreignKey)
-				->having('COUNT(DISTINCT ' . $this->_table->getConnection()->getDriver()->quoteIdentifier($key) . ') = ' . count($andValues))
+				->having((new QueryExpression())->eq($matched, count($andValues), 'integer'))
+				->orderBy([], true)
 				->where($conditions);
 		}
 
