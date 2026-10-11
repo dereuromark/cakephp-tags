@@ -119,7 +119,7 @@
 								['action' => 'delete', $tag->id],
 								[
 									'class' => 'btn btn-outline-danger',
-									'escapeTitle' => false,
+									'escape' => false,
 									'title' => __d('tags', 'Delete'),
 									'form' => [
 										'class' => 'd-inline',

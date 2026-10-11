@@ -84,7 +84,7 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 		<div class="d-flex gap-2">
 			<?= $this->Form->button('<i class="fas fa-save me-1"></i>' . __d('tags', 'Save'), [
 				'class' => 'btn btn-primary',
-				'escapeTitle' => false,
+				'escape' => false,
 			]) ?>
 			<a href="<?= $this->Url->build(['action' => 'index']) ?>" class="btn btn-outline-secondary">
 				<?= __d('tags', 'Abort') ?>

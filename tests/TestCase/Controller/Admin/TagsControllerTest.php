@@ -126,6 +126,8 @@ class TagsControllerTest extends TestCase {
 
 		$this->assertResponseOk();
 		$this->assertResponseContains('Add Tag');
+		$this->assertResponseContains('<i class="fas fa-save me-1"></i>');
+		$this->assertResponseNotContains('&lt;i class=');
 	}
 
 	/**

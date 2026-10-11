@@ -85,7 +85,7 @@
 					['controller' => 'Tags', 'action' => 'recalculateCounters'],
 					[
 						'class' => 'btn btn-outline-info w-100',
-						'escapeTitle' => false,
+						'escape' => false,
 						'form' => [
 							'class' => 'd-inline',
 						],
