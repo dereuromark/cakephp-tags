@@ -968,4 +968,35 @@ class TagBehaviorTest extends TestCase {
 		$this->assertSame($expected, Hash::extract($result, '{n}.name'));
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testNamespacesKeepIdenticalLabelsSeparate(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$result = $this->Behavior->normalizeTags('first:Example,second:Example');
+
+		$this->assertCount(2, $result);
+		$this->assertSame('first', $result[0]['namespace']);
+		$this->assertSame('second', $result[1]['namespace']);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testNamespaceSaveDoesNotReuseAnotherNamespaceTag(): void {
+		$this->Behavior->setConfig('separator', ':');
+		$first = $this->Table->get(1, contain: ['Tags']);
+		$first = $this->Table->patchEntity($first, ['tag_list' => 'first:Example']);
+		$this->Table->saveOrFail($first);
+		$second = $this->Table->get(2, contain: ['Tags']);
+		$second = $this->Table->patchEntity($second, ['tag_list' => 'second:Example']);
+		$this->Table->saveOrFail($second);
+
+		$first = $this->Table->get(1, contain: ['Tags']);
+		$second = $this->Table->get(2, contain: ['Tags']);
+		$this->assertSame('first', $first->tags[0]->namespace);
+		$this->assertSame('second', $second->tags[0]->namespace);
+		$this->assertNotSame($first->tags[0]->id, $second->tags[0]->id);
+	}
+
 }

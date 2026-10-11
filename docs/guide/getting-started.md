@@ -53,3 +53,27 @@ $articles->saveOrFail($article);
 ```
 
 Always contain the current association before updating an existing entity. The ORM needs those entities to retain and remove links correctly.
+
+## Creating and displaying records
+
+An add action uses `newEntity()` with the submitted `tag_list`; it does not need to contain existing tags. Keep your normal validation and save handling:
+
+```php
+$articles = $this->fetchTable('Articles');
+$article = $articles->newEntity($this->getRequest()->getData());
+$articles->saveOrFail($article);
+```
+
+To display labels on a view page, contain them and load the helper:
+
+```php
+$article = $this->fetchTable('Articles')->get($id, contain: ['Tags']);
+$this->set(compact('article'));
+```
+
+```php
+$this->loadHelper('Tags.Tag');
+echo $this->Tag->tags($article->tags);
+```
+
+`saveOrFail()` throws on a failed save. Normal interactive add forms should use `save()` and display validation errors, as the edit example does.

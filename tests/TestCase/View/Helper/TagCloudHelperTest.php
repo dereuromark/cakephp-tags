@@ -120,4 +120,16 @@ HTML;
 		$this->assertTextEquals($expected, $result);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testDisplayCanDisableLinksForOneCall(): void {
+		$result = $this->Helper->display([
+			['counter' => 2, 'tag' => ['id' => 1, 'label' => 'Example', 'slug' => 'example']],
+		], ['url' => false]);
+
+		$this->assertStringContainsString('Example', $result);
+		$this->assertStringNotContainsString('<a ', $result);
+	}
+
 }

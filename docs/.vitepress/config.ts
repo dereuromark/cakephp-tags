@@ -8,6 +8,7 @@ const sidebar = [
     { text: 'Finding records', link: '/guide/finders' },
     { text: 'Admin interface', link: '/guide/admin' },
     { text: 'Helper and assets', link: '/guide/helper' },
+    { text: 'Application integrations', link: '/guide/integrations' },
   ] },
   { text: 'Reference', items: [
     { text: 'Configuration', link: '/reference/configuration' },

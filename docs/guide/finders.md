@@ -46,13 +46,7 @@ $tags = $articles->Tagged->find('cloud')->toArray();
 $this->set(compact('tags'));
 ```
 
-The cloud finder groups pivot rows by tag and adds a calculated `weight`. This query is global unless you add a condition for the model discriminator:
-
-```php
-$tags = $articles->Tagged->find('cloud')
-    ->where(['Tagged.fk_model' => $articles->getAlias()])
-    ->toArray();
-```
+The cloud finder groups pivot rows by tag and adds a calculated `weight`. Calling it through the host's `Tagged` association applies that association's model discriminator. Calling `fetchTable('Tags.Tagged')->find('cloud')` queries links across models unless you add your own conditions.
 
 In the template:
 

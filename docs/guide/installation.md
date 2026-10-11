@@ -12,7 +12,7 @@ The plugin database tables are created by [CakePHP Migrations](https://book.cake
 composer require cakephp/migrations
 ```
 
-Load both plugins in `src/Application.php`, preserving your existing plugin setup:
+Load the plugins in `src/Application.php`, preserving your existing setup. If Migrations is already registered in `config/plugins.php`, keep that registration and add only Tags:
 
 ```php
 $this->addPlugin('Migrations');
@@ -34,6 +34,35 @@ bin/cake migrations migrate -p Tags
 This creates `tags_tags` and `tags_tagged`, including the color field. Your existing tagged table needs no extra column when you use `taggedCounter => false`, as in [getting started](./getting-started.md).
 
 To cache each record's tag count, add an integer `tag_count` column with default `0` to the host table and enable the default counter configuration. Backfill existing records after introducing the cache; adding a zero-filled column does not calculate their existing counts.
+
+## Optional host counter
+
+For an existing Articles table, create an application migration such as `config/Migrations/20260101000000_AddArticleTagCount.php`:
+
+```php
+<?php
+use Migrations\BaseMigration;
+
+class AddArticleTagCount extends BaseMigration {
+    public function change(): void {
+        $this->table('articles')
+            ->addColumn('tag_count', 'integer', ['default' => 0, 'null' => false])
+            ->update();
+    }
+}
+```
+
+Run the application's migration command without `-p Tags`, then enable the behavior's default counter. For an existing installation, a one-time application command can backfill counts through the model-scoped association:
+
+```php
+$articles = $this->fetchTable('Articles');
+foreach ($articles->find()->select(['id']) as $article) {
+    $count = $articles->Tagged->find()->where(['Tagged.fk_id' => $article->id])->count();
+    $articles->updateAll(['tag_count' => $count], ['id' => $article->id]);
+}
+```
+
+Adapt the primary-key and counter names to your table. Coordinate this backfill with writes so a concurrent save cannot be overwritten by an earlier count.
 
 ## UUID host records
 

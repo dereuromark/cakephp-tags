@@ -2,6 +2,7 @@
 
 namespace Tags\Test\TestCase\View\Helper;
 
+use Cake\Core\Configure;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest as Request;
 use Cake\ORM\TableRegistry;
@@ -342,6 +343,23 @@ HTML;
 
 		$this->assertFalse($span->hasAttribute('onmouseover'));
 		$this->assertStringContainsString('&quot;', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testControlDoesNotRenderGlobalBehaviorOrAdminOptions(): void {
+		Configure::write('Tags', ['field' => 'labels', 'accessCheck' => fn () => true, 'taggedCounter' => ['tag_count']]);
+		try {
+			$helper = new TagHelper($this->View);
+			$result = $helper->control();
+
+			$this->assertStringContainsString('name="labels"', $result);
+			$this->assertStringNotContainsString('accessCheck', $result);
+			$this->assertStringNotContainsString('taggedCounter', $result);
+		} finally {
+			Configure::delete('Tags');
+		}
 	}
 
 }

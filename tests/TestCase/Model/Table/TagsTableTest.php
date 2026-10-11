@@ -502,4 +502,26 @@ class TagsTableTest extends TestCase {
 		$this->assertSame([$entity->id], $result);
 	}
 
+	/**
+	 * @return void
+	 */
+	public function testMultipleTagsFinderListBeforeSaving(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+
+		$this->assertSame(0, $table->find('taggedOne', value: ['missing'])->count());
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMultipleCollectionsWithoutCountersKeepUntaggedQueriesSeparate(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+		$table->getBehavior('TagsOne')->setConfig('taggedCounter', false);
+		$table->getBehavior('TagsTwo')->setConfig('taggedCounter', false);
+		$table->saveOrFail($table->newEntity(['name' => 'Example', 'one_list' => 'first']));
+
+		$this->assertSame(2, $table->find('untaggedOne')->count());
+		$this->assertSame(3, $table->find('untaggedTwo')->count());
+	}
+
 }

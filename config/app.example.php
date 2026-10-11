@@ -42,7 +42,7 @@ return [
 		// Example: restrict to admin role on the cakephp/authentication identity:
 		// 'accessCheck' => function (\Cake\Http\ServerRequest $request): bool {
 		//     $identity = $request->getAttribute('identity');
-		//     return $identity !== null && in_array('admin', (array)$identity->roles, true);
+		//     return $identity !== null && in_array('admin', (array)$identity->get('roles'), true);
 		// },
 
 		// Custom slug generator (optional). When set, must be a callable taking
@@ -55,10 +55,19 @@ return [
 		// Behavior defaults (override per addBehavior() call as needed):
 		// 'taggedCounter' => ['tag_count'],
 		// 'strategy' => 'string', // 'string' or 'array'
+		// 'field' => 'tag_list',
 		// 'delimiter' => ',',
+		// 'finderField' => 'slug',
+		// 'inlineColorEditing' => false,
+		// 'colorMap' => null,
+		// 'tagsCounter' => ['counter'],
+		// 'tagsAlias' => 'Tags',
+		// 'taggedAlias' => 'Tagged',
+		// 'fkModelAlias' => null,
+		// 'fkModelField' => 'fk_model',
 		// 'namespace' => null,
 		// 'separator' => null,
-		// 'andSeparator' => null,
-		// 'orSeparator' => null,
+		// 'andSeparator' => '+',
+		// 'orSeparator' => ',',
 	],
 ];

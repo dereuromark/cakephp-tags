@@ -31,7 +31,7 @@ For another collection, pass its `field`:
 <?= $this->Tag->control(['field' => 'topic_list']) ?>
 ```
 
-The helper merges global `Tags` configuration with per-call options. Keep admin closures and behavior-only configuration out of a helper's HTML options; use a normal FormHelper control when sharing a broad global configuration.
+The helper shares global `Tags.field` and `Tags.strategy` defaults. Behavior and admin settings are not rendered as HTML attributes. Per-call form options take precedence.
 
 ## Colored labels
 

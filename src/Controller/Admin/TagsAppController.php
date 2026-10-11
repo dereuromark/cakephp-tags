@@ -25,7 +25,7 @@ use Throwable;
  * `Tags.accessCheck`. When set to a `Closure`, it must return literal `true`
  * for the current request to proceed; anything else (returns false, returns
  * truthy non-bool, throws) yields a 403. Unset = no-op (the host
- * AppController's auth is the only gate). See docs/README.md for examples.
+ * AppController's auth is the only gate). See docs/guide/admin.md for examples.
  */
 class TagsAppController extends AppController {
 

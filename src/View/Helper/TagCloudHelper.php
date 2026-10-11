@@ -104,7 +104,7 @@ class TagCloudHelper extends Helper {
 
 			$label = $options['tagModel'] ? $tag[$options['tagModel']][$options['labelKey']] : $tag[$options['labelKey']];
 
-			if ($this->getConfig('url') !== false) {
+			if ($options['url'] !== false) {
 				$content = $this->Html->link(
 					$label,
 					$this->_tagUrl($tag, $options),

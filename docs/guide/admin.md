@@ -2,11 +2,15 @@
 
 Loading Tags routes enables the dashboard at `/admin/tags` and tag management at `/admin/tags/tags`. The interface provides tag CRUD, merge previews, duplicate suggestions, orphan cleanup, counter recalculation, export and namespace moves.
 
-The plugin layout uses Bootstrap 5. Its assets and the bundled screenshots describe the admin interface, not the public tag forms in your application.
+The plugin layout uses Bootstrap 5.
+
+![Tags admin dashboard](../screenshots/tags-admin-dashboard.png)
+
+![Tags admin list](../screenshots/tags-admin-index.png)
 
 ## Access control
 
-By default, admin controllers inherit the application's `AppController` initialization and `beforeFilter()`. Keep your existing admin authentication and authorization in place. Tags does not install Authentication or define an admin role for you.
+By default, admin controllers inherit the application's `AppController` initialization and `beforeFilter()`. Keep your existing admin authentication and authorization in place. The inherited `beforeFilter()` callback must be untyped or use `void`, matching the plugin callback. Tags does not install Authentication or define an admin role for you.
 
 An optional additional gate receives the request and must return literal `true`:
 
@@ -31,7 +35,7 @@ When a configured gate runs with the Authorization component, it calls `skipAuth
 Configure::write('Tags.standalone', true);
 ```
 
-This bypasses the host `AppController` initialization and `beforeFilter()` callbacks. It still needs that class to exist, and it does not disable application middleware. Configure an access gate or equivalent application middleware before exposing standalone admin routes.
+This bypasses the host `AppController` initialization and `beforeFilter()` callbacks. It still needs that class to exist, and it does not disable application middleware. Other inherited hooks, including `beforeRender()`, `afterFilter()` and custom event mappings, still apply; keep those hooks compatible with the components loaded in standalone mode. Configure an access gate or equivalent application middleware before exposing standalone admin routes.
 
 ## Layout
 

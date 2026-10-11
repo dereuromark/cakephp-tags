@@ -73,9 +73,8 @@ class TaggedTable extends Table {
 	 * Returns a tag cloud
 	 *
 	 * The result contains a "weight" field which has a normalized size of the tag
-	 * counter set. The min and max size can be set by passing 'minSize" and
-	 * 'maxSize' to the query. This value can be used in the view to control the
-	 * size of the tag font.
+	 * counter set. TagCloudHelper uses that weight to calculate its configured
+	 * minimum and maximum font sizes.
 	 *
 	 * @param \Cake\ORM\Query\SelectQuery $query Query array.
 	 * @return \Cake\ORM\Query\SelectQuery
@@ -85,19 +84,7 @@ class TaggedTable extends Table {
 		$fields = $groupBy;
 		$fields['counter'] = $query->func()->count('*');
 
-		// FIXME or remove
-		// Support old code without the counter cache
-		// This is related to https://github.com/CakeDC/tags/issues/10 to work around a limitation of postgres
-		/*
-		$field = $this->getDataSource()->fields($this->Tag);
-		$field = array_merge($field, $this->getDataSource()->fields($this, null, 'Tagged.tag_id'));
-		$fields = 'DISTINCT ' . implode(',', $field);
-		$groupBy = null;
-		*/
-
 		$options = [
-			'minSize' => 10,
-			'maxSize' => 20,
 			'contain' => 'Tags',
 			'fields' => $fields,
 			'group' => $groupBy,
