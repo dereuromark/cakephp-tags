@@ -505,6 +505,25 @@ class TagsTableTest extends TestCase {
 	/**
 	 * @return void
 	 */
+	public function testMultipleCollectionsKeepTaggedSubqueriesSeparate(): void {
+		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
+		$entity = $table->newEntity(['name' => 'Example', 'one_list' => 'first,shared', 'two_list' => 'second,shared']);
+		$table->saveOrFail($entity);
+
+		foreach ([['second'], 'second+shared', 'second,missing'] as $value) {
+			$this->assertSame(0, $table->find('taggedOne', value: $value)->count());
+		}
+		foreach ([['first'], 'first+shared', 'first,missing'] as $value) {
+			$this->assertSame(0, $table->find('taggedTwo', value: $value)->count());
+		}
+		foreach ([['first'], 'first+shared', 'first,missing'] as $value) {
+			$this->assertSame([$entity->id], $table->find('taggedOne', value: $value)->all()->extract('id')->toList());
+		}
+	}
+
+	/**
+	 * @return void
+	 */
 	public function testMultipleTagsFinderListBeforeSaving(): void {
 		$table = TableRegistry::getTableLocator()->get('MultiTagsRecords');
 

@@ -73,5 +73,5 @@ return [
 	],
 	// Optional fresh-migration settings, separate from Tags behavior options:
 	// 'Polymorphic' => ['type' => 'uuid'],
-	// 'Migrations' => ['unsigned' => true],
+	// 'Migrations' => ['unsigned_primary_keys' => true],
 ];
