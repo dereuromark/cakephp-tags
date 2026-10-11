@@ -17,7 +17,7 @@ return [
 
 		// Back-to-App link in the admin header (opt-in). When set, an outline
 		// button appears in the top navbar so admins can escape the
-		// plugin-isolated layout. Accepts anything Router::url() takes — Cake
+		// plugin-isolated layout. Accepts anything Router::url() takes: Cake
 		// URL array, path string, or full URL. Use 'plugin' => false to
 		// anchor the builder to the host app rather than the Tags plugin.
 		// 'adminBackUrl' => ['plugin' => false, 'prefix' => 'Admin', 'controller' => 'Overview', 'action' => 'index'],
@@ -39,7 +39,7 @@ return [
 		// AppController is bypassed in that mode, so this gate becomes the
 		// only plugin-side protection).
 		//
-		// Example — restrict to admin role on the cakephp/authentication identity:
+		// Example: restrict to admin role on the cakephp/authentication identity:
 		// 'accessCheck' => function (\Cake\Http\ServerRequest $request): bool {
 		//     $identity = $request->getAttribute('identity');
 		//     return $identity !== null && in_array('admin', (array)$identity->roles, true);
@@ -53,7 +53,7 @@ return [
 		// 'slug' => fn (string $label): string => mb_strtolower(\Cake\Utility\Text::slug($label)),
 
 		// Behavior defaults (override per addBehavior() call as needed):
-		// 'taggedCounter' => true,
+		// 'taggedCounter' => ['tag_count'],
 		// 'strategy' => 'string', // 'string' or 'array'
 		// 'delimiter' => ',',
 		// 'namespace' => null,
