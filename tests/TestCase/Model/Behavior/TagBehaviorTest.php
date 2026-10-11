@@ -3,7 +3,6 @@
 namespace Tags\Test\TestCase\Model\Behavior;
 
 use Cake\Database\Driver\Mysql;
-use Cake\Database\Driver\Postgres;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
@@ -699,9 +698,6 @@ class TagBehaviorTest extends TestCase {
 
 		$result = $this->Table->Tagged->find('all')->where(['tag_id IN' => Hash::extract($result, '{n}.id')])->toArray();
 		$this->assertCount(4, $result);
-
-		$connectionConfig = $this->Table->getConnection()->config();
-		$this->skipIf($connectionConfig['driver'] === Postgres::class, 'Only for MySQL/Sqlite for now');
 
 		$result = $this->Table->find('tagged', value: 'color+weight')->orderByAsc($this->Table->aliasField('name'))->toArray();
 

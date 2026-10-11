@@ -155,6 +155,10 @@ class TaggedTable extends Table {
 		}
 
 		if (!property_exists($this, 'order') || $this->order === null) {
+			if ($query->clause('group')) {
+				return;
+			}
+
 			$contain = $query->getContain();
 			if (!isset($contain[$this->Tags->getAlias()])) {
 				return;

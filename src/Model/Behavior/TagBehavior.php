@@ -816,7 +816,6 @@ class TagBehavior extends Behavior {
 				->select([$taggedAlias . '.' . $foreignKey])
 				->groupBy($taggedAlias . '.' . $foreignKey)
 				->having((new QueryExpression())->eq($matched, count($andValues), 'integer'))
-				->orderBy([], true)
 				->where($conditions);
 		}
 
