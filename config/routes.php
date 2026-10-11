@@ -5,7 +5,7 @@ use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
 $routes->prefix('Admin', function (RouteBuilder $routes): void {
-	$routes->plugin('Tags', ['path' => '/tags'], function (RouteBuilder $routes): void {
+	$routes->plugin('Tags', function (RouteBuilder $routes): void {
 		$routes->setRouteClass(DashedRoute::class);
 
 		// Dashboard
@@ -33,5 +33,5 @@ $routes->prefix('Admin', function (RouteBuilder $routes): void {
 		$routes->connect('/tags/change-namespace', ['controller' => 'Tags', 'action' => 'changeNamespace']);
 
 		$routes->fallbacks(DashedRoute::class);
-	});
+	}, ['path' => '/tags']);
 });

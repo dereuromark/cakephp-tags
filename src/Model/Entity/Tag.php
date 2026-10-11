@@ -21,7 +21,7 @@ class Tag extends Entity {
 	 *
 	 * @var array<string, bool>
 	 */
-	protected array $_accessible = [
+	protected array $patchable = [
 		'id' => false,
 		'counter' => false,
 		'*' => true,

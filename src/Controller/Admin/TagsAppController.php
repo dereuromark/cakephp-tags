@@ -64,20 +64,15 @@ class TagsAppController extends AppController {
 	 * @return void
 	 */
 	public function beforeFilter(EventInterface $event): void {
-		$result = null;
 		if (Configure::read('Tags.standalone')) {
 			Controller::beforeFilter($event);
 		} else {
-			$result = parent::beforeFilter($event);
+			parent::beforeFilter($event);
 		}
 
 		$check = Configure::read('Tags.accessCheck');
 		if ($check instanceof Closure && $this->components()->has('Authorization') && method_exists($this->components()->get('Authorization'), 'skipAuthorization')) {
 			$this->components()->get('Authorization')->skipAuthorization();
-		}
-		if ($result instanceof ResponseInterface) {
-			$event->setResult($result);
-			$event->stopPropagation();
 		}
 		if ($event->getResult() instanceof ResponseInterface || $event->isStopped()) {
 			return;

@@ -37,7 +37,7 @@ class TagsDashboardController extends TagsAppController {
 				'count' => $tagsTable->find()->func()->count('*'),
 			])
 			->groupBy('namespace')
-			->disableHydration()
+			->enableHydration(false)
 			->all()
 			->toArray();
 
@@ -75,7 +75,7 @@ class TagsDashboardController extends TagsAppController {
 				'count' => $taggedTable->find()->func()->count('*'),
 			])
 			->groupBy('fk_model')
-			->disableHydration()
+			->enableHydration(false)
 			->all()
 			->toArray();
 

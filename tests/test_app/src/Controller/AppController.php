@@ -25,15 +25,21 @@ class AppController extends Controller {
 
 	/**
 	 * @param \Cake\Event\EventInterface $event
-	 * @return mixed
+	 * @return void
 	 */
-	public function beforeFilter(EventInterface $event) {
+	public function beforeFilter(EventInterface $event): void {
 		$callback = Configure::read('TestApp.beforeFilter');
 		if ($callback) {
-			return $callback($event);
+			$result = $callback($event);
+			if ($result instanceof \Psr\Http\Message\ResponseInterface) {
+				$event->setResult($result);
+				$event->stopPropagation();
+			}
+
+			return;
 		}
 
-		return parent::beforeFilter($event);
+		parent::beforeFilter($event);
 	}
 
 }

@@ -62,7 +62,7 @@ class TagHelperTest extends TestCase {
 	public function testControlStringEmpty() {
 		$result = $this->TagHelper->control();
 
-		$expected = '<div class="input text"><label for="tag-list">Tags</label><input type="text" name="tag_list" id="tag-list"></div>';
+		$expected = '<div class="input"><label for="tag-list">Tags</label><input type="text" name="tag_list" id="tag-list"></div>';
 		$this->assertSame($expected, $result);
 	}
 
@@ -77,7 +77,7 @@ class TagHelperTest extends TestCase {
 
 		$result = $this->TagHelper->control();
 		$expected = <<<HTML
-<div class="input text">
+<div class="input">
 	<label for="tag-list">Tags</label>
 	<input type="text" name="tag_list" id="tag-list" value="One, Two">
 </div>
@@ -94,7 +94,7 @@ HTML;
 
 		$result = $this->TagHelper->control();
 
-		$expected = '<div class="input select"><label for="tag-list">Tags</label><input type="hidden" name="tag_list" value=""><select name="tag_list[]" multiple="multiple" id="tag-list"></select></div>';
+		$expected = '<div class="input"><label for="tag-list">Tags</label><input type="hidden" name="tag_list" value=""><select name="tag_list[]" multiple="multiple" id="tag-list"></select></div>';
 		$this->assertSame($expected, $result);
 	}
 
@@ -112,7 +112,7 @@ HTML;
 
 		$result = $this->TagHelper->control();
 		$expected = <<<HTML
-<div class="input select">
+<div class="input">
 	<label for="tag-list">Tags</label>
 	<input type="hidden" name="tag_list" value="">
 	<select name="tag_list[]" multiple="multiple" id="tag-list">

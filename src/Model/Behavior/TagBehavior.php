@@ -25,7 +25,7 @@ class TagBehavior extends Behavior {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected array $_defaultConfig = [
+	protected array $defaultConfig = [
 		'field' => 'tag_list',
 		'strategy' => 'string',
 		'delimiter' => ',',
@@ -74,7 +74,7 @@ class TagBehavior extends Behavior {
 	 * @param array $config The config for this behavior.
 	 */
 	public function __construct(Table $table, array $config = []) {
-		$this->_defaultConfig = (array)Configure::read('Tags') + $this->_defaultConfig;
+		$this->defaultConfig = (array)Configure::read('Tags') + $this->defaultConfig;
 
 		parent::__construct($table, $config);
 	}
@@ -111,9 +111,9 @@ class TagBehavior extends Behavior {
 	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options): void {
 		$field = $this->getConfig('field');
 		$property = $this->getConfig('tagsAssoc.propertyName');
-		$options['accessibleFields'][$property] = true;
-		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['id'] = true;
-		$options['associated'][$this->getConfig('tagsAlias')]['accessibleFields']['color'] = true;
+		$options['patchableFields'][$property] = true;
+		$options['associated'][$this->getConfig('tagsAlias')]['patchableFields']['id'] = true;
+		$options['associated'][$this->getConfig('tagsAlias')]['patchableFields']['color'] = true;
 
 		if (isset($data[$field])) {
 			$data[$property] = $this->normalizeTags($data[$field]);
@@ -205,7 +205,7 @@ class TagBehavior extends Behavior {
 	 * @return array<string>|string
 	 */
 	public function prepareTagsForOutput(array $data): array|string {
-		if ($this->_config['strategy'] === 'array') {
+		if ($this->config['strategy'] === 'array') {
 			return $this->prepareTagsForOutputArray($data);
 		}
 
@@ -222,8 +222,8 @@ class TagBehavior extends Behavior {
 		$tags = [];
 
 		foreach ($data as $tag) {
-			if ($this->_config['separator'] !== null && ($tag['namespace'] || $this->_config['namespace'])) {
-				$tags[] = $tag['namespace'] . $this->_config['separator'] . $tag['label'];
+			if ($this->config['separator'] !== null && ($tag['namespace'] || $this->config['namespace'])) {
+				$tags[] = $tag['namespace'] . $this->config['separator'] . $tag['label'];
 			} else {
 				$tags[] = $tag['label'];
 			}
@@ -239,7 +239,7 @@ class TagBehavior extends Behavior {
 	 * @return string
 	 */
 	public function prepareTagsForOutputString(array $data): string {
-		return implode($this->_config['delimiter'] . ' ', $this->prepareTagsForOutputArray($data));
+		return implode($this->config['delimiter'] . ' ', $this->prepareTagsForOutputArray($data));
 	}
 
 	/**
@@ -255,8 +255,8 @@ class TagBehavior extends Behavior {
 		$taggedAlias = $config['taggedAlias'];
 		$taggedAssoc = $config['taggedAssoc'];
 
-		$table = $this->_table;
-		$tableAlias = $this->_table->getAlias();
+		$table = $this->table;
+		$tableAlias = $this->table->getAlias();
 
 		$modelAlias = $this->getConfig('fkModelAlias') ?: $tableAlias;
 		$assocConditions = [$taggedAlias . '.' . $this->getConfig('fkModelField') => $modelAlias];
@@ -321,7 +321,7 @@ class TagBehavior extends Behavior {
 		$tagsAlias = $config['tagsAlias'];
 		$taggedAlias = $config['taggedAlias'];
 
-		$taggedTable = $this->_table->{$taggedAlias};
+		$taggedTable = $this->table->{$taggedAlias};
 
 		if (!$taggedTable->hasBehavior('CounterCache')) {
 			$taggedTable->addBehavior('CounterCache');
@@ -341,21 +341,21 @@ class TagBehavior extends Behavior {
 		$taggedCounterConfig = $this->_getTaggedCounterConfig($config['taggedCounter']);
 
 		foreach (array_keys($taggedCounterConfig) as $field) {
-			if (!$this->_table->hasField($field)) {
+			if (!$this->table->hasField($field)) {
 				throw new RuntimeException(sprintf(
 					'Field "%s" does not exist in table "%s"',
 					$field,
-					$this->_table->getTable(),
+					$this->table->getTable(),
 				));
 			}
 
-			$modelAlias = $config['fkModelAlias'] ?: $this->_table->getAlias();
+			$modelAlias = $config['fkModelAlias'] ?: $this->table->getAlias();
 			$taggedCounterConfig[$field]['conditions'] = [
 				$taggedTable->aliasField($this->getConfig('fkModelField')) => $modelAlias,
 			];
 		}
-		if (!$counterCache->getConfig($this->_table->getAlias())) {
-			$counterCache->setConfig($this->_table->getAlias(), $taggedCounterConfig);
+		if (!$counterCache->getConfig($this->table->getAlias())) {
+			$counterCache->setConfig($this->table->getAlias(), $taggedCounterConfig);
 		}
 	}
 
@@ -413,12 +413,12 @@ class TagBehavior extends Behavior {
 			return $query;
 		}
 
-		$primaryKey = $this->_table->getPrimaryKey();
+		$primaryKey = $this->table->getPrimaryKey();
 		if (!is_string($primaryKey)) {
 			throw new RuntimeException('The tagged finder requires a single-column primary key.');
 		}
 
-		return $query->where([$this->_table->aliasField($primaryKey) . ' IN' => $subQuery]);
+		return $query->where([$this->table->aliasField($primaryKey) . ' IN' => $subQuery]);
 	}
 
 	/**
@@ -444,17 +444,17 @@ class TagBehavior extends Behavior {
 			$counterField = $taggedCounters ? reset($taggedCounters) : null;
 		}
 
-		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
+		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->table->getAlias();
 		if ($counterField !== null) {
-			return $query->where([$this->_table->getAlias() . '.' . $counterField => 0]);
+			return $query->where([$this->table->getAlias() . '.' . $counterField => 0]);
 		}
 
 		$foreignKey = $this->getConfig('tagsAssoc.foreignKey');
 		$associationAlias = $this->getConfig('taggedAlias') === 'Tagged' ? 'NoTags' : $this->getConfig('taggedAlias') . 'NoTags';
 		$conditions = [$associationAlias . '.' . $this->getConfig('fkModelField') => $modelAlias];
-		if (!$this->_table->hasAssociation($associationAlias)) {
+		if (!$this->table->hasAssociation($associationAlias)) {
 			$settings = ['className' => $this->getConfig('taggedAssoc.className'), 'foreignKey' => $foreignKey, 'conditions' => $conditions];
-			$this->_table->hasOne($associationAlias, $settings);
+			$this->table->hasOne($associationAlias, $settings);
 		}
 
 		return $query->contain([$associationAlias])->where([$associationAlias . '.id IS' => null]);
@@ -473,12 +473,12 @@ class TagBehavior extends Behavior {
 
 		$result = [];
 
-		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->_table->getAlias();
+		$modelAlias = $this->getConfig('fkModelAlias') ?: $this->table->getAlias();
 
 		$common = ['_joinData' => [$this->getConfig('fkModelField') => $modelAlias]];
 		$namespace = $this->getConfig('namespace');
 
-		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')};
+		$tagsTable = $this->table->{$this->getConfig('tagsAlias')};
 		$displayField = $tagsTable->getDisplayField();
 
 		// Pre-parse every input tag, deduplicate by namespace and slug, then do one database
@@ -558,7 +558,7 @@ class TagBehavior extends Behavior {
 			return $existing;
 		}
 
-		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
+		$tagsTable = $this->table->{$this->getConfig('tagsAlias')}->getTarget();
 		$results = $tagsTable->find()
 			->where([$tagsTable->aliasField('slug') . ' IN' => array_unique($slugs)])
 			->select([
@@ -602,7 +602,7 @@ class TagBehavior extends Behavior {
 			return [];
 		}
 
-		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
+		$tagsTable = $this->table->{$this->getConfig('tagsAlias')}->getTarget();
 		$primaryKey = $tagsTable->getPrimaryKey();
 		$slugField = $tagsTable->aliasField('slug');
 
@@ -650,7 +650,7 @@ class TagBehavior extends Behavior {
 	 * @return \Cake\Datasource\EntityInterface|null
 	 */
 	protected function _tagExists(string $slug) {
-		$tagsTable = $this->_table->{$this->getConfig('tagsAlias')}->getTarget();
+		$tagsTable = $this->table->{$this->getConfig('tagsAlias')}->getTarget();
 
 		$result = $tagsTable->find()
 			->where([
@@ -793,7 +793,7 @@ class TagBehavior extends Behavior {
 				$key . ' IN' => $filterValue,
 			];
 
-			return $this->_table->{$taggedAlias}->find()
+			return $this->table->{$taggedAlias}->find()
 				->contain([$this->getConfig('tagsAlias')])
 				->select($taggedAlias . '.' . $foreignKey)
 				->where($conditions);
@@ -808,7 +808,7 @@ class TagBehavior extends Behavior {
 				$key . ' IN' => $andValues,
 			];
 
-			$subquery = $this->_table->{$taggedAlias}->find();
+			$subquery = $this->table->{$taggedAlias}->find();
 			$matched = $subquery->func()->count(new UnaryExpression('DISTINCT', new IdentifierExpression($key)));
 
 			return $subquery
@@ -827,7 +827,7 @@ class TagBehavior extends Behavior {
 				$key . ' IN' => $orValues,
 			];
 
-			return $this->_table->{$taggedAlias}->find()
+			return $this->table->{$taggedAlias}->find()
 				->contain([$this->getConfig('tagsAlias')])
 				->select($taggedAlias . '.' . $foreignKey)
 				->where($conditions);
