@@ -147,9 +147,11 @@ class TagsControllerTest extends TestCase {
 
 		$this->assertResponseOk();
 		$this->assertResponseContains('<script nonce="script-nonce" src="https://cdn.jsdelivr.net/npm/bootstrap');
-		$this->assertResponseNotRegExp('/<script(?![^>]*nonce=)/');
-		$this->assertResponseNotRegExp('/<style(?![^>]*nonce=)/');
-		$this->assertResponseNotRegExp('/<link(?![^>]*nonce=)[^>]*stylesheet/');
+		$this->assertResponseNotRegExp('/<script(?![^>]*\snonce="script-nonce")/');
+		$this->assertResponseNotRegExp('/<style(?![^>]*\snonce="style-nonce")/');
+		$this->assertResponseNotRegExp('/<link(?=[^>]*stylesheet)(?![^>]*\snonce="style-nonce")/');
+		$this->assertResponseRegExp('/<style[^>]*\snonce="style-nonce"/');
+		$this->assertResponseRegExp('/<link[^>]*\snonce="style-nonce"[^>]*stylesheet|<link[^>]*stylesheet[^>]*\snonce="style-nonce"/');
 	}
 
 	/**
