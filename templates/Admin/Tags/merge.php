@@ -4,7 +4,7 @@
  * @var array<\Tags\Model\Entity\Tag> $tags
  * @var array $tagsByNamespace
  */
-$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
+$cspNonce = (string)($this->getRequest()->getAttribute('cspScriptNonce') ?? $this->getRequest()->getAttribute('cspNonce', ''));
 ?>
 
 <h1 class="mb-4">

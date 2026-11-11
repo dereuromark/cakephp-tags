@@ -3,7 +3,7 @@
  * @var \App\View\AppView $this
  * @var array $namespaces
  */
-$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
+$cspNonce = (string)($this->getRequest()->getAttribute('cspScriptNonce') ?? $this->getRequest()->getAttribute('cspNonce', ''));
 ?>
 
 <h1 class="mb-4">

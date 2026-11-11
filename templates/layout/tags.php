@@ -7,7 +7,10 @@
  *
  * @var \Cake\View\View $this
  */
-$cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
+$cspNonce = (string)($this->getRequest()->getAttribute('cspScriptNonce') ?? $this->getRequest()->getAttribute('cspNonce', ''));
+$nonceAttr = $cspNonce !== '' ? ' nonce="' . h($cspNonce) . '"' : '';
+$cspStyleNonce = (string)$this->getRequest()->getAttribute('cspStyleNonce', '');
+$styleNonceAttr = $cspStyleNonce !== '' ? ' nonce="' . h($cspStyleNonce) . '"' : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,12 +20,12 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 	<title><?= $this->fetch('title') ? strip_tags($this->fetch('title')) . ' - ' : '' ?>Tags Admin</title>
 
 	<!-- Bootstrap 5.3.3 CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link<?= $styleNonceAttr ?> href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
 	<!-- Font Awesome 6.7.2 -->
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous">
+	<link<?= $styleNonceAttr ?> href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous">
 
-	<style>
+	<style<?= $styleNonceAttr ?>>
 		:root {
 			--tags-primary: #0d6efd;
 			--tags-success: #198754;
@@ -340,9 +343,9 @@ $cspNonce = (string)$this->getRequest()->getAttribute('cspNonce', '');
 	</main>
 
 	<!-- Bootstrap JS -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	<script<?= $nonceAttr ?> src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-	<script<?= $cspNonce !== '' ? ' nonce="' . h($cspNonce) . '"' : '' ?>>
+	<script<?= $nonceAttr ?>>
 	// Mobile sidebar toggle (CSP-safe replacement for inline onclick)
 	document.querySelectorAll('[data-tags-sidebar-toggle]').forEach(function(btn) {
 		btn.addEventListener('click', function() {
