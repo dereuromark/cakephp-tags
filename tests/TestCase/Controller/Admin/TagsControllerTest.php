@@ -3,10 +3,16 @@ declare(strict_types=1);
 
 namespace Tags\Test\TestCase\Controller\Admin;
 
+use Cake\Event\EventInterface;
+use Cake\Event\EventManager;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\MiddlewareQueue;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class TagsControllerTest extends TestCase {
 
@@ -126,6 +132,40 @@ class TagsControllerTest extends TestCase {
 
 		$this->assertResponseOk();
 		$this->assertResponseContains('Add Tag');
+	}
+
+	/**
+	 * CakePHP's CspMiddleware stores the nonces as `cspScriptNonce` and `cspStyleNonce`.
+	 *
+	 * @return void
+	 */
+	public function testAddUsesCoreCspNonces(): void {
+		$this->withRequestAttribute('cspScriptNonce', 'script-nonce');
+		$this->withRequestAttribute('cspStyleNonce', 'style-nonce');
+
+		$this->get('/admin/tags/tags/add');
+
+		$this->assertResponseOk();
+		$this->assertResponseContains('<script nonce="script-nonce" src="https://cdn.jsdelivr.net/npm/bootstrap');
+		$this->assertResponseNotRegExp('/<script(?![^>]*\snonce="script-nonce")/');
+		$this->assertResponseNotRegExp('/<style(?![^>]*\snonce="style-nonce")/');
+		$this->assertResponseNotRegExp('/<link(?=[^>]*stylesheet)(?![^>]*\snonce="style-nonce")/');
+		$this->assertResponseRegExp('/<style[^>]*\snonce="style-nonce"/');
+		$this->assertResponseRegExp('/<link[^>]*\snonce="style-nonce"[^>]*stylesheet|<link[^>]*stylesheet[^>]*\snonce="style-nonce"/');
+	}
+
+	/**
+	 * A custom middleware may still provide the nonce as `cspNonce`.
+	 *
+	 * @return void
+	 */
+	public function testAddFallsBackToCspNonce(): void {
+		$this->withRequestAttribute('cspNonce', 'custom-nonce');
+
+		$this->get('/admin/tags/tags/add');
+
+		$this->assertResponseOk();
+		$this->assertResponseNotRegExp('/<script(?![^>]*nonce="custom-nonce")/');
 	}
 
 	/**
@@ -679,6 +719,22 @@ class TagsControllerTest extends TestCase {
 			->extract('slug')
 			->toList();
 		$this->assertSame(['color', 'dark-color'], $result);
+	}
+
+	/**
+	 * Adds a middleware that sets a request attribute, like a CSP middleware would.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 *
+	 * @return void
+	 */
+	protected function withRequestAttribute(string $name, string $value): void {
+		EventManager::instance()->on('Server.buildMiddleware', function (EventInterface $event, MiddlewareQueue $queue) use ($name, $value): void {
+			$queue->prepend(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($name, $value): ResponseInterface {
+				return $handler->handle($request->withAttribute($name, $value));
+			});
+		});
 	}
 
 }
